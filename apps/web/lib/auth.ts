@@ -15,7 +15,8 @@ import { sendResetPasswordEmail, sendVerifyEmail } from "@/lib/email"
 import { env } from "@/lib/env"
 import { requiresTwoFactor } from "@/lib/two-factor"
 
-export const APP_NAME = "Next.js Template"
+/** Anzeigename, u. a. als Aussteller in Authenticator-Apps (TOTP). */
+export const APP_NAME = "BITS-Portal Kanton Solothurn"
 
 // SSO provider management endpoints. The plugin lets any signed-in user call
 // these (scoped to providers they registered); we restrict them to admins so
@@ -56,7 +57,22 @@ export const auth = betterAuth({
       if (SSO_MANAGEMENT_PATHS.has(ctx.path)) {
         const session = await getSessionFromCtx(ctx)
         if (session?.user.role !== "admin") {
-          throw new APIError("FORBIDDEN", { message: "Admin access required" })
+          throw new APIError("FORBIDDEN", {
+            message: "Dafür sind Adminrechte nötig.",
+          })
+        }
+      }
+
+      // Admins can't change their own role, so at least one admin always
+      // remains (the admin plugin itself doesn't prevent self-demotion).
+      if (ctx.path === "/admin/set-role") {
+        const session = await getSessionFromCtx(ctx)
+        const body = ctx.body as { userId?: unknown } | undefined
+        if (session && body?.userId === session.user.id) {
+          throw new APIError("BAD_REQUEST", {
+            code: "CANNOT_CHANGE_OWN_ROLE",
+            message: "Sie können Ihre eigene Rolle nicht ändern.",
+          })
         }
       }
 
@@ -65,7 +81,8 @@ export const auth = betterAuth({
         const session = await getSessionFromCtx(ctx)
         if (session && (await requiresTwoFactor(session.user))) {
           throw new APIError("FORBIDDEN", {
-            message: "Two-factor authentication is required for admins",
+            message:
+              "Für Admins ist die Zwei-Faktor-Authentisierung vorgeschrieben.",
           })
         }
       }
@@ -101,7 +118,7 @@ export const auth = betterAuth({
           action: "reject",
           code: "ADMIN_ACCOUNT_LINK_FORBIDDEN",
           message:
-            "This email belongs to an admin account. Sign in with a password.",
+            "Diese E-Mail-Adresse gehört zu einem Admin-Konto. Bitte mit Passwort anmelden.",
         }
       },
     }),

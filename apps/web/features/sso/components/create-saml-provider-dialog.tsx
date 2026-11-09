@@ -1,19 +1,18 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import {
-  createSamlProviderInputSchema,
-  type CreateSamlProviderInput,
-} from "@workspace/api"
+import type { CreateSamlProviderInput } from "@workspace/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { PlusIcon } from "lucide-react"
 import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -31,7 +30,46 @@ import {
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
+import { errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
+
+const optionalText = z.string().trim().optional()
+
+/**
+ * Wie `createSamlProviderInputSchema` in `@workspace/api`, aber mit deutschen
+ * Meldungen (der Server prüft zusätzlich mit dem Original).
+ */
+const formSchema = z
+  .object({
+    providerId: z
+      .string()
+      .trim()
+      .min(2, "Mindestens 2 Zeichen.")
+      .max(50, "Höchstens 50 Zeichen.")
+      .regex(
+        /^[a-z0-9][a-z0-9-]*$/,
+        "Nur Kleinbuchstaben, Ziffern und Bindestriche."
+      ),
+    domain: z
+      .string()
+      .trim()
+      .min(3, "Bitte mindestens eine E-Mail-Domäne angeben.")
+      .regex(
+        /^[a-z0-9.-]+\.[a-z]{2,}(,\s*[a-z0-9.-]+\.[a-z]{2,})*$/i,
+        "Domänen durch Komma trennen, z. B. so.ch."
+      ),
+    issuer: z.url("Die Entity-ID des IdP muss eine URL sein."),
+    entryPoint: z.url("Die SSO-URL des IdP muss eine URL sein."),
+    cert: optionalText,
+    idpMetadataXml: optionalText,
+    emailAttribute: optionalText,
+    nameAttribute: optionalText,
+  })
+  .refine((v) => Boolean(v.cert || v.idpMetadataXml), {
+    message:
+      "Bitte das Signaturzertifikat des IdP oder seine Metadaten (XML) angeben.",
+    path: ["cert"],
+  }) satisfies z.ZodType<CreateSamlProviderInput>
 
 const defaultValues: CreateSamlProviderInput = {
   providerId: "",
@@ -55,46 +93,48 @@ const fields: Array<{
 }> = [
   {
     name: "providerId",
-    label: "Provider ID",
-    placeholder: "acme-okta",
-    description: "Used in the ACS URL. Lowercase letters, numbers, dashes.",
+    label: "Provider-ID",
+    placeholder: "ktso-entra",
+    description: "Teil der ACS-URL. Kleinbuchstaben, Ziffern und Bindestriche.",
   },
   {
     name: "domain",
-    label: "Email domains",
-    placeholder: "acme.com, acme.de",
-    description: "Users with these email domains are sent to this IdP.",
+    label: "E-Mail-Domänen",
+    placeholder: "so.ch",
+    description:
+      "Personen mit diesen E-Mail-Domänen werden an diesen IdP weitergeleitet. Mehrere durch Komma trennen.",
   },
   {
     name: "issuer",
-    label: "IdP entity ID (issuer)",
-    placeholder: "https://idp.acme.com/metadata",
+    label: "Entity-ID des IdP (Issuer)",
+    placeholder: "https://sts.windows.net/…/",
   },
   {
     name: "entryPoint",
-    label: "IdP SSO URL",
-    placeholder: "https://idp.acme.com/sso/saml",
+    label: "SSO-URL des IdP",
+    placeholder: "https://login.microsoftonline.com/…/saml2",
   },
   {
     name: "cert",
-    label: "IdP signing certificate (PEM)",
+    label: "Signaturzertifikat des IdP (PEM)",
     multiline: true,
     placeholder: "-----BEGIN CERTIFICATE-----",
   },
   {
     name: "idpMetadataXml",
-    label: "IdP metadata XML (optional)",
+    label: "Metadaten des IdP als XML (optional)",
     multiline: true,
-    description: "Can replace the certificate if it contains the signing cert.",
+    description:
+      "Kann das Zertifikat ersetzen, wenn die Metadaten das Signaturzertifikat enthalten.",
   },
   {
     name: "emailAttribute",
-    label: "Email attribute (optional)",
+    label: "Attribut für die E-Mail-Adresse (optional)",
     placeholder: "email",
   },
   {
     name: "nameAttribute",
-    label: "Name attribute (optional)",
+    label: "Attribut für den Namen (optional)",
     placeholder: "displayName",
   },
 ]
@@ -103,7 +143,7 @@ export function CreateSamlProviderDialog() {
   const [open, setOpen] = React.useState(false)
   const queryClient = useQueryClient()
   const form = useForm<CreateSamlProviderInput>({
-    resolver: zodResolver(createSamlProviderInputSchema),
+    resolver: zodResolver(formSchema),
     defaultValues,
   })
 
@@ -111,32 +151,43 @@ export function CreateSamlProviderDialog() {
     orpc.sso.create.mutationOptions({
       onSuccess: async (provider) => {
         await queryClient.invalidateQueries({ queryKey: orpc.sso.key() })
-        toast.success(`Added ${provider.providerId}`)
+        toast.success(`Provider ${provider.providerId} hinzugefügt`)
         form.reset(defaultValues)
         setOpen(false)
       },
-      onError: (error) => toast.error(error.message),
+      onError: (error) =>
+        toast.error(
+          errorMessage(error, {
+            CONFLICT: "Es gibt bereits einen Provider mit dieser ID.",
+            BAD_REQUEST:
+              "Die Konfiguration des Providers ist ungültig. Bitte Zertifikat, URLs und Domänen prüfen.",
+          })
+        ),
     })
   )
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <PlusIcon />
-          Add provider
+        <Button size="lg">
+          <PlusIcon aria-hidden="true" />
+          Provider hinzufügen
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90svh] overflow-y-auto sm:max-w-lg">
+      <DialogContent
+        showCloseButton={false}
+        className="max-h-[90svh] overflow-y-auto sm:max-w-lg"
+      >
         <DialogHeader>
-          <DialogTitle>Add SAML provider</DialogTitle>
+          <DialogTitle>SAML-Provider hinzufügen</DialogTitle>
           <DialogDescription>
-            Copy these values from your identity provider (Okta, Entra ID,
-            Google Workspace, Keycloak, …).
+            Die Werte stammen aus der SAML-App im Identity Provider (z. B. Entra
+            ID, Keycloak, Okta).
           </DialogDescription>
         </DialogHeader>
         <form
           id="create-saml-form"
+          noValidate
           onSubmit={form.handleSubmit((values) => create.mutate(values))}
         >
           <FieldGroup>
@@ -180,13 +231,16 @@ export function CreateSamlProviderDialog() {
           </FieldGroup>
         </form>
         <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Abbrechen</Button>
+          </DialogClose>
           <Button
             type="submit"
             form="create-saml-form"
             disabled={create.isPending}
           >
-            {create.isPending && <Spinner />}
-            Add provider
+            {create.isPending && <Spinner aria-hidden="true" />}
+            Provider hinzufügen
           </Button>
         </DialogFooter>
       </DialogContent>
