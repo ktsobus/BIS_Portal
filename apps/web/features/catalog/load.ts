@@ -41,3 +41,15 @@ export const loadService = cache((slug: string) =>
 export const loadLeistung = cache((slug: string) =>
   settle(() => serverClient.catalog.leistung({ slug }))
 )
+
+/**
+ * Status mit zentralem Kontakt, auch ohne Snapshot. Scheitert nie: Fusszeile
+ * und Ausfallseite dürfen eine Seite nicht scheitern lassen.
+ */
+export const loadStatus = cache(async () => {
+  try {
+    return await serverClient.catalog.status()
+  } catch {
+    return null
+  }
+})

@@ -6,8 +6,8 @@ import {
   catalogLeistungPageSchema,
   catalogOverviewSchema,
   catalogSearchIndexSchema,
+  catalogPublicStatusSchema,
   catalogServicePageSchema,
-  catalogStatusSchema,
   slugInputSchema,
   syncRunSchema,
 } from "../schemas/catalog"
@@ -23,7 +23,7 @@ const unavailable = {
 
 /** Öffentlich (ohne Anmeldung): liest nur aus dem Katalog-Snapshot. */
 export const catalogContract = {
-  status: oc.route({ method: "GET" }).output(catalogStatusSchema),
+  status: oc.route({ method: "GET" }).output(catalogPublicStatusSchema),
   overview: oc.errors(unavailable).output(catalogOverviewSchema),
   family: oc
     .errors({ ...unavailable, ...notFound })

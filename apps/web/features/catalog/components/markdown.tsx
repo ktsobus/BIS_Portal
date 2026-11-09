@@ -1,18 +1,10 @@
-import Markdown, { type Components, type UrlTransform } from "react-markdown"
+import Markdown, { type Components } from "react-markdown"
 
 import { cn } from "@/lib/utils"
 
-import { stripEnclosingQuotes } from "../text"
-import { ExternalLinkHint, isExternalUrl } from "./external-link"
-
-/** Nur diese Protokolle werden als Link dargestellt, alles andere als Text. */
-const SAFE_URL = /^(?:https?:\/\/|mailto:|tel:)/i
-
-const urlTransform: UrlTransform = (url, key) => {
-  if (key !== "href") return ""
-  const trimmed = url.trim()
-  return SAFE_URL.test(trimmed) ? trimmed : ""
-}
+import { isExternalUrl } from "../links"
+import { markdownOptions, prepareMarkdown } from "../markdown"
+import { ExternalLinkHint } from "./external-link"
 
 type HeadingLevel = 2 | 3 | 4 | 5 | 6
 
@@ -106,8 +98,9 @@ const componentsByLevel: Record<HeadingLevel, Components> = {
 
 /**
  * Beschreibungen aus LeanIX sicher als Markdown darstellen: kein rohes HTML,
- * keine Bilder, Links nur http(s)/mailto/tel. Überschriften im Text beginnen
- * bei `headingLevel` (Standard h3, unter einem h2-Abschnitt).
+ * keine Bilder, Links nur http(s)/mailto/tel, einfache Zeilenumbrüche bleiben
+ * erhalten. Überschriften im Text beginnen bei `headingLevel` (Standard h3,
+ * unter einem h2-Abschnitt).
  */
 export function MarkdownText({
   children,
@@ -127,11 +120,10 @@ export function MarkdownText({
       )}
     >
       <Markdown
-        skipHtml
-        urlTransform={urlTransform}
+        {...markdownOptions}
         components={componentsByLevel[headingLevel]}
       >
-        {stripEnclosingQuotes(children)}
+        {prepareMarkdown(children)}
       </Markdown>
     </div>
   )

@@ -5,6 +5,8 @@ import { defineConfig } from "vitest/config"
 const root = import.meta.dirname
 
 export default defineConfig({
+  // tsconfig hat `jsx: preserve` (für Next.js); in Tests JSX selbst umwandeln.
+  oxc: { jsx: { runtime: "automatic" } },
   resolve: {
     alias: {
       "@": root,

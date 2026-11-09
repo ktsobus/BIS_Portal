@@ -6,8 +6,10 @@ import { cn } from "@/lib/utils"
 
 import { ExternalLinkHint, isExternalUrl, safeHref } from "./external-link"
 
+// `max-w-full min-w-0 shrink` hebt `shrink-0` der Button-Basis auf: Lange
+// Beschriftungen brechen um, statt bei 320 px aus der Karte zu laufen.
 const actionClass =
-  "h-auto min-h-10 justify-start gap-2 px-4 py-2 text-left text-base font-bold whitespace-normal"
+  "h-auto min-h-10 max-w-full min-w-0 shrink justify-start gap-2 px-4 py-2 text-left text-base font-bold whitespace-normal"
 
 /**
  * Aktion als Schaltfläche: `order` rot (primär), `request` und `contact`
@@ -33,7 +35,7 @@ export function ActionLink({ action }: { action: CatalogLink }) {
       {action.kind === "contact" && href.startsWith("tel:") ? (
         <PhoneIcon aria-hidden="true" />
       ) : null}
-      <span>
+      <span className="min-w-0">
         {action.label}
         {external ? <ExternalLinkHint /> : null}
       </span>

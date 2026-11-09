@@ -67,6 +67,8 @@ export const catalogAdminRouter = {
           minRatio: env.CATALOG_MIN_RATIO,
           staleAfterHours: env.CATALOG_STALE_AFTER_HOURS,
           rootCategoryId: env.CATALOG_ROOT_ID ?? leanixModel.kategorie.rootId,
+          // Gültigkeit prüft lib/env.ts (https, mailto oder tel).
+          fallbackActionConfigured: Boolean(env.CATALOG_FALLBACK_REQUEST_URL),
         },
       }
     }),

@@ -53,6 +53,20 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       EMAIL_FROM: ${EMAIL_FROM:?set EMAIL_FROM}
+      # LeanIX und Katalog (siehe apps/web/.env.example). Leere Werte nur bei
+      # optionalen Variablen; sonst die Standardwerte aus apps/web/lib/env.ts.
+      LEANIX_BASE_URL: ${LEANIX_BASE_URL:-https://ktso.leanix.net}
+      LEANIX_WORKSPACE: ${LEANIX_WORKSPACE:-eamktsoLive}
+      LEANIX_API_TOKEN: ${LEANIX_API_TOKEN:-}
+      CATALOG_ROOT_ID: ${CATALOG_ROOT_ID:-}
+      CATALOG_SYNC_INTERVAL_MINUTES: ${CATALOG_SYNC_INTERVAL_MINUTES:-15}
+      CATALOG_MIN_RATIO: ${CATALOG_MIN_RATIO:-0.5}
+      CATALOG_STALE_AFTER_HOURS: ${CATALOG_STALE_AFTER_HOURS:-24}
+      CATALOG_SHOW_PERSONS: ${CATALOG_SHOW_PERSONS:-false}
+      CATALOG_FALLBACK_REQUEST_URL: ${CATALOG_FALLBACK_REQUEST_URL:-}
+      CATALOG_FALLBACK_REQUEST_LABEL: ${CATALOG_FALLBACK_REQUEST_LABEL:-Anfrage an den Service Desk}
+      CATALOG_SUPPORT_EMAIL: ${CATALOG_SUPPORT_EMAIL:-}
+      CATALOG_SUPPORT_PHONE: ${CATALOG_SUPPORT_PHONE:-}
       # Picked up by nginx-proxy / acme-companion.
       VIRTUAL_HOST: ${APP_DOMAIN}
       VIRTUAL_PORT: "3000"
