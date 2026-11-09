@@ -1,21 +1,34 @@
-# Self-hosted production stack: Next.js app + Postgres, served through an
-# existing nginxproxy/nginx-proxy (+ nginxproxy/acme-companion for TLS) that
-# runs on the external Docker network PROXY_NETWORK.
+# Produktiver Betrieb des BITS-Portals auf einem internen Server:
+# Next.js-App + Postgres. Details: docs/betrieb.md.
 #
-#   cp .env.prod.example .env.prod   # then fill in the values
+#   cp .env.prod.example .env.prod   # Werte ausfüllen, chmod 600 .env.prod
 #   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 #
-# Migrations run as a one-off `migrate` service before the app starts.
-name: app-prod
+# Die App lauscht auf ${APP_BIND}:${APP_PORT} (Standard 127.0.0.1:3000). TLS
+# übernimmt der vorgelagerte Reverse-Proxy (kantonaler Reverse-Proxy oder ein
+# Webserver auf dem Host mit internem Zertifikat). Variante mit einem
+# bestehenden nginx-proxy: docker-compose.nginx-proxy.yml.
+#
+# Die Migrationen laufen vor dem Start der App als einmaliger Dienst `migrate`.
+name: bits-portal
+
+# Gemeinsame Build-Args für App und Migration: Basis-Image und npm-Registry
+# (z. B. interne Registry bzw. Mirror). Einen Proxy für den Build nicht hier
+# setzen (ein leerer Wert würde die Proxy-Einstellung des Docker-Clients
+# überschreiben), sondern in ~/.docker/config.json («proxies») oder mit
+# `docker compose build --build-arg HTTPS_PROXY=…`.
+x-build-args: &build-args
+  NODE_IMAGE: ${NODE_IMAGE:-node:24-alpine}
+  NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org}
 
 services:
   postgres:
-    image: postgres:17-alpine
+    image: ${POSTGRES_IMAGE:-postgres:17-alpine}
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-bits}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_DB: ${POSTGRES_DB:-bits}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -23,15 +36,16 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    # Not published to the host and not on the proxy network.
+    # Nicht auf dem Host veröffentlicht, nur im internen Netz.
     networks: [internal]
 
   migrate:
     build:
       context: .
       target: migrate
+      args: *build-args
     environment:
-      DATABASE_URL: &database-url postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-app}
+      DATABASE_URL: &database-url postgres://${POSTGRES_USER:-bits}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-bits}
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,45 +56,59 @@ services:
     build:
       context: .
       args:
-        NEXT_PUBLIC_APP_URL: https://${APP_DOMAIN:?set APP_DOMAIN}
+        <<: *build-args
+        # Wird beim Build ins Bundle eingesetzt: nach einer Änderung neu bauen.
+        NEXT_PUBLIC_APP_URL: ${APP_URL:?set APP_URL}
     restart: unless-stopped
     environment:
       DATABASE_URL: *database-url
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET}
-      BETTER_AUTH_URL: https://${APP_DOMAIN}
-      # LeanIX und Katalog (siehe apps/web/.env.example). Leere Werte nur bei
-      # optionalen Variablen; sonst die Standardwerte aus apps/web/lib/env.ts.
+      # Öffentliche Adresse des Portals, wie sie im Browser steht.
+      BETTER_AUTH_URL: ${APP_URL}
+
+      # --- LeanIX / Katalog (siehe .env.prod.example) ------------------------
+      # Ohne Token liefe das Portal im Demo-Modus (fester Testdatensatz, kein
+      # Sync). Darum ist der Token hier Pflicht; für eine bewusste
+      # Demo-Installation CATALOG_SOURCE=demo und einen beliebigen Token setzen.
+      LEANIX_API_TOKEN: ${LEANIX_API_TOKEN:?set LEANIX_API_TOKEN (API-Token des technischen LeanIX-Benutzers)}
       LEANIX_BASE_URL: ${LEANIX_BASE_URL:-https://ktso.leanix.net}
       LEANIX_WORKSPACE: ${LEANIX_WORKSPACE:-eamktsoLive}
-      LEANIX_API_TOKEN: ${LEANIX_API_TOKEN:-}
+      CATALOG_SOURCE: ${CATALOG_SOURCE:-leanix}
+      # Leer = Wurzel aus apps/web/lib/leanix/model.ts
       CATALOG_ROOT_ID: ${CATALOG_ROOT_ID:-}
       CATALOG_SYNC_INTERVAL_MINUTES: ${CATALOG_SYNC_INTERVAL_MINUTES:-15}
       CATALOG_MIN_RATIO: ${CATALOG_MIN_RATIO:-0.5}
       CATALOG_STALE_AFTER_HOURS: ${CATALOG_STALE_AFTER_HOURS:-24}
       CATALOG_SHOW_PERSONS: ${CATALOG_SHOW_PERSONS:-false}
+      CATALOG_SHRINK_TOLERANCE: ${CATALOG_SHRINK_TOLERANCE:-5}
+      CATALOG_SHOW_EMPTY_SERVICES: ${CATALOG_SHOW_EMPTY_SERVICES:-false}
+      CATALOG_HTTP_ALLOWED_HOSTS: ${CATALOG_HTTP_ALLOWED_HOSTS:-}
       CATALOG_FALLBACK_REQUEST_URL: ${CATALOG_FALLBACK_REQUEST_URL:-}
       CATALOG_FALLBACK_REQUEST_LABEL: ${CATALOG_FALLBACK_REQUEST_LABEL:-Anfrage an den Service Desk}
       CATALOG_SUPPORT_EMAIL: ${CATALOG_SUPPORT_EMAIL:-}
       CATALOG_SUPPORT_PHONE: ${CATALOG_SUPPORT_PHONE:-}
+      # Reverse Proxies, die X-Forwarded-For ergänzen (Rate-Limit der Anmeldung)
       AUTH_TRUSTED_PROXIES: ${AUTH_TRUSTED_PROXIES:-}
-      # Picked up by nginx-proxy / acme-companion.
-      VIRTUAL_HOST: ${APP_DOMAIN}
-      VIRTUAL_PORT: "3000"
-      LETSENCRYPT_HOST: ${APP_DOMAIN}
-    expose:
-      - "3000"
+
+      # --- Ausgehender Proxy zu ktso.leanix.net (leer = direkt) -------------
+      # Das Image setzt NODE_USE_ENV_PROXY=1, damit Node die Werte beachtet.
+      HTTPS_PROXY: ${HTTPS_PROXY:-}
+      NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,postgres}
+      # Kein SMTP: Das Portal versendet keine E-Mails (kein Passwort-Reset,
+      # keine E-Mail-Bestätigung; Konten legen Admins an).
+    ports:
+      # Nur für den Reverse-Proxy. Steht er auf einem anderen Server,
+      # APP_BIND auf die interne Adresse dieses Servers setzen.
+      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-3000}:3000"
     depends_on:
       migrate:
         condition: service_completed_successfully
-    # Give the server time to finish in-flight requests on SIGTERM.
+    # Zeit, um laufende Anfragen bei SIGTERM abzuschliessen.
     stop_grace_period: 30s
-    networks: [internal, proxy]
+    networks: [internal]
 
 networks:
   internal:
-  proxy:
-    name: ${PROXY_NETWORK:-nginx-proxy}
-    external: true
 
 volumes:
   postgres-data:

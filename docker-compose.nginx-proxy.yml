@@ -1,0 +1,26 @@
+# Optional: Betrieb hinter einem bestehenden nginxproxy/nginx-proxy auf
+# demselben Docker-Host (externes Docker-Netz PROXY_NETWORK). Ergänzt
+# docker-compose.prod.yml:
+#
+#   docker compose -f docker-compose.prod.yml -f docker-compose.nginx-proxy.yml \
+#     --env-file .env.prod up -d --build
+#
+# TLS im Intranet: Zertifikat der internen PKI im nginx-proxy ablegen, als
+# /etc/nginx/certs/<APP_DOMAIN>.crt und /etc/nginx/certs/<APP_DOMAIN>.key
+# (Volume des nginx-proxy-Containers). nginx-proxy findet es über VIRTUAL_HOST.
+#
+# Let's Encrypt (nginxproxy/acme-companion) funktioniert nur, wenn der Host
+# öffentlich im DNS steht und aus dem Internet über HTTP erreichbar ist. Für
+# einen internen Server LETSENCRYPT_HOST leer lassen.
+services:
+  app:
+    environment:
+      VIRTUAL_HOST: ${APP_DOMAIN:?set APP_DOMAIN (Hostname aus APP_URL)}
+      VIRTUAL_PORT: "3000"
+      LETSENCRYPT_HOST: ${LETSENCRYPT_HOST:-}
+    networks: [internal, proxy]
+
+networks:
+  proxy:
+    name: ${PROXY_NETWORK:-nginx-proxy}
+    external: true

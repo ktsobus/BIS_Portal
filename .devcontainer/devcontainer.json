@@ -1,5 +1,5 @@
 {
-  "name": "nextjs-template",
+  "name": "bits-portal",
   "dockerComposeFile": ["../docker-compose.yml", "docker-compose.yml"],
   "service": "app",
   "runServices": ["app", "postgres"],
