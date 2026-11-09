@@ -5,12 +5,13 @@ import {
   TriangleAlertIcon,
 } from "lucide-react"
 
+import { formatRelative } from "@/lib/format"
+
 import {
   formatDateTimeLong,
   formatHours,
   formatInterval,
   formatPercent,
-  formatRelative,
 } from "./format"
 
 function leanixFactSheetUrl(
@@ -123,10 +124,16 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
         hint={
           sourceIsDemo
             ? "Im Demo-Modus findet keine Synchronisierung statt."
-            : undefined
+            : config.tokenConfigured
+              ? undefined
+              : "Ohne LeanIX-API-Token findet keine Synchronisierung statt."
         }
       >
-        {formatInterval(config.syncIntervalMinutes)}
+        {sourceIsDemo
+          ? "Aus (Demo-Modus)"
+          : config.tokenConfigured
+            ? formatInterval(config.syncIntervalMinutes)
+            : "Aus (kein API-Token)"}
       </Item>
 
       <Item

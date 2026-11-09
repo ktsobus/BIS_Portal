@@ -15,8 +15,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - shadcn forms use `Field` + react-hook-form `Controller` (there is no `Form` component).
 - API changes start in `packages/api` (contract), then the feature's `server/router.ts` (registered in `apps/web/server/router.ts`).
 - `packages/api` is the only shared package. It holds the wire contract (zod + `@orpc/contract` only) and must stay free of server code; the client imports it.
-- Everything else lives in `apps/web`: shadcn components in `components/ui`, Drizzle in `db/`, React Email templates in `emails/`. Env vars are in `apps/web/.env`.
-- Feature folders: feature code lives in `apps/web/features/<feature>/` (`components/`, `server/router.ts`, feature helpers). Pages in `app/` stay thin and compose feature components. Features don't import each other's internals; code several features need goes to `components/ui`, `lib/`, `db/` or `emails/`. Contracts/schemas stay in `packages/api` (one file per feature), Drizzle tables in `db/schema/`.
+- Everything else lives in `apps/web`: shadcn components in `components/ui`, Drizzle in `db/`. The portal sends no email (no password reset, no email verification). Env vars are in `apps/web/.env`.
+- Feature folders: feature code lives in `apps/web/features/<feature>/` (`components/`, `server/router.ts`, feature helpers). Pages in `app/` stay thin and compose feature components. Features don't import each other's internals; code several features need goes to `components/ui`, `lib/` or `db/`. Contracts/schemas stay in `packages/api` (one file per feature), Drizzle tables in `db/schema/`.
 
 ## Data access
 
@@ -28,7 +28,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Auth
 
-- Public sign-up is disabled (`emailAndPassword.disableSignUp` in `apps/web/lib/auth.ts`). The first admin is created at `/setup`, which is only reachable while no admin exists. After that, admins create password users in the admin section.
+- Public sign-up is disabled (`emailAndPassword.disableSignUp` in `apps/web/lib/auth.ts`). The first admin is created at `/setup`, which closes for good once setup is done (`app_settings.setup_completed_at`, not "no admin exists"). After that, admins create password accounts (always role `admin`) in the admin section. `lib/auth.ts` guards roles (only via set-role, never the last admin), the 12-character password rule and a per-account sign-in throttle (`lib/sign-in-throttle.ts`). `/rpc` rejects cross-origin mutations and requires the `x-csrf-token` header that `lib/orpc.ts` sends (`server/rpc-handler.ts`).
 - SAML (`@better-auth/sso`) is optional. Admins add providers at runtime in the admin section (stored in the DB); SAML users are provisioned on first sign-in with role `user`. LDAP lives on the `feat/ldap` branch.
 - TOTP 2FA can be required for admins with a password (`credential`) account. This is controlled by the `requireAdminTwoFactor` app setting (`app_settings` table), which is **off by default** and toggled by admins (`apps/web/lib/two-factor.ts`). SAML users and regular password users never need it. Enforcement lives in the `authed`/`adminOnly` middlewares and `requireSession()`; keep both in sync.
 - SAML identities must never be linked into an existing password admin account, since that would bypass TOTP. This is enforced by `resolveUser` in `lib/auth.ts`.

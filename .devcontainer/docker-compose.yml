@@ -1,4 +1,4 @@
-# Merged on top of the root docker-compose.yml (postgres + mailpit), so the
+# Merged on top of the root docker-compose.yml (postgres), so the
 # project directory is the repo root and relative paths below start there.
 services:
   app:
@@ -13,7 +13,6 @@ services:
     # Loopback only, so nothing is exposed to the LAN.
     ports:
       - "127.0.0.1:3000:3000"
-      - "127.0.0.1:3001:3001"
     volumes:
       - .:/workspace:cached
       # Keep the container's node_modules apart from the host's: pnpm refuses
@@ -31,20 +30,14 @@ services:
       # Real env vars win over apps/web/.env (Next.js and drizzle-kit both use
       # @next/env, which never overrides existing variables).
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/app
-      SMTP_HOST: mailpit
-      SMTP_PORT: "1025"
       COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
     depends_on:
       - postgres
-      - mailpit
 
-  # Postgres stays internal, and mailpit's UI uses 8026 instead of 8025, so
-  # this can run alongside `docker compose up` from the host.
+  # Postgres stays internal, so this can run alongside `docker compose up`
+  # from the host.
   postgres:
     ports: !reset []
-  mailpit:
-    ports: !override
-      - "127.0.0.1:8026:8025"
 
 volumes:
   node-modules-root:

@@ -1,31 +1,34 @@
+import Link from "next/link"
+
+import { siteContainer } from "@/components/site/container"
+import { FooterSender } from "@/components/site/footer-sender"
 import { SiteHeader } from "@/components/site/site-header"
 import { cn } from "@/lib/utils"
 
 /**
- * Inhaltsbreite und Seitenränder; entspricht dem öffentlichen Layout, damit
- * Kopf und Inhalt fluchten.
- */
-const container = "mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10"
-
-/**
  * Rahmen für den Admin-Bereich und die Anmeldeseiten: Kopf mit
- * Admin-Kennzeichnung, optionale Werkzeugleiste (Reiter, Abmelden), Inhalt.
+ * Admin-Kennzeichnung, optionale Werkzeugleiste (Reiter, Abmelden), Inhalt
+ * und schlanke Fusszeile mit Absender. Ohne Server-Aufrufe, damit er auch in
+ * Fehlerseiten (Client Components) nutzbar ist.
  */
 export function AdminShell({
   toolbar,
+  variant = "admin",
   children,
 }: {
   toolbar?: React.ReactNode
+  /** `public` z. B. für Fehlerseiten des öffentlichen Portals. */
+  variant?: "admin" | "public"
   children: React.ReactNode
 }) {
   return (
     <div className="flex min-h-svh flex-col">
-      <SiteHeader variant="admin" />
+      <SiteHeader variant={variant} />
       {toolbar ? (
         <div className="border-b border-border">
           <div
             className={cn(
-              container,
+              siteContainer,
               "flex flex-wrap items-end justify-between gap-x-6 gap-y-1"
             )}
           >
@@ -36,10 +39,25 @@ export function AdminShell({
       <main
         id="inhalt"
         tabIndex={-1}
-        className={cn(container, "flex-1 pt-6 pb-16 outline-none sm:pt-10")}
+        className={cn(siteContainer, "flex-1 pt-6 pb-16 outline-none sm:pt-10")}
       >
         {children}
       </main>
+      <footer className="border-t border-border bg-so-surface">
+        <div
+          className={cn(
+            siteContainer,
+            "flex flex-col gap-4 py-6 text-sm md:flex-row md:items-end md:justify-between"
+          )}
+        >
+          <FooterSender />
+          <p>
+            <Link href="/" className="link-cd text-muted-foreground">
+              Zum Katalog
+            </Link>
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

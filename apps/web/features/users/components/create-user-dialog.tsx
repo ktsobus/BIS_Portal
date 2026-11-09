@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { userRoleSchema, type CreateUserInput } from "@workspace/api"
+import type { CreateUserInput } from "@workspace/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { UserPlusIcon } from "lucide-react"
 import * as React from "react"
@@ -26,35 +26,31 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
+  fieldDescribedBy,
 } from "@/components/ui/field"
+import { FormAlert } from "@/components/ui/form-alert"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Spinner } from "@/components/ui/spinner"
 import { accountFields, errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
 
-import { roleLabels } from "./labels"
-
-/** Wie `createUserInputSchema`, aber mit deutschen Meldungen. */
+/**
+ * Wie `createUserInputSchema`, aber mit deutschen Meldungen. Passwortkonten
+ * werden immer als Admin angelegt: Der Katalog ist ohne Anmeldung
+ * zugänglich, ein Passwortkonto ohne Adminrechte hätte keine Funktion. Die
+ * Rolle «Benutzer» entsteht nur bei der ersten SAML-Anmeldung.
+ */
 const formSchema = z.object({
   name: accountFields.name,
   email: accountFields.email,
   password: accountFields.password,
-  role: userRoleSchema,
-}) satisfies z.ZodType<CreateUserInput>
+})
 
-const defaultValues: CreateUserInput = {
-  name: "",
-  email: "",
-  password: "",
-  role: "user",
-}
+type FormValues = z.infer<typeof formSchema>
+
+const defaultValues: FormValues = { name: "", email: "", password: "" }
+
+const FORM_ERROR_ID = "create-user-error"
 
 const textFields = [
   { name: "name", label: "Name", type: "text", autoComplete: "off" },
@@ -77,97 +73,127 @@ const textFields = [
 export function CreateUserDialog() {
   const [open, setOpen] = React.useState(false)
   const queryClient = useQueryClient()
-  const form = useForm<CreateUserInput>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   })
+  // Serverfehler ohne Feldbezug bleiben im Dialog stehen (kein Toast).
+  const [formError, setFormError] = React.useState<string | null>(null)
+  const alertRef = React.useRef<HTMLDivElement>(null)
+  // Neuer Fehler: Hinweis fokussieren, damit er vorgelesen wird.
+  React.useEffect(() => {
+    if (formError) alertRef.current?.focus()
+  }, [formError])
 
   const createUser = useMutation(
     orpc.user.create.mutationOptions({
       onSuccess: async (user) => {
         await queryClient.invalidateQueries({ queryKey: orpc.user.key() })
-        toast.success(`Benutzer ${user.email} erfasst`)
+        toast.success(`Admin-Konto ${user.email} erfasst`)
         form.reset(defaultValues)
         setOpen(false)
       },
-      onError: (error) =>
-        toast.error(
-          errorMessage(error, {
-            CONFLICT:
-              "Es gibt bereits einen Benutzer mit dieser E-Mail-Adresse.",
-          })
-        ),
+      onError: (error) => {
+        if ("code" in error && error.code === "CONFLICT") {
+          form.setError(
+            "email",
+            {
+              type: "server",
+              message: "Es gibt bereits ein Konto mit dieser E-Mail-Adresse.",
+            },
+            { shouldFocus: true }
+          )
+          return
+        }
+        setFormError(errorMessage(error))
+      },
     })
   )
 
+  function submit(values: FormValues) {
+    setFormError(null)
+    const input: CreateUserInput = { ...values, role: "admin" }
+    createUser.mutate(input)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next)
+        if (!next) setFormError(null)
+      }}
+    >
       <DialogTrigger asChild>
         <Button size="lg">
           <UserPlusIcon aria-hidden="true" />
-          Neuer Benutzer
+          Admin-Konto erfassen
         </Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>Neuer Benutzer</DialogTitle>
+          <DialogTitle>Neues Admin-Konto</DialogTitle>
           <DialogDescription>
-            Erfasst ein Konto, das sich mit E-Mail-Adresse und Passwort
-            anmeldet.
+            Erfasst ein Konto mit E-Mail-Adresse und Passwort. Es hat Zugriff
+            auf den ganzen Admin-Bereich. Für den Katalog ist keine Anmeldung
+            nötig.
           </DialogDescription>
         </DialogHeader>
         <form
           id="create-user-form"
           noValidate
-          onSubmit={form.handleSubmit((values) => createUser.mutate(values))}
+          onSubmit={form.handleSubmit(submit)}
+          className="flex flex-col gap-5"
         >
+          {formError ? (
+            <FormAlert
+              ref={alertRef}
+              id={FORM_ERROR_ID}
+              title="Konto nicht erfasst"
+            >
+              {formError}
+            </FormAlert>
+          ) : null}
           <FieldGroup>
             {textFields.map((f) => (
               <Controller
                 key={f.name}
                 name={f.name}
                 control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>{f.label}</FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      type={f.type}
-                      autoComplete={f.autoComplete}
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {"description" in f && (
-                      <FieldDescription>{f.description}</FieldDescription>
-                    )}
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                render={({ field, fieldState }) => {
+                  const description =
+                    "description" in f ? f.description : undefined
+                  const { descriptionId, errorId, describedBy } =
+                    fieldDescribedBy(`create-user-${field.name}`, {
+                      description: Boolean(description),
+                      invalid: Boolean(fieldState.error?.message),
+                    })
+                  return (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor={`create-user-${field.name}`}>
+                        {f.label}
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        id={`create-user-${field.name}`}
+                        type={f.type}
+                        autoComplete={f.autoComplete}
+                        aria-invalid={fieldState.invalid}
+                        aria-describedby={describedBy}
+                      />
+                      {description ? (
+                        <FieldDescription id={descriptionId}>
+                          {description}
+                        </FieldDescription>
+                      ) : null}
+                      {fieldState.invalid && (
+                        <FieldError id={errorId} errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )
+                }}
               />
             ))}
-            <Controller
-              name="role"
-              control={form.control}
-              render={({ field }) => (
-                <Field>
-                  <FieldLabel htmlFor={field.name}>Rolle</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id={field.name} className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="user">{roleLabels.user}</SelectItem>
-                      <SelectItem value="admin">{roleLabels.admin}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FieldDescription>
-                    Admins haben Zugriff auf den ganzen Admin-Bereich.
-                  </FieldDescription>
-                </Field>
-              )}
-            />
           </FieldGroup>
         </form>
         <DialogFooter>
@@ -180,7 +206,7 @@ export function CreateUserDialog() {
             disabled={createUser.isPending}
           >
             {createUser.isPending && <Spinner aria-hidden="true" />}
-            Benutzer erfassen
+            Admin-Konto erfassen
           </Button>
         </DialogFooter>
       </DialogContent>

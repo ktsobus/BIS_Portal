@@ -25,7 +25,12 @@ export default async function AdminLayout({
       toolbar={
         <>
           <AdminNav />
-          <div className="flex min-h-11 flex-wrap items-center gap-x-3 pb-1 text-sm">
+          {/* Benannte Region, damit Benutzername und «Abmelden» per
+              Landmarken-Navigation erreichbar sind. */}
+          <section
+            aria-label="Angemeldetes Konto"
+            className="flex min-h-11 flex-wrap items-center gap-x-3 pb-1 text-sm"
+          >
             <span className="text-muted-foreground">
               Angemeldet als{" "}
               <span className="text-foreground" title={user.email}>
@@ -33,7 +38,7 @@ export default async function AdminLayout({
               </span>
             </span>
             <SignOutButton />
-          </div>
+          </section>
         </>
       }
     >

@@ -1,11 +1,12 @@
 import Link from "next/link"
 import type { CatalogStatus } from "@workspace/api"
 
+import { formatDateTime } from "@/lib/format"
 import { serverClient } from "@/lib/orpc-server"
 import { cn } from "@/lib/utils"
 
 import { siteContainer } from "./container"
-import { formatDateTime } from "./format"
+import { FooterSender } from "./footer-sender"
 
 async function loadStatus(): Promise<CatalogStatus | null> {
   try {
@@ -32,14 +33,7 @@ export async function SiteFooter() {
           "flex flex-col gap-6 py-8 text-sm md:flex-row md:items-start md:justify-between"
         )}
       >
-        <div className="flex flex-col gap-1">
-          <p className="text-lg leading-tight font-bold italic">
-            Amt für Informatik und Organisation
-          </p>
-          <p className="text-muted-foreground">
-            Kanton Solothurn · Business-IT-Serviceportal
-          </p>
-        </div>
+        <FooterSender />
 
         <div className="flex max-w-[44ch] flex-col gap-1.5">
           {generatedAt ? (
@@ -66,7 +60,7 @@ export async function SiteFooter() {
           ) : null}
           <p>
             <Link href="/sign-in" className="link-cd text-muted-foreground">
-              Anmelden
+              Anmeldung Administration
             </Link>
           </p>
         </div>

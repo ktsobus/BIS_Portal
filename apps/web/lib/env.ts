@@ -16,11 +16,21 @@ const serverEnvSchema = z.object({
   DATABASE_URL: z.url(),
   BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.url(),
-  SMTP_HOST: z.string().default("localhost"),
-  SMTP_PORT: z.coerce.number().default(1025),
-  SMTP_USER: z.string().optional(),
-  SMTP_PASSWORD: z.string().optional(),
-  EMAIL_FROM: z.string().default("App <noreply@example.com>"),
+  /**
+   * IP-Adressen oder CIDR-Bereiche der Reverse Proxies (kommagetrennt), z. B.
+   * `172.18.0.0/16`. Nur nötig, wenn der Proxy `X-Forwarded-For` ergänzt
+   * statt zu überschreiben; dann wird die Kette von rechts gelesen und der
+   * erste nicht vertrauenswürdige Eintrag gilt als Client-IP (Rate-Limit).
+   */
+  AUTH_TRUSTED_PROXIES: z
+    .string()
+    .optional()
+    .transform((value) =>
+      (value ?? "")
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+    ),
 
   // --- LeanIX / Katalog -----------------------------------------------------
   /** Basis-URL der LeanIX-Instanz (ohne Workspace). */

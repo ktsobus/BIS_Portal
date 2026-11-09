@@ -14,7 +14,7 @@ export default async function AdminUsersPage() {
     <>
       <AdminPageHeader
         title="Benutzer"
-        description="Eine öffentliche Registrierung gibt es nicht. Hier erfassen Sie Benutzer mit Passwort. Wer sich über SAML anmeldet, wird bei der ersten Anmeldung mit der Rolle «Benutzer» angelegt; für den Admin-Bereich machen Sie die Person hier zum Admin."
+        description="Eine öffentliche Registrierung gibt es nicht; der Katalog ist ohne Anmeldung zugänglich. Hier erfassen Sie Admin-Konten mit Passwort. Wer sich über SAML anmeldet, erhält bei der ersten Anmeldung die Rolle «Benutzer» ohne Zugriff auf den Admin-Bereich; machen Sie die Person hier zum Admin."
         action={<CreateUserDialog />}
       />
       <UsersTable currentUserId={user.id} />
