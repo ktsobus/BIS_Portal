@@ -1,25 +1,74 @@
 import "server-only"
 
+import { getCatalog, getCatalogStatus } from "@/lib/catalog/store"
+import { env } from "@/lib/env"
 import { os } from "@/server/orpc"
 
-// PHASE-0-STUB: wird mit den Abfragen auf den Snapshot implementiert.
+import { createFallbackAction } from "./fallback"
+import {
+  buildFamilyPage,
+  buildLeistungPage,
+  buildOverview,
+  buildSearchIndex,
+  buildServicePage,
+  type ViewOptions,
+} from "./views"
+
+function viewOptions(): ViewOptions {
+  return {
+    fallbackAction: createFallbackAction(
+      env.CATALOG_FALLBACK_REQUEST_URL,
+      env.CATALOG_FALLBACK_REQUEST_LABEL
+    ),
+    showPersons: env.CATALOG_SHOW_PERSONS,
+  }
+}
+
+async function load() {
+  const [snapshot, status] = await Promise.all([
+    getCatalog(),
+    getCatalogStatus(),
+  ])
+  return { snapshot, status }
+}
+
+/** Öffentliche Katalog-Prozeduren (ohne Anmeldung), lesen nur den Snapshot. */
 export const catalogRouter = {
-  status: os.catalog.status.handler(() => {
-    throw new Error("not implemented")
+  status: os.catalog.status.handler(() => getCatalogStatus()),
+
+  overview: os.catalog.overview.handler(async ({ errors }) => {
+    const { snapshot, status } = await load()
+    if (!snapshot) throw errors.CATALOG_UNAVAILABLE()
+    return { status, ...buildOverview(snapshot, viewOptions()) }
   }),
-  overview: os.catalog.overview.handler(({ errors }) => {
-    throw errors.CATALOG_UNAVAILABLE()
+
+  family: os.catalog.family.handler(async ({ input, errors }) => {
+    const { snapshot, status } = await load()
+    if (!snapshot) throw errors.CATALOG_UNAVAILABLE()
+    const page = buildFamilyPage(snapshot, viewOptions(), input.slug)
+    if (!page) throw errors.NOT_FOUND()
+    return { status, ...page }
   }),
-  family: os.catalog.family.handler(({ errors }) => {
-    throw errors.CATALOG_UNAVAILABLE()
+
+  service: os.catalog.service.handler(async ({ input, errors }) => {
+    const { snapshot, status } = await load()
+    if (!snapshot) throw errors.CATALOG_UNAVAILABLE()
+    const page = buildServicePage(snapshot, viewOptions(), input.slug)
+    if (!page) throw errors.NOT_FOUND()
+    return { status, ...page }
   }),
-  service: os.catalog.service.handler(({ errors }) => {
-    throw errors.CATALOG_UNAVAILABLE()
+
+  leistung: os.catalog.leistung.handler(async ({ input, errors }) => {
+    const { snapshot, status } = await load()
+    if (!snapshot) throw errors.CATALOG_UNAVAILABLE()
+    const page = buildLeistungPage(snapshot, viewOptions(), input.slug)
+    if (!page) throw errors.NOT_FOUND()
+    return { status, ...page }
   }),
-  leistung: os.catalog.leistung.handler(({ errors }) => {
-    throw errors.CATALOG_UNAVAILABLE()
-  }),
-  searchIndex: os.catalog.searchIndex.handler(({ errors }) => {
-    throw errors.CATALOG_UNAVAILABLE()
+
+  searchIndex: os.catalog.searchIndex.handler(async ({ errors }) => {
+    const { snapshot, status } = await load()
+    if (!snapshot) throw errors.CATALOG_UNAVAILABLE()
+    return { status, ...buildSearchIndex(snapshot, viewOptions()) }
   }),
 }
