@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  formatDateTimeShort as formatDateTime,
+  formatRelative,
+} from "@/lib/format"
+
+import {
   factSheetTypeLabel,
-  formatDateTime,
   formatDuration,
   formatHours,
   formatInterval,
-  formatRelative,
 } from "./format"
 
 describe("Formatierung im Admin-Bereich", () => {
@@ -50,7 +53,7 @@ describe("Formatierung im Admin-Bereich", () => {
 
   it("formatDateTime in Zürcher Zeit", () => {
     expect(formatDateTime("2026-11-09T13:16:00.000Z")).toBe("09.11.2026, 14:16")
-    expect(formatDateTime(null)).toBe("–")
+    expect(formatDateTime(null)).toBeNull()
   })
 
   it("formatHours und Fact-Sheet-Typen", () => {

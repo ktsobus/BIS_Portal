@@ -61,8 +61,11 @@ COPY --from=builder --chown=node:node /app/apps/web/.next/static ./apps/web/.nex
 
 USER node
 EXPOSE 3000
+# Readiness: HTTP 503, wenn die Datenbank nicht erreichbar ist oder kein
+# Katalog vorliegt (Liveness ohne Abhängigkeiten: /rpc/health/check). Shell-
+# Form, damit ${PORT} zur Laufzeit aufgelöst wird.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget -qO /dev/null http://127.0.0.1:3000/rpc/health/check || exit 1
+  CMD wget -qO /dev/null "http://127.0.0.1:${PORT:-3000}/rpc/health/ready" || exit 1
 # Run node directly (no npm/pnpm wrapper) so SIGTERM reaches the server and it
 # can drain in-flight requests.
 CMD ["node", "apps/web/server.js"]

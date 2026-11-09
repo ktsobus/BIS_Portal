@@ -48,11 +48,6 @@ services:
       DATABASE_URL: *database-url
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET}
       BETTER_AUTH_URL: https://${APP_DOMAIN}
-      SMTP_HOST: ${SMTP_HOST:?set SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_USER: ${SMTP_USER:-}
-      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
-      EMAIL_FROM: ${EMAIL_FROM:?set EMAIL_FROM}
       # LeanIX und Katalog (siehe apps/web/.env.example). Leere Werte nur bei
       # optionalen Variablen; sonst die Standardwerte aus apps/web/lib/env.ts.
       LEANIX_BASE_URL: ${LEANIX_BASE_URL:-https://ktso.leanix.net}
@@ -67,6 +62,7 @@ services:
       CATALOG_FALLBACK_REQUEST_LABEL: ${CATALOG_FALLBACK_REQUEST_LABEL:-Anfrage an den Service Desk}
       CATALOG_SUPPORT_EMAIL: ${CATALOG_SUPPORT_EMAIL:-}
       CATALOG_SUPPORT_PHONE: ${CATALOG_SUPPORT_PHONE:-}
+      AUTH_TRUSTED_PROXIES: ${AUTH_TRUSTED_PROXIES:-}
       # Picked up by nginx-proxy / acme-companion.
       VIRTUAL_HOST: ${APP_DOMAIN}
       VIRTUAL_PORT: "3000"

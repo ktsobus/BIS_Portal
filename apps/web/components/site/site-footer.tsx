@@ -5,10 +5,11 @@ import {
   SupportContactLinks,
 } from "@/features/catalog/components/support-contact"
 import { loadStatus } from "@/features/catalog/load"
+import { formatDateTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 import { siteContainer } from "./container"
-import { formatDateTime } from "./format"
+import { FooterSender } from "./footer-sender"
 
 /**
  * Fusszeile mit Absender (CD: Black Italic), Kontakt zum Service Desk (falls
@@ -31,14 +32,7 @@ export async function SiteFooter() {
           "flex flex-col gap-6 py-8 text-sm md:flex-row md:items-start md:justify-between"
         )}
       >
-        <div className="flex flex-col gap-1">
-          <p className="text-lg leading-tight font-bold italic">
-            Amt für Informatik und Organisation
-          </p>
-          <p className="text-muted-foreground">
-            Kanton Solothurn · Business-IT-Serviceportal
-          </p>
-        </div>
+        <FooterSender />
 
         {hasSupportContact(contact) ? (
           <section
@@ -77,7 +71,7 @@ export async function SiteFooter() {
           ) : null}
           <p>
             <Link href="/sign-in" className="link-cd text-muted-foreground">
-              Anmelden
+              Anmeldung Administration
             </Link>
           </p>
         </div>

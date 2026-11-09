@@ -30,7 +30,7 @@ function FieldLegend({
       data-slot="field-legend"
       data-variant={variant}
       className={cn(
-        "mb-1.5 font-medium data-[variant=label]:text-sm data-[variant=legend]:text-base",
+        "mb-1.5 font-bold data-[variant=label]:text-sm data-[variant=legend]:text-base",
         className
       )}
       {...props}
@@ -120,7 +120,7 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="field-label"
       className={cn(
-        "flex w-fit items-center gap-2 text-sm font-medium group-data-[disabled=true]/field:opacity-50",
+        "flex w-fit items-center gap-2 text-base font-bold group-data-[disabled=true]/field:opacity-50",
         className
       )}
       {...props}
@@ -224,7 +224,26 @@ function FieldError({
   )
 }
 
+/**
+ * IDs für Hinweis (`FieldDescription`) und Fehler (`FieldError`) eines Felds
+ * und der passende `aria-describedby`-Wert für das Eingabeelement (WCAG
+ * 1.3.1/3.3.2). Verweist nur auf tatsächlich angezeigte Elemente.
+ */
+function fieldDescribedBy(
+  name: string,
+  { description, invalid }: { description?: boolean; invalid?: boolean }
+) {
+  const descriptionId = `${name}-description`
+  const errorId = `${name}-error`
+  const describedBy =
+    [description ? descriptionId : null, invalid ? errorId : null]
+      .filter(Boolean)
+      .join(" ") || undefined
+  return { descriptionId, errorId, describedBy }
+}
+
 export {
+  fieldDescribedBy,
   Field,
   FieldLabel,
   FieldDescription,

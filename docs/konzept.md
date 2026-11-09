@@ -352,7 +352,7 @@ Zod 4, better-auth, Drizzle + Postgres, Docker.
 | Monorepo, oRPC, Zod, Drizzle, Docker | unverändert übernehmen                                           |
 | better-auth (Admin-Login)   | übernehmen; SAML mit kantonalem IdP (offene Frage 7) plus Passwort-Login           |
 | Feature `tasks`, Startseiteninhalt `overview` | entfernen (Beispielcode)                               |
-| E-Mail/2FA                  | nur behalten, wenn Passwort-Admins nötig sind                            |
+| E-Mail/2FA                  | E-Mail: entfernt (kein Passwort-Reset, keine Bestätigungsmails), 2FA bleibt |
 | Theme (`app/globals.css`)   | durch CD-Tokens ersetzen (Kapitel 6.2)                                   |
 | Neu: Sync-Scheduler         | `apps/web/instrumentation.ts` (Node-Runtime) + Advisory-Lock             |
 | Neu: Tests                  | Vitest für Mapper und Publikationsregel mit Fixtures aus der Discovery   |

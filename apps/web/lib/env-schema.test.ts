@@ -38,7 +38,7 @@ describe("Umgebungsvariablen", () => {
       CATALOG_SHOW_EMPTY_SERVICES: false,
       CATALOG_HTTP_ALLOWED_HOSTS: [],
       CATALOG_FALLBACK_REQUEST_LABEL: "Anfrage an den Service Desk",
-      SMTP_PORT: 1025,
+      AUTH_TRUSTED_PROXIES: [],
     })
     expect(resolveCatalogSource(env)).toBe("demo")
   })
@@ -46,7 +46,11 @@ describe("Umgebungsvariablen", () => {
   it("behandelt leere Werte wie nicht gesetzt (z. B. ${VAR:-} in Compose)", () => {
     const keys = Object.keys(exampleEnv())
     const empty = Object.fromEntries(keys.map((key) => [key, ""]))
-    const env = parseServerEnv({ ...empty, ...required, SMTP_PORT: "  " })
+    const env = parseServerEnv({
+      ...empty,
+      ...required,
+      CATALOG_SYNC_INTERVAL_MINUTES: "  ",
+    })
     expect(env.CATALOG_SOURCE).toBeUndefined()
     expect(env).toMatchObject({
       CATALOG_SYNC_INTERVAL_MINUTES: 15,
@@ -57,7 +61,7 @@ describe("Umgebungsvariablen", () => {
       CATALOG_FALLBACK_REQUEST_LABEL: "Anfrage an den Service Desk",
       LEANIX_BASE_URL: "https://ktso.leanix.net",
       LEANIX_WORKSPACE: "eamktsoLive",
-      SMTP_PORT: 1025,
+      AUTH_TRUSTED_PROXIES: [],
     })
   })
 

@@ -11,14 +11,5 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  # Local SMTP server that catches all outgoing mail.
-  # Web UI: http://localhost:8025
-  mailpit:
-    image: axllent/mailpit:latest
-    restart: unless-stopped
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-
 volumes:
   postgres-data:

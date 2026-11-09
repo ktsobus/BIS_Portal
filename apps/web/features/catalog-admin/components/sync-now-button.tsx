@@ -16,10 +16,17 @@ const syncErrors = {
   CONFLICT:
     "Es läuft bereits eine Synchronisierung. Der Status wird aktualisiert, sobald sie abgeschlossen ist.",
   PRECONDITION_FAILED:
-    "Kein LeanIX-API-Token konfiguriert. Im Demo-Modus ist keine Synchronisierung möglich.",
+    "Synchronisierung nicht möglich: Auf dem Server ist kein LeanIX-API-Token hinterlegt oder die Datenquelle ist auf «demo» gesetzt.",
 }
 
-function announceRun(run: SyncRun) {
+/** Was bei einem gescheiterten Lauf weiter angezeigt wird. */
+function keptStateHint(hasSnapshot: boolean) {
+  return hasSnapshot
+    ? "Der bisherige Stand bleibt aktiv."
+    : "Es ist noch kein Stand vorhanden; das Portal meldet «Der Katalog ist vorübergehend nicht verfügbar»."
+}
+
+function announceRun(run: SyncRun, hasSnapshot: boolean) {
   switch (run.status) {
     case "success":
       toast.success("Synchronisierung abgeschlossen", {
@@ -30,12 +37,12 @@ function announceRun(run: SyncRun) {
       break
     case "rejected":
       toast.warning("Neuer Stand nicht übernommen", {
-        description: `${run.message ?? "Die Plausibilisierung hat den neuen Stand abgelehnt."} Der bisherige Stand bleibt aktiv.`,
+        description: `${run.message ?? "Die Plausibilisierung hat den neuen Stand abgelehnt."} ${keptStateHint(hasSnapshot)}`,
       })
       break
     case "failed":
       toast.error("Synchronisierung fehlgeschlagen", {
-        description: `${run.message ?? "Unbekannter Fehler."} Der bisherige Stand bleibt aktiv.`,
+        description: `${run.message ?? "Unbekannter Fehler."} ${keptStateHint(hasSnapshot)}`,
       })
       break
     case "running":
@@ -48,11 +55,13 @@ function announceRun(run: SyncRun) {
 export function syncUnavailableReason(
   config: CatalogAdminOverview["config"]
 ): string | null {
-  if (!config.tokenConfigured) {
-    return "Demo-Modus: Das Portal zeigt den mitgelieferten Beispielkatalog. Für die Synchronisierung mit LeanIX muss auf dem Server ein API-Token hinterlegt sein (Umgebungsvariable LEANIX_API_TOKEN)."
-  }
   if (config.source === "demo") {
-    return "Demo-Modus: Die Datenquelle ist auf «demo» gesetzt (Umgebungsvariable CATALOG_SOURCE). Das Portal zeigt den mitgelieferten Beispielkatalog."
+    return config.tokenConfigured
+      ? "Demo-Modus: Die Datenquelle ist auf «demo» gesetzt (Umgebungsvariable CATALOG_SOURCE). Das Portal zeigt den mitgelieferten Beispielkatalog."
+      : "Demo-Modus: Das Portal zeigt den mitgelieferten Beispielkatalog. Für die Synchronisierung mit LeanIX muss auf dem Server ein API-Token hinterlegt sein (Umgebungsvariable LEANIX_API_TOKEN)."
+  }
+  if (!config.tokenConfigured) {
+    return "LeanIX-Modus, aber kein API-Token hinterlegt: Das Portal zeigt den zuletzt gespeicherten Stand, eine Synchronisierung ist nicht möglich. Hinterlegen Sie den Token auf dem Server (Umgebungsvariable LEANIX_API_TOKEN)."
   }
   return null
 }
@@ -60,15 +69,18 @@ export function syncUnavailableReason(
 export function SyncNowButton({
   config,
   running,
+  hasSnapshot,
 }: {
   config: CatalogAdminOverview["config"]
   /** Ein Lauf ist bereits im Gang (z. B. vom Zeitplan ausgelöst). */
   running: boolean
+  /** Es gibt einen Katalog-Stand, der bei einem Fehlschlag aktiv bleibt. */
+  hasSnapshot: boolean
 }) {
   const queryClient = useQueryClient()
   const syncNow = useMutation(
     orpc.catalogAdmin.syncNow.mutationOptions({
-      onSuccess: announceRun,
+      onSuccess: (run) => announceRun(run, hasSnapshot),
       onError: (error) =>
         toast.error("Synchronisierung nicht möglich", {
           description: errorMessage(error, syncErrors),

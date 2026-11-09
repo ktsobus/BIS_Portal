@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm"
 
 import { db } from "@/db"
 import { auth } from "@/lib/auth"
-import { isSetupComplete } from "@/lib/setup"
+import { isSetupComplete, markSetupComplete } from "@/lib/setup"
 
 import { os } from "@/server/orpc"
 
@@ -17,6 +17,10 @@ export const setupRouter = {
       // Serialize concurrent setup attempts; the lock is released on commit.
       await tx.execute(sql`select pg_advisory_xact_lock(${SETUP_LOCK_ID})`)
       if (await isSetupComplete()) throw errors.CONFLICT()
+
+      // Mark setup as done first: if creating the admin fails, the
+      // transaction rolls the flag back and /setup stays open.
+      await markSetupComplete(tx)
 
       // Called without headers, so better-auth treats it as a trusted
       // server-side call and skips the admin-session check.

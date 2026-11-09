@@ -1,64 +1,24 @@
 import type { QualityIssue, SyncRunStatus, SyncTrigger } from "@workspace/api"
 
-/** Formatierung für den Admin-Bereich: de-CH, Zeitzone Zürich. */
+import { formatDateTime, formatDateTimeShort } from "@/lib/format"
+
+/** Zahlen und Labels für den Admin-Bereich (de-CH); Datum aus `lib/format`. */
 const LOCALE = "de-CH"
-const TIME_ZONE = "Europe/Zurich"
 
-const shortDateTime = new Intl.DateTimeFormat(LOCALE, {
-  dateStyle: "medium",
-  timeStyle: "short",
-  timeZone: TIME_ZONE,
-})
-
-const longDate = new Intl.DateTimeFormat(LOCALE, {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-  timeZone: TIME_ZONE,
-})
-
-const time = new Intl.DateTimeFormat(LOCALE, {
-  hour: "2-digit",
-  minute: "2-digit",
-  timeZone: TIME_ZONE,
-})
-
-const relative = new Intl.RelativeTimeFormat(LOCALE, { numeric: "auto" })
 const number = new Intl.NumberFormat(LOCALE)
 const decimal = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 1 })
 const percent = new Intl.NumberFormat(LOCALE, { style: "percent" })
 
-function parse(value: string | null | undefined): Date | null {
-  if (!value) return null
-  const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? null : date
+/** Tabellen: z. B. «09.11.2026, 14:16»; «–» ohne Wert. */
+export function formatDateTimeCompact(
+  value: string | null | undefined
+): string {
+  return formatDateTimeShort(value) ?? "–"
 }
 
-/** z. B. «09.11.2026, 14:16». */
-export function formatDateTime(value: string | null | undefined): string {
-  const date = parse(value)
-  return date ? shortDateTime.format(date) : "–"
-}
-
-/** z. B. «9. November 2026, 14:16 Uhr». */
+/** Fliesstext: z. B. «9. November 2026, 14:16 Uhr»; «–» ohne Wert. */
 export function formatDateTimeLong(value: string | null | undefined): string {
-  const date = parse(value)
-  return date ? `${longDate.format(date)}, ${time.format(date)} Uhr` : "–"
-}
-
-/** z. B. «vor 5 Minuten», «gestern». */
-export function formatRelative(
-  value: string | null | undefined,
-  now = Date.now()
-): string | null {
-  const date = parse(value)
-  if (!date) return null
-  const seconds = Math.round((date.getTime() - now) / 1000)
-  const abs = Math.abs(seconds)
-  if (abs < 60) return "gerade eben"
-  if (abs < 3600) return relative.format(Math.round(seconds / 60), "minute")
-  if (abs < 86400) return relative.format(Math.round(seconds / 3600), "hour")
-  return relative.format(Math.round(seconds / 86400), "day")
+  return formatDateTime(value) ?? "–"
 }
 
 /** z. B. «850 ms», «12.3 s», «2 min 5 s». */
