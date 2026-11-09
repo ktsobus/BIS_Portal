@@ -1,0 +1,30 @@
+import { onError, ORPCError } from "@orpc/server"
+import { RPCHandler } from "@orpc/server/fetch"
+
+import { router } from "@/server/router"
+
+const handler = new RPCHandler(router, {
+  interceptors: [
+    // Log only unexpected failures, not 4xx errors like UNAUTHORIZED or validation.
+    onError((error) => {
+      if (!(error instanceof ORPCError) || error.status >= 500) {
+        console.error(error)
+      }
+    }),
+  ],
+})
+
+async function handleRequest(request: Request) {
+  const { response } = await handler.handle(request, {
+    prefix: "/rpc",
+    context: { headers: request.headers },
+  })
+  return response ?? new Response("Not found", { status: 404 })
+}
+
+export const HEAD = handleRequest
+export const GET = handleRequest
+export const POST = handleRequest
+export const PUT = handleRequest
+export const PATCH = handleRequest
+export const DELETE = handleRequest

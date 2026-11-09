@@ -1,0 +1,13 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Supply-chain cooldown: only install versions published at least 7 days ago.
+# Value is in minutes (7 * 24 * 60).
+minimumReleaseAge: 10080
+
+# Packages allowed to run install scripts.
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true

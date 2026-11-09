@@ -1,0 +1,76 @@
+# Self-hosted production stack: Next.js app + Postgres, served through an
+# existing nginxproxy/nginx-proxy (+ nginxproxy/acme-companion for TLS) that
+# runs on the external Docker network PROXY_NETWORK.
+#
+#   cp .env.prod.example .env.prod   # then fill in the values
+#   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+#
+# Migrations run as a one-off `migrate` service before the app starts.
+name: app-prod
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Not published to the host and not on the proxy network.
+    networks: [internal]
+
+  migrate:
+    build:
+      context: .
+      target: migrate
+    environment:
+      DATABASE_URL: &database-url postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-app}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks: [internal]
+
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_APP_URL: https://${APP_DOMAIN:?set APP_DOMAIN}
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: *database-url
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: https://${APP_DOMAIN}
+      SMTP_HOST: ${SMTP_HOST:?set SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:?set EMAIL_FROM}
+      # Picked up by nginx-proxy / acme-companion.
+      VIRTUAL_HOST: ${APP_DOMAIN}
+      VIRTUAL_PORT: "3000"
+      LETSENCRYPT_HOST: ${APP_DOMAIN}
+    expose:
+      - "3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # Give the server time to finish in-flight requests on SIGTERM.
+    stop_grace_period: 30s
+    networks: [internal, proxy]
+
+networks:
+  internal:
+  proxy:
+    name: ${PROXY_NETWORK:-nginx-proxy}
+    external: true
+
+volumes:
+  postgres-data:

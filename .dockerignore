@@ -1,0 +1,14 @@
+**/node_modules
+**/.next
+**/.turbo
+**/.env*
+!**/.env.example
+**/*.tsbuildinfo
+**/next-env.d.ts
+**/.react-email
+.git
+.devcontainer
+.vscode
+Dockerfile
+docker-compose*.yml
+README.md

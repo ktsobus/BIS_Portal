@@ -1,0 +1,42 @@
+import { Geist, Geist_Mono } from "next/font/google"
+
+import "./globals.css"
+import { cn } from "@/lib/utils"
+import type { Metadata } from "next"
+
+import { Providers } from "@/components/providers"
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
+
+export const metadata: Metadata = {
+  title: "Next.js Template",
+  description: "Next.js monorepo template",
+}
+
+const fontMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+})
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        "font-sans",
+        geist.variable
+      )}
+    >
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  )
+}
