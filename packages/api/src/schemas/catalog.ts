@@ -48,7 +48,10 @@ export const namedRefSchema = z.object({
   name: z.string(),
 })
 
-export const subtypeSchema = z.enum(["verwaltungsleistung", "behoerdenleistung"])
+export const subtypeSchema = z.enum([
+  "verwaltungsleistung",
+  "behoerdenleistung",
+])
 
 /** Leistung (LeanIX-Typ `behoerdenLeistungen`) im Kanal BITS. */
 export const leistungSchema = z.object({
@@ -164,16 +167,18 @@ export const familySummarySchema = familySchema.extend({
   leistungCount: z.number().int(),
 })
 
-export const serviceSummarySchema = serviceSchema.pick({
-  id: true,
-  slug: true,
-  name: true,
-  definition: true,
-  familyId: true,
-  responsible: true,
-}).extend({
-  leistungCount: z.number().int(),
-})
+export const serviceSummarySchema = serviceSchema
+  .pick({
+    id: true,
+    slug: true,
+    name: true,
+    definition: true,
+    familyId: true,
+    responsible: true,
+  })
+  .extend({
+    leistungCount: z.number().int(),
+  })
 
 export const leistungSummarySchema = leistungSchema.pick({
   id: true,
@@ -207,7 +212,9 @@ export const catalogLeistungPageSchema = z.object({
   status: catalogStatusSchema,
   leistung: leistungSchema,
   /** Alle Einordnungen (eine Leistung kann mehreren Services angehören). */
-  placements: z.array(z.object({ family: familySchema, service: serviceSchema })),
+  placements: z.array(
+    z.object({ family: familySchema, service: serviceSchema })
+  ),
   parent: leistungSummarySchema.nullable(),
   children: z.array(leistungSummarySchema),
 })
@@ -242,8 +249,18 @@ export const slugInputSchema = z.object({ slug: z.string().min(1) })
 // ---------------------------------------------------------------------------
 // Admin
 
-export const syncTriggerSchema = z.enum(["startup", "schedule", "manual", "webhook"])
-export const syncRunStatusSchema = z.enum(["running", "success", "failed", "rejected"])
+export const syncTriggerSchema = z.enum([
+  "startup",
+  "schedule",
+  "manual",
+  "webhook",
+])
+export const syncRunStatusSchema = z.enum([
+  "running",
+  "success",
+  "failed",
+  "rejected",
+])
 
 export const syncRunSchema = z.object({
   id: z.string(),

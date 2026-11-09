@@ -19,8 +19,14 @@ export const leanixModel = {
     /** Feld «Subtyp» und seine Optionen. */
     subtypeField: "category",
     subtypes: {
-      verwaltungsLeistungen: { key: "verwaltungsleistung", label: "Verwaltungsleistung" },
-      behoerdenLeistungen: { key: "behoerdenleistung", label: "Behördenleistung" },
+      verwaltungsLeistungen: {
+        key: "verwaltungsleistung",
+        label: "Verwaltungsleistung",
+      },
+      behoerdenLeistungen: {
+        key: "behoerdenleistung",
+        label: "Behördenleistung",
+      },
     },
     relations: {
       kategorie: "relbehoerdenLeistungenToLeistungskategorie",
@@ -66,15 +72,31 @@ export interface ResourceTypeRule {
 export const resourceTypeRules: Record<string, ResourceTypeRule> = {
   ordering_form: { kind: "order", fallbackLabel: "Bestellen", order: 1 },
   ky2help: { kind: "order", fallbackLabel: "In ky2help beantragen", order: 2 },
-  support_ticket: { kind: "request", fallbackLabel: "Support-Ticket erfassen", order: 1 },
-  phone_contact: { kind: "contact", fallbackLabel: "Telefonischer Kontakt", order: 1 },
+  support_ticket: {
+    kind: "request",
+    fallbackLabel: "Support-Ticket erfassen",
+    order: 1,
+  },
+  phone_contact: {
+    kind: "contact",
+    fallbackLabel: "Telefonischer Kontakt",
+    order: 1,
+  },
   website: { kind: "info", fallbackLabel: "Webseite", order: 1 },
   Anwendungslink: { kind: "info", fallbackLabel: "Zur Anwendung", order: 2 },
   documentation: { kind: "info", fallbackLabel: "Dokumentation", order: 3 },
   information: { kind: "info", fallbackLabel: "Information", order: 4 },
   faq: { kind: "info", fallbackLabel: "FAQ", order: 5 },
-  additional_help: { kind: "info", fallbackLabel: "Zusätzliche Hilfe", order: 6 },
+  additional_help: {
+    kind: "info",
+    fallbackLabel: "Zusätzliche Hilfe",
+    order: 6,
+  },
   wiki: { kind: "info", fallbackLabel: "Wiki", order: 7 },
   "AIO-Wiki": { kind: "info", fallbackLabel: "AIO-Wiki", order: 8 },
-  miscellaneous: { kind: "info", fallbackLabel: "Weitere Informationen", order: 9 },
+  miscellaneous: {
+    kind: "info",
+    fallbackLabel: "Weitere Informationen",
+    order: 9,
+  },
 }

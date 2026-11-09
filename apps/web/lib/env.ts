@@ -5,7 +5,9 @@ import { z } from "zod"
 const optionalString = z
   .string()
   .optional()
-  .transform((value) => (value && value.trim() !== "" ? value.trim() : undefined))
+  .transform((value) =>
+    value && value.trim() !== "" ? value.trim() : undefined
+  )
 
 const serverEnvSchema = z.object({
   NODE_ENV: z
@@ -43,7 +45,9 @@ const serverEnvSchema = z.object({
     .transform((value) => value === "true"),
   /** Standard-Aktion, wenn eine Leistung keine Aktions-Ressource hat. */
   CATALOG_FALLBACK_REQUEST_URL: optionalString,
-  CATALOG_FALLBACK_REQUEST_LABEL: z.string().default("Anfrage an den Service Desk"),
+  CATALOG_FALLBACK_REQUEST_LABEL: z
+    .string()
+    .default("Anfrage an den Service Desk"),
 })
 
 export const env = serverEnvSchema.parse(process.env)
