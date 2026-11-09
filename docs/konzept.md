@@ -611,3 +611,44 @@ behoben (Optionsschlüssel = vorletztes Segment, je Fact-Sheet-Typ und Feld, get
 `apps/web/scripts/leanix-discovery.test.ts`); mit den Daten dieses Laufs ergibt die
 Auswertung jetzt `behoerdenLeistungen.kanal = Business_IT_Servicekatalog` und 13 von 18
 Leistungen im Kanal.
+
+---
+
+## 12. Stand des PoC (10.11.2026)
+
+**Umgesetzt** (Phasen 1–4 aus Kapitel 8, Teile von 5):
+
+- Öffentliches Portal ohne Anmeldung im CD: Start mit Service-Familien und Suche, Familien-,
+  Service- und Leistungsseiten, «Nächste Schritte» aus Ressourcen, Kontakt zum Service Desk,
+  Volltextsuche mit Filtern (Subtyp, Leistungsbezüger), deutsche Fehlerseiten.
+- LeanIX-Anbindung mit Token-Handling, paginierten GraphQL-Abfragen, Publikationsregel (Kanal
+  «enthält»), Vererbung bei Eltern-/Kind-Leistungen, Ressourcen-Mapping und
+  Datenqualitätsbericht.
+- Snapshot-Cache in Postgres mit Plausibilisierung (Schrumpf-Schutz, Vollständigkeit, Teilfehler),
+  Intervall-Sync, Advisory-Lock, Abgleich zwischen Instanzen; das Portal liest nie live aus LeanIX.
+- Admin-Bereich: Passwort-Anmeldung (Ersteinrichtung über `/setup`), optional SAML-SSO,
+  Katalog-Status, «Jetzt synchronisieren», letzte Läufe, Datenqualitätsbericht, Benutzer.
+- Sicherheit: CSRF-/Origin-Prüfung, Sicherheits-Header (CSP), Drosselung von Fehlanmeldungen,
+  Passwortregeln, kein E-Mail-Versand.
+- Betrieb: Docker-Image (Standalone, inkl. Logo), Compose für den internen Server,
+  Readiness-Check, Betriebshandbuch ([betrieb.md](betrieb.md)).
+- Demo-Modus ohne Token (`apps/web/data/demo-catalog.json`) und LeanIX-Mock
+  (`scripts/mock-leanix.mjs`) für Vorführungen und Tests; 198 automatisierte Tests.
+
+**Geprüft:** Fünf unabhängige Prüfungen (Anforderungen, Ausfallsicherheit, CD und
+Barrierefreiheit, Sicherheit, Betrieb). 59 Befunde wurden bestätigt und behoben bzw. als offener
+Punkt dokumentiert. Gegen die echte LeanIX-Instanz lief bisher nur die Discovery; der erste Sync
+mit dem echten Token steht noch aus.
+
+**Datenbefunde für das Service-Management** (aus dem Datenqualitätsbericht):
+
+- 6 Leistungen im Kanal ohne Service-Zuordnung (u. a. «Mobile», «Schulung», Testeinträge).
+- Noch keine Ressourcen («Weitere Informationen») bei den Leistungen → keine Bestell-Schaltflächen.
+- «SO!Desk Teamadministrator festlegen» trägt die Beschreibung eines Mitwirkungsverfahrens;
+  zwei Services (IT-Arbeitsplatzinfrastruktur, SO!Workplace) haben identische Definitionen.
+- «Zugang zur Mitwirkungsplattform beantragen» verlinkt auf ein LeanIX-Portal mit
+  Sitzungsparametern; mehrere Beschreibungen verlinken mit `http:` statt `https:`.
+
+**Nächste Schritte:** Token in `apps/web/.env` eintragen und ersten Sync im Admin-Bereich prüfen;
+offene Fragen 1, 2 und 10 klären (Ressourcentypen, Service-Desk-Kontakt, leere Services
+anzeigen); Hosting-Details (Frage 6) mit dem Betrieb abstimmen.

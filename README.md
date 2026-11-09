@@ -79,26 +79,32 @@ eine echte Postgres-Datenbank: `CATALOG_IT_DATABASE_URL` oder, wenn nicht gesetz
 ## Konfiguration
 
 Umgebungsvariablen stehen in `apps/web/.env` (Vorlage `apps/web/.env.example`), geprüft in
-`apps/web/lib/env.ts`. Für den Betrieb: `.env.prod.example` und [Betriebshandbuch](docs/betrieb.md).
+`apps/web/lib/env-schema.ts` (leere Werte gelten als nicht gesetzt). Für den Betrieb: `.env.prod.example` und [Betriebshandbuch](docs/betrieb.md).
 
-| Variable                         | Standard                         | Bedeutung                                                                                       |
-| -------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                   | –                                | Postgres-Verbindung                                                                             |
-| `BETTER_AUTH_SECRET`             | –                                | Geheimnis für Sitzungen (mind. 32 Zeichen)                                                      |
-| `BETTER_AUTH_URL`                | –                                | Adresse des Portals (Server)                                                                    |
-| `NEXT_PUBLIC_APP_URL`            | `http://localhost:3000`          | Adresse des Portals (wird beim Build ins Bundle eingesetzt)                                     |
-| `LEANIX_BASE_URL`                | `https://ktso.leanix.net`        | LeanIX-Instanz                                                                                  |
-| `LEANIX_WORKSPACE`               | `eamktsoLive`                    | Workspace (für Links in die Fact Sheets)                                                        |
-| `LEANIX_API_TOKEN`               | leer                             | API-Token des technischen Benutzers (Rolle Viewer). Leer = Demo-Modus                           |
-| `CATALOG_SOURCE`                 | `leanix` mit Token, sonst `demo` | `leanix` (Sync) oder `demo` (mitgelieferter Snapshot)                                           |
-| `CATALOG_ROOT_ID`                | aus `lib/leanix/model.ts`        | LeanIX-ID der Ebene-1-Kategorie «Business IT-Servicekatalog»                                    |
-| `CATALOG_SYNC_INTERVAL_MINUTES`  | `15`                             | Abstand der Syncs in Minuten                                                                    |
-| `CATALOG_MIN_RATIO`              | `0.5`                            | Neuer Stand wird abgelehnt, wenn er weniger als diesen Anteil der bisherigen Leistungen enthält |
-| `CATALOG_STALE_AFTER_HOURS`      | `24`                             | Ab so vielen Stunden ohne erfolgreichen Sync gilt der Katalog als veraltet                      |
-| `CATALOG_SHOW_PERSONS`           | `false`                          | Personen (Leistungsverantwortliche/r) anzeigen                                                  |
-| `CATALOG_FALLBACK_REQUEST_URL`   | leer                             | Standard-Aktion für Leistungen ohne Bestell-/Anfrage-Ressource                                  |
-| `CATALOG_FALLBACK_REQUEST_LABEL` | `Anfrage an den Service Desk`    | Beschriftung der Standard-Aktion                                                                |
-| `CATALOG_IT_DATABASE_URL`        | `<DATABASE_URL>_it`              | Nur Tests: Datenbank für den Integrationstest                                                   |
+| Variable                         | Standard                         | Bedeutung                                                                                                       |
+| -------------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                   | –                                | Postgres-Verbindung                                                                                             |
+| `BETTER_AUTH_SECRET`             | –                                | Geheimnis für Sitzungen (mind. 32 Zeichen)                                                                      |
+| `BETTER_AUTH_URL`                | –                                | Adresse des Portals (Server)                                                                                    |
+| `NEXT_PUBLIC_APP_URL`            | `http://localhost:3000`          | Adresse des Portals (wird beim Build ins Bundle eingesetzt)                                                     |
+| `LEANIX_BASE_URL`                | `https://ktso.leanix.net`        | LeanIX-Instanz                                                                                                  |
+| `LEANIX_WORKSPACE`               | `eamktsoLive`                    | Workspace (für Links in die Fact Sheets)                                                                        |
+| `LEANIX_API_TOKEN`               | leer                             | API-Token des technischen Benutzers (Rolle Viewer). Leer = Demo-Modus                                           |
+| `CATALOG_SOURCE`                 | `leanix` mit Token, sonst `demo` | `leanix` (Sync) oder `demo` (mitgelieferter Snapshot)                                                           |
+| `CATALOG_ROOT_ID`                | aus `lib/leanix/model.ts`        | LeanIX-ID der Ebene-1-Kategorie «Business IT-Servicekatalog»                                                    |
+| `CATALOG_SYNC_INTERVAL_MINUTES`  | `15`                             | Abstand der Syncs in Minuten                                                                                    |
+| `CATALOG_MIN_RATIO`              | `0.5`                            | Neuer Stand wird abgelehnt, wenn er weniger als diesen Anteil der bisherigen Leistungen enthält                 |
+| `CATALOG_SHRINK_TOLERANCE`       | `5`                              | … und zusätzlich mehr als so viele Leistungen (bzw. Aktionen) wegfallen                                         |
+| `CATALOG_STALE_AFTER_HOURS`      | `24`                             | Ab so vielen Stunden ohne erfolgreichen Sync gilt der Katalog als veraltet                                      |
+| `CATALOG_SHOW_PERSONS`           | `false`                          | Personen (Leistungsverantwortliche/r) anzeigen                                                                  |
+| `CATALOG_SHOW_EMPTY_SERVICES`    | `false`                          | Services ohne Leistung im Kanal anzeigen (vorläufig aus, siehe Konzept 2.2)                                     |
+| `CATALOG_HTTP_ALLOWED_HOSTS`     | leer                             | Hosts, für die Ressourcen-Links mit `http:` erlaubt sind (sonst nur `https:`)                                   |
+| `CATALOG_FALLBACK_REQUEST_URL`   | leer                             | Zentraler Kontakt: Standard-Aktion für Leistungen ohne Bestell-/Anfrage-Ressource (`https:`, `mailto:`, `tel:`) |
+| `CATALOG_FALLBACK_REQUEST_LABEL` | `Anfrage an den Service Desk`    | Beschriftung der Standard-Aktion                                                                                |
+| `CATALOG_SUPPORT_EMAIL`          | leer                             | Optional: E-Mail-Adresse des Service Desk (Fusszeile, Kontaktkasten)                                            |
+| `CATALOG_SUPPORT_PHONE`          | leer                             | Optional: Telefonnummer des Service Desk                                                                        |
+| `AUTH_TRUSTED_PROXIES`           | leer                             | Reverse Proxies (IP/CIDR), die `X-Forwarded-For` ergänzen (Rate-Limit der Anmeldung)                            |
+| `CATALOG_IT_DATABASE_URL`        | `<DATABASE_URL>_it`              | Nur Tests: Datenbank für den Integrationstest                                                                   |
 
 Das LeanIX-Mapping (Fact-Sheet-Typen, Kanal-Feld, Relationen, Ressourcentypen) steht in
 `apps/web/lib/leanix/model.ts`.
@@ -115,7 +121,8 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 - Die App lauscht auf `127.0.0.1:3000`; TLS übernimmt ein vorgelagerter Reverse-Proxy mit
   internem Zertifikat. Für einen bestehenden nginx-proxy gibt es `docker-compose.nginx-proxy.yml`.
 - Migrationen laufen automatisch als Dienst `migrate` vor dem Start der App.
-- Health-Check: `GET /rpc/health/check`, Katalogstatus: `GET /rpc/catalog/status`.
+- Liveness: `GET /rpc/health/check`; Readiness (auch Docker-`HEALTHCHECK`): `GET /rpc/health/ready`;
+  Katalogstatus: `GET /rpc/catalog/status`.
 - Der Container braucht ausgehend `ktso.leanix.net:443` (bei Bedarf `HTTPS_PROXY`/`NO_PROXY`).
 - Ohne Internet beim Build: `NODE_IMAGE` und `NPM_REGISTRY` auf interne Quellen setzen.
 
@@ -138,7 +145,7 @@ unverändert von so.ch und lässt sich mit `node scripts/fetch-logo.mjs` neu lad
 Publikationsmedien beziehen und unter demselben Namen ablegen; Details in
 [docs/branding.md](docs/branding.md).
 
-## Betrieb: Monitoring und Anmeldung
+## Monitoring und Anmeldeschutz
 
 **Monitoring-Endpunkte** (GET, ohne Anmeldung):
 

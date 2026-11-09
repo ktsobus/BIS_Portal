@@ -168,7 +168,8 @@ Ausnahme `APP_URL`: Sie steckt im Bundle, also mit `--build`.
 
 | Prüfung                                 | Zweck                                                                                                  |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `GET /rpc/health/check`                 | Liveness: Server antwortet (HTTP 200). Nutzt auch der Docker-`HEALTHCHECK`.                            |
+| `GET /rpc/health/check`                 | Liveness: Server antwortet (HTTP 200), ohne Abhängigkeiten zu prüfen.                                  |
+| `GET /rpc/health/ready`                 | Readiness, nutzt auch der Docker-`HEALTHCHECK`: 200 (`ok`/`degraded`), 503 ohne DB oder ohne Katalog   |
 | `GET /rpc/catalog/status`               | Katalog: `available` (Snapshot geladen), `source` (`leanix`/`demo`), `generatedAt`, `stale` (veraltet) |
 | `/admin/catalog` (angemeldet als Admin) | Sync-Status, letzte Läufe, «Jetzt synchronisieren», Datenqualitätsbericht mit Links in die Fact Sheets |
 
