@@ -77,7 +77,9 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
         hint={
           status.generatedAt
             ? "Zeitpunkt, zu dem die angezeigten Daten aus der Quelle gelesen wurden."
-            : "Es ist noch kein Katalog-Stand gespeichert."
+            : data.unreadableSnapshots
+              ? "Der gespeicherte Stand ist mit dieser Version nicht kompatibel (Schema). Die nächste erfolgreiche Synchronisierung ersetzt ihn."
+              : "Es ist noch kein Katalog-Stand gespeichert."
         }
       >
         {status.generatedAt ? (

@@ -5,6 +5,10 @@
  * sich Fixtures oder Mapper ändern.
  *
  *   pnpm --filter web catalog:demo
+ *
+ * Wie der Sync blendet der Demo-Snapshot Services ohne Leistung im Kanal
+ * aus (Standard von `CATALOG_SHOW_EMPTY_SERVICES`). Für die Variante mit
+ * allen Services: `pnpm --filter web catalog:demo --all-services`.
  */
 import { writeFile } from "node:fs/promises"
 import path from "node:path"
@@ -23,6 +27,7 @@ const snapshot = buildSnapshot(raw, {
   workspace: "eamktsoLive",
   rootId: leanixModel.kategorie.rootId,
   showPersons: false,
+  showEmptyServices: process.argv.includes("--all-services"),
   generatedAt: fixtureLatestUpdate(raw) ?? FALLBACK_GENERATED_AT,
 })
 

@@ -25,6 +25,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Server code that reads per-request state from the DB without `headers()`/`cookies()` must call `await connection()` (see `lib/setup.ts`), otherwise Next.js prerenders it at build time.
 - Server components may read the session (`apps/web/lib/session.ts`) to gate or redirect. If a server component ever needs app data, it must call the same oRPC router through a server-side router client (not set up yet), never `db` directly.
 - All business logic lives in oRPC procedures (`apps/web/features/*/server/router.ts`, each starting with `import "server-only"`, combined in `server/router.ts`) behind the middlewares in `apps/web/server/orpc.ts` (`authed`, `adminOnly`).
+- Catalog snapshots are stored as JSON (`catalog_snapshot.payload`) and validated with `catalogSnapshotSchema` when loaded. Add new snapshot fields with `.optional()` or `.default()`; bump `CATALOG_SCHEMA_VERSION` only for real breaking changes and then add a step to `apps/web/lib/catalog/snapshot-migrations.ts`, so stored snapshots stay readable after an upgrade.
+- Env vars are validated in `apps/web/lib/env-schema.ts` (empty values count as unset); `lib/env-schema.test.ts` checks `apps/web/.env.example` against it.
 
 ## Auth
 

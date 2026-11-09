@@ -13,7 +13,11 @@ import {
   type Service,
 } from "@workspace/api"
 
-import { leanixModel, resourceTypeRules } from "@/lib/leanix/model"
+import {
+  leanixModel,
+  resourceTypeRules,
+  type ResponsiblePersonRule,
+} from "@/lib/leanix/model"
 import type {
   RawCatalogData,
   RawDocument,
@@ -24,9 +28,13 @@ import type {
 
 import {
   cleanDescription,
+  cleanLabel,
   createSlugger,
   extractSummary,
+  findHttpLinkHosts,
   findLeanixLinks,
+  sanitizeLeanixLinks,
+  stripUrlCredentials,
 } from "./text"
 
 /**
@@ -38,6 +46,8 @@ import {
  * - Services = aktive Kategorien Ebene 3 unter einer Familie
  * - Leistungen = aktiv, Kanal enthält «Business IT-Servicekatalog», einem
  *   Service zugeordnet (eigene Kategorie oder geerbt von der Parent-Leistung)
+ * - Services ohne solche Leistung (und Familien ohne solche Services) nur
+ *   mit `showEmptyServices`; gemeldet werden sie in jedem Fall
  */
 
 export interface BuildSnapshotOptions {
@@ -49,6 +59,13 @@ export interface BuildSnapshotOptions {
   rootId: string
   /** Personen (Abonnements) übernehmen. */
   showPersons: boolean
+  /**
+   * Services ohne Leistung im Kanal anzeigen. Sonst werden sie ausgeblendet,
+   * ebenso Familien ohne angezeigten Service.
+   */
+  showEmptyServices: boolean
+  /** Hosts, für die Ressourcen-Links mit `http:` erlaubt sind (sonst nur `https:`). */
+  httpAllowedHosts?: readonly string[]
   /** Zeitpunkt des Abrufs (ISO). */
   generatedAt: string
 }
@@ -56,6 +73,7 @@ export interface BuildSnapshotOptions {
 const CHANNEL_LABEL = "Business IT-Servicekatalog"
 const ACTIVE = "ACTIVE"
 const ALLOWED_PROTOCOLS = new Set(["https:", "http:", "mailto:", "tel:"])
+const NO_HTTP_HOSTS: readonly string[] = []
 const KIND_ORDER: Record<LinkKind, number> = {
   order: 0,
   request: 1,
@@ -126,40 +144,98 @@ export function leanixFactSheetUrl(
 // ---------------------------------------------------------------------------
 // Ressourcen → Aktionen und Links
 
-/** Prüft eine Ressourcen-URL (nur https, http, mailto, tel). */
-export function normalizeResourceUrl(
-  value: string | null | undefined
-): string | null {
+export type UrlCheck =
+  | { ok: true; url: string }
+  | {
+      ok: false
+      reason: "missing" | "invalid" | "insecure" | "credentials" | "leanix"
+    }
+
+const isLeanixHost = (hostname: string) =>
+  /(?:^|\.)leanix\.net$/i.test(hostname)
+
+function hostAllowed(hostname: string, hosts: readonly string[]) {
+  const host = hostname.toLowerCase()
+  return hosts.some((entry) => host === entry || host.endsWith(`.${entry}`))
+}
+
+/**
+ * Prüft eine Ressourcen-URL (Konzept 2.4/4.3): erlaubt sind `https:`,
+ * `mailto:` und `tel:`, `http:` nur für die Hosts in `httpAllowedHosts`
+ * (auch deren Subdomains). Abgelehnt werden zudem URLs mit Zugangsdaten
+ * (`https://user:pass@host`) und Links auf LeanIX selbst, die nur mit
+ * LeanIX-Konto funktionieren.
+ */
+export function checkResourceUrl(
+  value: string | null | undefined,
+  httpAllowedHosts: readonly string[] = NO_HTTP_HOSTS
+): UrlCheck {
   const text = value?.trim()
-  if (!text) return null
+  if (!text) return { ok: false, reason: "missing" }
   let url: URL
   try {
     url = new URL(text)
   } catch {
-    return null
+    return { ok: false, reason: "invalid" }
   }
-  if (!ALLOWED_PROTOCOLS.has(url.protocol)) return null
-  if ((url.protocol === "https:" || url.protocol === "http:") && !url.hostname)
-    return null
-  return url.href
+  if (!ALLOWED_PROTOCOLS.has(url.protocol))
+    return { ok: false, reason: "invalid" }
+  const web = url.protocol === "https:" || url.protocol === "http:"
+  if (web && !url.hostname) return { ok: false, reason: "invalid" }
+  if (url.username || url.password) return { ok: false, reason: "credentials" }
+  if (url.protocol === "http:" && !hostAllowed(url.hostname, httpAllowedHosts))
+    return { ok: false, reason: "insecure" }
+  if (web && isLeanixHost(url.hostname)) return { ok: false, reason: "leanix" }
+  return { ok: true, url: url.href }
 }
+
+/** Geprüfte, normalisierte Ressourcen-URL oder `null` (siehe `checkResourceUrl`). */
+export function normalizeResourceUrl(
+  value: string | null | undefined,
+  httpAllowedHosts: readonly string[] = NO_HTTP_HOSTS
+): string | null {
+  const result = checkResourceUrl(value, httpAllowedHosts)
+  return result.ok ? result.url : null
+}
+
+type ResourceProblemCode =
+  | "RESOURCE_INVALID_URL"
+  | "RESOURCE_LINKS_TO_LEANIX"
+  | "RESOURCE_FILE_NOT_SHOWN"
+  | "RESOURCE_TYPE_NOT_SHOWN"
+
+/** Schweregrad im Datenqualitätsbericht. */
+const RESOURCE_SEVERITY: Record<ResourceProblemCode, QualityIssue["severity"]> =
+  {
+    // Ein gepflegter Link fehlt im Portal: korrigieren.
+    RESOURCE_INVALID_URL: "error",
+    RESOURCE_LINKS_TO_LEANIX: "warning",
+    // Bewusst nicht angezeigt (Konzept 2.4): nur zur Information.
+    RESOURCE_FILE_NOT_SHOWN: "info",
+    RESOURCE_TYPE_NOT_SHOWN: "info",
+  }
 
 interface ResourceResult {
   actions: CatalogLink[]
   links: CatalogLink[]
-  problems: Array<{
-    code: "RESOURCE_INVALID_URL" | "RESOURCE_TYPE_NOT_SHOWN"
-    message: string
-  }>
+  problems: Array<{ code: ResourceProblemCode; message: string }>
 }
 
-export function mapResources(documents: RawDocument[]): ResourceResult {
+/** Hochgeladene Datei (laut `origin`), nur mit LeanIX-Login abrufbar. */
+const isFileResource = (doc: RawDocument) =>
+  typeof doc.origin === "string" &&
+  leanixModel.fileOriginPattern.test(doc.origin)
+
+export function mapResources(
+  documents: RawDocument[],
+  httpAllowedHosts: readonly string[] = NO_HTTP_HOSTS
+): ResourceResult {
   const entries: Array<{ link: CatalogLink; order: number }> = []
   const problems: ResourceResult["problems"] = []
 
   for (const doc of documents) {
     const type = doc.documentType?.trim() || null
-    const name = doc.name?.trim() || null
+    const name = cleanLabel(doc.name)
     const rule = type ? resourceTypeRules[type] : undefined
     if (!type || !rule) {
       problems.push({
@@ -170,23 +246,26 @@ export function mapResources(documents: RawDocument[]): ResourceResult {
       })
       continue
     }
-    const url = normalizeResourceUrl(doc.url)
-    if (!url) {
+    const label = name ?? rule.fallbackLabel
+    if (isFileResource(doc)) {
       problems.push({
-        code: "RESOURCE_INVALID_URL",
-        message: doc.url?.trim()
-          ? `Ressource «${name ?? rule.fallbackLabel}» hat eine ungültige oder nicht erlaubte URL (erlaubt: https, http, mailto, tel) und wird nicht angezeigt.`
-          : `Ressource «${name ?? rule.fallbackLabel}» hat keine URL (z. B. hochgeladene Datei) und wird nicht angezeigt.`,
+        code: "RESOURCE_FILE_NOT_SHOWN",
+        message: `Ressource «${label}» ist eine hochgeladene Datei (nur mit LeanIX-Login abrufbar) und wird nicht angezeigt.`,
       })
+      continue
+    }
+    const checked = checkResourceUrl(doc.url, httpAllowedHosts)
+    if (!checked.ok) {
+      problems.push(resourceUrlProblem(label, checked.reason))
       continue
     }
     entries.push({
       order: rule.order,
       link: {
         id: doc.id,
-        label: name ?? rule.fallbackLabel,
-        url,
-        description: doc.description?.trim() || null,
+        label,
+        url: checked.url,
+        description: cleanLabel(doc.description),
         resourceType: type,
         kind: rule.kind,
       },
@@ -207,24 +286,58 @@ export function mapResources(documents: RawDocument[]): ResourceResult {
   }
 }
 
+function resourceUrlProblem(
+  label: string,
+  reason: Extract<UrlCheck, { ok: false }>["reason"]
+): ResourceResult["problems"][number] {
+  switch (reason) {
+    case "missing":
+      return {
+        code: "RESOURCE_FILE_NOT_SHOWN",
+        message: `Ressource «${label}» hat keine URL (z. B. hochgeladene Datei) und wird nicht angezeigt.`,
+      }
+    case "leanix":
+      return {
+        code: "RESOURCE_LINKS_TO_LEANIX",
+        message: `Ressource «${label}» verweist auf LeanIX (nur mit LeanIX-Konto nutzbar) und wird nicht angezeigt.`,
+      }
+    case "insecure":
+      return {
+        code: "RESOURCE_INVALID_URL",
+        message: `Ressource «${label}» verwendet http (unverschlüsselt) und wird nicht angezeigt. Erlaubt sind https, mailto und tel, http nur für Hosts in CATALOG_HTTP_ALLOWED_HOSTS.`,
+      }
+    case "credentials":
+      return {
+        code: "RESOURCE_INVALID_URL",
+        message: `Ressource «${label}» enthält Zugangsdaten in der URL und wird nicht angezeigt.`,
+      }
+    case "invalid":
+      return {
+        code: "RESOURCE_INVALID_URL",
+        message: `Ressource «${label}» hat eine ungültige oder nicht erlaubte URL (erlaubt: https, mailto, tel) und wird nicht angezeigt.`,
+      }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Personen und Referenzen
 
-function personsOf(node: RawFactSheet): Person[] {
+/** Verantwortliche Personen: Abos des konfigurierten Typs mit der konfigurierten Rolle. */
+export function personsOf(
+  node: RawFactSheet,
+  rule: ResponsiblePersonRule
+): Person[] {
   const persons = new Map<string, Person>()
   for (const edge of node.subscriptions?.edges ?? []) {
     const sub = edge?.node
     const name = sub?.user?.displayName?.trim()
     if (!sub || !name) continue
+    if (rule.subscriptionType && sub.type !== rule.subscriptionType) continue
     const roles = (sub.roles ?? [])
       .map((role) => role?.name?.trim())
       .filter((role): role is string => !!role)
-    const isResponsible =
-      roles.includes(leanixModel.responsibleRole) || sub.type === "RESPONSIBLE"
-    if (!isResponsible) continue
-    const role = roles.includes(leanixModel.responsibleRole)
-      ? leanixModel.responsibleRole
-      : (roles[0] ?? null)
+    if (rule.role && !roles.includes(rule.role)) continue
+    const role = rule.role ?? roles[0] ?? null
     if (!persons.has(name)) persons.set(name, { name, role })
   }
   return [...persons.values()].sort(byName)
@@ -305,13 +418,81 @@ export function buildSnapshot(
   ) => {
     for (const problem of problems) {
       issue(
-        problem.code === "RESOURCE_INVALID_URL" ? "error" : "info",
+        RESOURCE_SEVERITY[problem.code],
         problem.code,
         problem.message,
         node,
         type
       )
     }
+  }
+  /** Gleiche Beschriftung wie im Bericht (Name oder Anzeigename). */
+  const labelOf = (node: RawFactSheet) => node.displayName?.trim() || node.name
+  /** Wortgleiche Beschreibungen (meist kopiert) innerhalb eines Typs melden. */
+  const reportDuplicateDescriptions = (
+    entries: Array<{ node: RawFactSheet; text: string | null }>,
+    type: string,
+    what: string
+  ) => {
+    const groups = new Map<string, RawFactSheet[]>()
+    for (const { node, text } of entries) {
+      const key = text?.replace(/\s+/g, " ").trim().toLowerCase()
+      if (!key) continue
+      const group = groups.get(key)
+      if (group) group.push(node)
+      else groups.set(key, [node])
+    }
+    for (const group of groups.values()) {
+      if (group.length < 2) continue
+      for (const node of group) {
+        const others = group
+          .filter((other) => other.id !== node.id)
+          .map((other) => `«${labelOf(other)}» (${urlFor(type, other.id)})`)
+        issue(
+          "warning",
+          "DUPLICATE_DESCRIPTION",
+          `Beschreibung identisch mit ${what} ${others.join(", ")}. Vermutlich kopiert: Text in LeanIX prüfen.`,
+          node,
+          type
+        )
+      }
+    }
+  }
+  const httpAllowedHosts = options.httpAllowedHosts ?? NO_HTTP_HOSTS
+  /**
+   * Beschreibung aus LeanIX: bereinigt, ohne Sitzungsparameter in
+   * LeanIX-Links und ohne Zugangsdaten in Links. Unverschlüsselte Links
+   * (http) und entfernte Zugangsdaten werden gemeldet.
+   */
+  const describe = (
+    value: string | null | undefined,
+    node: RawFactSheet,
+    type: string
+  ) => {
+    const cleaned = sanitizeLeanixLinks(cleanDescription(value))
+    const text = stripUrlCredentials(cleaned)
+    if (text !== cleaned) {
+      issue(
+        "warning",
+        "DESCRIPTION_LINK_CREDENTIALS",
+        "Beschreibung enthält einen Link mit Zugangsdaten (Benutzer/Passwort). Sie werden im Portal entfernt; bitte in LeanIX korrigieren.",
+        node,
+        type
+      )
+    }
+    const insecure = findHttpLinkHosts(text).filter(
+      (host) => !hostAllowed(host, httpAllowedHosts)
+    )
+    if (insecure.length > 0) {
+      issue(
+        "warning",
+        "DESCRIPTION_INSECURE_LINK",
+        `Beschreibung enthält unverschlüsselte Links (http) auf ${insecure.join(", ")}. Bitte auf https umstellen.`,
+        node,
+        type
+      )
+    }
+    return text
   }
 
   // --- Kategorien: Familien (Ebene 2) und Services (Ebene 3) --------------
@@ -428,8 +609,8 @@ export function buildSnapshot(
       continue
     }
 
-    const description = cleanDescription(node.description)
-    const resources = mapResources(documentsOf(node))
+    const description = describe(node.description, node, leistungModel.type)
+    const resources = mapResources(documentsOf(node), httpAllowedHosts)
     const subtype = node.category
       ? (
           leistungModel.subtypes as Record<
@@ -451,7 +632,9 @@ export function buildSnapshot(
       responsible: orgUnits(
         relationRefs(node, leistungModel.relations.organisation)
       ),
-      persons: options.showPersons ? personsOf(node) : [],
+      persons: options.showPersons
+        ? personsOf(node, leanixModel.responsiblePersons.leistung)
+        : [],
       audiences: namedRefs(
         relationRefs(node, leistungModel.relations.bezueger)
       ),
@@ -524,16 +707,21 @@ export function buildSnapshot(
     )
   }
   const leistungen = shown.map((s) => s.leistung)
+  reportDuplicateDescriptions(
+    shown.map(({ node, leistung }) => ({ node, text: leistung.description })),
+    leistungModel.type,
+    "der Leistung"
+  )
 
   // --- Services ------------------------------------------------------------
-  const slugService = createSlugger()
-  const services: Service[] = serviceNodes.map((node) => {
-    const definition = cleanDescription(node.description)
-    const resources = mapResources(documentsOf(node))
+  const serviceEntries = serviceNodes.map((node) => {
+    const definition = describe(node.description, node, kategorieModel.type)
+    const resources = mapResources(documentsOf(node), httpAllowedHosts)
     const leistungIds = leistungen
       .filter((l) => l.serviceIds.includes(node.id))
       .sort(byName)
       .map((l) => l.id)
+    const shownInPortal = options.showEmptyServices || leistungIds.length > 0
 
     if (!definition) {
       issue(
@@ -547,16 +735,26 @@ export function buildSnapshot(
     reportLeanixLinks(definition, node, kategorieModel.type)
     reportResourceProblems(resources.problems, node, kategorieModel.type)
     if (leistungIds.length === 0) {
+      // Freigegeben wird über den Kanal der Leistung: ohne Leistung ist der
+      // Service nur sichtbar, wenn das ausdrücklich eingestellt ist.
       issue(
-        "info",
+        shownInPortal ? "info" : "warning",
         "SERVICE_WITHOUT_LEISTUNG",
-        `Service hat keine Leistung im Kanal «${CHANNEL_LABEL}».`,
+        shownInPortal
+          ? `Service hat keine Leistung im Kanal «${CHANNEL_LABEL}» und wird ohne Leistungen angezeigt (CATALOG_SHOW_EMPTY_SERVICES).`
+          : `Service hat keine Leistung im Kanal «${CHANNEL_LABEL}» und wird nicht im Portal angezeigt.`,
         node,
         kategorieModel.type
       )
     }
+    return { node, definition, resources, leistungIds, shownInPortal }
+  })
 
-    return {
+  // Slugs erst nach dem Filter vergeben (nur angezeigte Services).
+  const slugService = createSlugger()
+  const services: Service[] = serviceEntries
+    .filter((entry) => entry.shownInPortal)
+    .map(({ node, definition, resources, leistungIds }) => ({
       id: node.id,
       slug: slugService(node.name, node.id),
       name: node.name,
@@ -565,31 +763,55 @@ export function buildSnapshot(
       responsible: orgUnits(
         relationRefs(node, kategorieModel.relations.organisation)
       ),
-      persons: options.showPersons ? personsOf(node) : [],
+      persons: options.showPersons
+        ? personsOf(node, leanixModel.responsiblePersons.kategorie)
+        : [],
       actions: resources.actions,
       links: resources.links,
       leistungIds,
       updatedAt: node.updatedAt ?? null,
       leanixUrl: urlFor(kategorieModel.type, node.id),
-    }
-  })
+    }))
+  // Alle Services prüfen, auch ausgeblendete: Es geht um die Daten in LeanIX.
+  reportDuplicateDescriptions(
+    serviceEntries.map(({ node, definition }) => ({ node, text: definition })),
+    kategorieModel.type,
+    "dem Service"
+  )
 
   // --- Familien ------------------------------------------------------------
   const slugFamily = createSlugger()
-  const families: Family[] = familyNodes.map((node) => {
-    const description = cleanDescription(node.description)
+  const families: Family[] = []
+  for (const node of familyNodes) {
+    const description = describe(node.description, node, kategorieModel.type)
     reportLeanixLinks(description, node, kategorieModel.type)
-    return {
+    const serviceIds = services
+      .filter((s) => s.familyId === node.id)
+      .map((s) => s.id)
+    const hasServices = serviceEntries.some(
+      (entry) => familyOfService.get(entry.node.id) === node.id
+    )
+    if (!options.showEmptyServices && serviceIds.length === 0) {
+      issue(
+        "info",
+        "FAMILY_WITHOUT_LEISTUNG",
+        hasServices
+          ? `Service-Familie hat keinen Service mit Leistung im Kanal «${CHANNEL_LABEL}» und wird nicht im Portal angezeigt.`
+          : "Service-Familie hat keine Services (Ebene 3) und wird nicht im Portal angezeigt.",
+        node,
+        kategorieModel.type
+      )
+      continue
+    }
+    families.push({
       id: node.id,
       slug: slugFamily(node.name, node.id),
       name: node.name,
       description,
-      serviceIds: services
-        .filter((s) => s.familyId === node.id)
-        .map((s) => s.id),
+      serviceIds,
       leanixUrl: urlFor(kategorieModel.type, node.id),
-    }
-  })
+    })
+  }
 
   issues.sort(
     (a, b) =>
@@ -598,6 +820,10 @@ export function buildSnapshot(
       a.code.localeCompare(b.code) ||
       a.message.localeCompare(b.message)
   )
+
+  const actionCount =
+    leistungen.reduce((sum, l) => sum + l.actions.length, 0) +
+    services.reduce((sum, s) => sum + s.actions.length, 0)
 
   return catalogSnapshotSchema.parse({
     schemaVersion: CATALOG_SCHEMA_VERSION,
@@ -617,6 +843,7 @@ export function buildSnapshot(
       leistungen: leistungen.length,
       leistungenInChannel: inChannel.length,
       leistungenSkipped: skipped,
+      actions: actionCount,
       issues: issues.length,
     },
   } satisfies CatalogSnapshot)

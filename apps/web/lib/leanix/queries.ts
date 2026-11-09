@@ -1,6 +1,10 @@
 import "server-only"
 
-import type { GraphqlResult } from "./client"
+import {
+  LeanixError,
+  type GraphqlErrorInfo,
+  type GraphqlResult,
+} from "./client"
 import { leanixModel } from "./model"
 import type { RawCatalogData, RawKategorie, RawLeistung } from "./types"
 
@@ -99,60 +103,131 @@ interface AllFactSheetsPage<TNode> {
 export interface FetchResult<TNode> {
   nodes: TNode[]
   totalCount: number
-  /** Teilfehler und Auffälligkeiten (für das Sync-Protokoll). */
+  /** Tolerierte Teilfehler und Auffälligkeiten (für das Sync-Protokoll). */
   warnings: string[]
 }
 
-/** Lädt alle Seiten einer `allFactSheets`-Abfrage. */
+/**
+ * Felder eines Fact Sheets, deren Teilfehler (GraphQL `errors` neben `data`)
+ * nur als Hinweis gelten: Sie betreffen Zusatzangaben (Personen nur mit
+ * `CATALOG_SHOW_PERSONS`, Berechtigungen). Ein Teilfehler auf jedem anderen
+ * Feld (z. B. `documents`, `kanal`, `status`, Relationen) würde Aktionen
+ * oder ganze Leistungen still verschwinden lassen und bricht den Sync ab;
+ * der bisherige Snapshot bleibt dann aktiv.
+ */
+export const TOLERATED_ERROR_FIELDS: ReadonlySet<string> = new Set([
+  "subscriptions",
+  "permittedReadACL",
+  "permittedWriteACL",
+])
+
+/**
+ * Feld des Fact Sheets, auf das sich ein Teilfehler bezieht, z. B.
+ * `documents` für `["allFactSheets", "edges", 0, "node", "documents"]`.
+ * `null`, wenn der Fehler keinen Pfad hat oder das Fact Sheet selbst bzw.
+ * die Abfrage als Ganzes betrifft.
+ */
+export function errorField(path: GraphqlErrorInfo["path"]): string | null {
+  if (!path || path[0] !== "allFactSheets") return null
+  if (path[1] !== "edges" || path[3] !== "node") return null
+  const field = path[4]
+  return typeof field === "string" ? field : null
+}
+
+function describeGraphqlError(error: GraphqlErrorInfo) {
+  const path = error.path?.join("/")
+  return path && !error.message.includes(path)
+    ? `${error.message} (${path})`
+    : error.message
+}
+
+/**
+ * Lädt alle Seiten einer `allFactSheets`-Abfrage. Wirft einen
+ * `LeanixError`, wenn LeanIX Teilfehler auf relevanten Feldern meldet oder
+ * weniger Einträge liefert als `totalCount` angibt: Ein unvollständiger
+ * Stand soll nie als Erfolg übernommen werden.
+ */
 export async function fetchAllPages<TNode extends { id?: unknown }>(
   client: GraphqlExecutor,
   query: string,
   label: string
 ): Promise<FetchResult<TNode>> {
-  const nodes: TNode[] = []
+  const nodes = new Map<string, TNode>()
   const warnings: string[] = []
+  let duplicates = 0
   let after: string | null = null
   let totalCount = 0
 
   for (let page = 0; ; page++) {
     if (page >= MAX_PAGES) {
-      throw new Error(
-        `${label}: mehr als ${MAX_PAGES} Seiten, Abfrage abgebrochen`
+      throw new LeanixError(
+        `${label}: mehr als ${MAX_PAGES} Seiten, Abfrage abgebrochen`,
+        { kind: "response" }
       )
     }
     const result: GraphqlResult<AllFactSheetsPage<TNode>> =
       await client.graphql<AllFactSheetsPage<TNode>>(query, { after })
     if (result.errors.length > 0) {
+      const fatal = result.errors.filter((error) => {
+        const field = errorField(error.path)
+        return !field || !TOLERATED_ERROR_FIELDS.has(field)
+      })
+      if (fatal.length > 0) {
+        throw new LeanixError(
+          `${label}: LeanIX meldet Teilfehler, Stand wird nicht übernommen: ${fatal
+            .slice(0, 3)
+            .map(describeGraphqlError)
+            .join(" | ")}`,
+          { kind: "graphql" }
+        )
+      }
       warnings.push(
         `${label}: ${result.errors
           .slice(0, 3)
-          .map((e) => e.message)
+          .map(describeGraphqlError)
           .join(" | ")}`
       )
     }
     const connection = result.data.allFactSheets
     if (!connection) {
-      throw new Error(`${label}: Antwort enthält kein allFactSheets`)
+      throw new LeanixError(`${label}: Antwort enthält kein allFactSheets`, {
+        kind: "response",
+      })
     }
     totalCount = connection.totalCount ?? totalCount
     for (const edge of connection.edges ?? []) {
-      // Leere Knoten entstehen, wenn der Typ nicht passt (Fragment).
-      if (edge?.node && typeof edge.node.id === "string") nodes.push(edge.node)
+      // Leere Knoten ({}) entstehen, wenn der Typ nicht passt (Fragment).
+      const node = edge?.node
+      if (!node || typeof node.id !== "string") continue
+      if (nodes.has(node.id)) duplicates++
+      else nodes.set(node.id, node)
     }
     const next = connection.pageInfo
     if (!next?.hasNextPage) break
     if (!next.endCursor || next.endCursor === after) {
-      throw new Error(`${label}: Paging liefert keinen neuen Cursor`)
+      throw new LeanixError(`${label}: Paging liefert keinen neuen Cursor`, {
+        kind: "response",
+      })
     }
     after = next.endCursor
   }
 
-  if (totalCount > 0 && nodes.length !== totalCount) {
-    warnings.push(
-      `${label}: ${nodes.length} von ${totalCount} Einträgen geladen`
+  if (totalCount > 0 && nodes.size < totalCount) {
+    throw new LeanixError(
+      `${label}: nur ${nodes.size} von ${totalCount} Einträgen geladen (unvollständige Antwort)`,
+      { kind: "response" }
     )
   }
-  return { nodes, totalCount, warnings }
+  if (duplicates > 0) {
+    warnings.push(`${label}: ${duplicates} doppelte Einträge ignoriert`)
+  }
+  if (totalCount > 0 && nodes.size > totalCount) {
+    // Z. B. Änderungen in LeanIX während des Pagings: unkritisch.
+    warnings.push(
+      `${label}: ${nodes.size} Einträge geladen, LeanIX meldet ${totalCount}`
+    )
+  }
+  return { nodes: [...nodes.values()], totalCount, warnings }
 }
 
 /** Lädt alle Rohdaten für einen Katalog-Snapshot aus LeanIX. */

@@ -15,6 +15,11 @@
 //   MOCK_CHANNEL_LIMIT=n     nur die ersten n Leistungen (nach Name) im Kanal
 //   MOCK_WORKSPACE           Workspace im Access-Token (Standard eamktsoLive)
 //   MOCK_PAGE_SIZE           höchstens so viele Einträge pro Seite
+//   MOCK_DOCUMENTS_ERROR=1   Teilfehler: `documents` der Leistungen = null
+//                            plus GraphQL-Fehler «Access denied» (mit Pfad)
+//   MOCK_TRUNCATE_AT=n       Leistungen: nach n Einträgen hasNextPage=false,
+//                            obwohl totalCount alle zählt (unvollständig)
+//   MOCK_DELAY_MS=n          jede GraphQL-Antwort um n ms verzögern
 //
 // Als Modul: `startMockLeanix(options)` startet einen Server und erlaubt,
 // die Optionen zur Laufzeit zu ändern (für Integrationstests).
@@ -138,8 +143,8 @@ async function readBody(req) {
 
 /**
  * Startet den Mock. Optionen: { port, exampleResources, fail, channelLimit,
- * workspace, pageSize, log }. Gibt { url, port, options, setOptions, close,
- * requests } zurück.
+ * workspace, pageSize, documentsError, truncateAt, delayMs, log }. Gibt
+ * { url, port, options, setOptions, close, requests } zurück.
  */
 export async function startMockLeanix(initial = {}) {
   const options = {
@@ -149,6 +154,9 @@ export async function startMockLeanix(initial = {}) {
     channelLimit: null,
     workspace: "eamktsoLive",
     pageSize: null,
+    documentsError: false,
+    truncateAt: null,
+    delayMs: 0,
     log: false,
     ...initial,
   }
@@ -232,6 +240,9 @@ export async function startMockLeanix(initial = {}) {
             ],
           })
         }
+        if (options.delayMs > 0) {
+          await new Promise((resolve) => setTimeout(resolve, options.delayMs))
+        }
         const first = Number(/first:\s*(\d+)/.exec(query)?.[1] ?? 100)
         const size = Math.max(1, Math.min(first, options.pageSize ?? first))
         const nodes = nodesFor(type, query)
@@ -240,19 +251,38 @@ export async function startMockLeanix(initial = {}) {
               Buffer.from(String(variables.after), "base64").toString("utf8")
             )
           : 0
-        const page = nodes.slice(offset, offset + size)
+        let page = nodes.slice(offset, offset + size)
+        const isLeistungen = type === "behoerdenLeistungen"
+        // Unvollständiges Paging: Ende melden, obwohl totalCount mehr zählt.
+        const last =
+          isLeistungen && options.truncateAt != null
+            ? Math.min(nodes.length, options.truncateAt)
+            : nodes.length
+        page = page.slice(0, Math.max(0, last - offset))
         const end = offset + page.length
+        const errors = []
+        if (isLeistungen && options.documentsError) {
+          // Wie LeanIX: Feld auf null, Fehler mit Pfad neben den Daten.
+          page = page.map((node, i) => {
+            errors.push({
+              message: `Exception while fetching data (/allFactSheets/edges[${i}]/node/documents) : Access denied`,
+              path: ["allFactSheets", "edges", i, "node", "documents"],
+            })
+            return { ...node, documents: null }
+          })
+        }
         return sendJson(res, 200, {
           data: {
             allFactSheets: {
               totalCount: nodes.length,
               pageInfo: {
-                hasNextPage: end < nodes.length,
+                hasNextPage: end < last,
                 endCursor: Buffer.from(String(end)).toString("base64"),
               },
               edges: page.map((node) => ({ node })),
             },
           },
+          ...(errors.length > 0 ? { errors } : {}),
         })
       }
 
@@ -300,6 +330,11 @@ if (isMain) {
     pageSize: process.env.MOCK_PAGE_SIZE
       ? Number(process.env.MOCK_PAGE_SIZE)
       : null,
+    documentsError: flag("MOCK_DOCUMENTS_ERROR"),
+    truncateAt: process.env.MOCK_TRUNCATE_AT
+      ? Number(process.env.MOCK_TRUNCATE_AT)
+      : null,
+    delayMs: Number(process.env.MOCK_DELAY_MS ?? 0) || 0,
     log: true,
   })
   console.log(
