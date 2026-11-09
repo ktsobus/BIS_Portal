@@ -72,8 +72,8 @@ export const ssoRouter = {
                 ? { metadata: input.idpMetadataXml }
                 : { entityID: input.issuer },
               // Where users land after a successful SAML sign-in.
-              callbackUrl: `${appUrl}/dashboard`,
-              idpInitiatedCallbackUrl: `${appUrl}/dashboard`,
+              callbackUrl: `${appUrl}/admin`,
+              idpInitiatedCallbackUrl: `${appUrl}/admin`,
               spMetadata: {},
               mapping: {
                 email: input.emailAttribute || undefined,

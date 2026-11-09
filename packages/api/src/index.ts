@@ -4,11 +4,11 @@ import type {
   InferContractRouterOutputs,
 } from "@orpc/contract"
 
+import { catalogAdminContract, catalogContract } from "./contracts/catalog"
 import { healthContract } from "./contracts/health"
 import { settingsContract } from "./contracts/settings"
 import { setupContract } from "./contracts/setup"
 import { authMethodsContract, ssoContract } from "./contracts/sso"
-import { taskContract } from "./contracts/task"
 import { userContract } from "./contracts/user"
 
 /**
@@ -16,11 +16,12 @@ import { userContract } from "./contracts/user"
  */
 export const contract = {
   auth: authMethodsContract,
+  catalog: catalogContract,
+  catalogAdmin: catalogAdminContract,
   health: healthContract,
   settings: settingsContract,
   setup: setupContract,
   sso: ssoContract,
-  task: taskContract,
   user: userContract,
 }
 
@@ -29,8 +30,8 @@ export type ApiClient = ContractRouterClient<Contract>
 export type ApiInputs = InferContractRouterInputs<Contract>
 export type ApiOutputs = InferContractRouterOutputs<Contract>
 
+export * from "./schemas/catalog"
 export * from "./schemas/settings"
 export * from "./schemas/setup"
 export * from "./schemas/sso"
-export * from "./schemas/task"
 export * from "./schemas/user"

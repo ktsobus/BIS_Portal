@@ -13,5 +13,5 @@ const link = new RPCLink({
 /** Typed oRPC client generated from the contract in `@workspace/api`. */
 export const client: ApiClient = createORPCClient(link)
 
-/** TanStack Query helpers: `orpc.task.list.queryOptions()`, etc. */
+/** TanStack Query helpers: `orpc.catalog.overview.queryOptions()`, etc. */
 export const orpc = createTanstackQueryUtils(client)

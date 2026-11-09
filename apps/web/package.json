@@ -19,6 +19,7 @@
   "dependencies": {
     "@base-ui/react": "^1.9.0",
     "@better-auth/sso": "1.7.15",
+    "@fontsource-variable/source-sans-3": "^5.3.1",
     "@hookform/resolvers": "^7.0.1",
     "@orpc/client": "^1.16.1",
     "@orpc/server": "^1.16.1",
@@ -47,6 +48,7 @@
     "react-dom": "^19",
     "react-email": "^6.11.6",
     "react-hook-form": "^7.91.0",
+    "react-markdown": "^10.1.0",
     "react-qr-code": "^2.2.0",
     "react-resizable-panels": "^4.16.0",
     "recharts": "3.8.0",
@@ -72,6 +74,8 @@
     "drizzle-kit": "^0.31.11",
     "eslint": "^10",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.5"
   }
 }

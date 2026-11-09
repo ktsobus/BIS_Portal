@@ -120,7 +120,7 @@ function ConfirmStep({ enrollment }: { enrollment: Enrollment }) {
       return
     }
     toast.success("Two-factor authentication enabled")
-    router.push("/dashboard")
+    router.push("/admin")
     router.refresh()
   }
 

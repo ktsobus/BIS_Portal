@@ -5,7 +5,7 @@ import { requireSessionAllowNo2FA } from "@/lib/session"
 
 export default async function TwoFactorSetupPage() {
   const { user } = await requireSessionAllowNo2FA()
-  if (user.twoFactorEnabled) redirect("/dashboard")
+  if (user.twoFactorEnabled) redirect("/admin")
 
   return (
     <div className="flex min-h-svh items-center justify-center p-6">

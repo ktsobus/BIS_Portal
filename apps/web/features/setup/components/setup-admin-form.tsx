@@ -79,7 +79,7 @@ export function SetupAdminForm() {
     }
     // If admin TOTP is required (off by default), requireSession() sends
     // the admin on to /two-factor/setup.
-    router.push("/dashboard")
+    router.push("/admin")
     router.refresh()
   }
 

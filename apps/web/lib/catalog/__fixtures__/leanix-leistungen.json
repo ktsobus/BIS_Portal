@@ -1,0 +1,1329 @@
+{
+  "_note": "Aus der LeanIX-Discovery vom 9.11.2026 abgeleitet; Personen pseudonymisiert, ACL/Kommentare entfernt. Relationen der Leistungen nur für «eLearning Inhalte publizieren» vollständig; relToParent/relToChild aus displayName rekonstruiert.",
+  "totalCount": 18,
+  "nodes": [
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-05-26T07:00:32.144706Z",
+      "description": null,
+      "displayName": "Alimentenbevorschussung",
+      "fullName": "Alimentenbevorschussung",
+      "id": "b770f4ce-7a4b-47e6-9a57-2daf843d73b6",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "Alimentenbevorschussung",
+      "rev": 11,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T09:21:32.130586Z",
+      "kanal": null,
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": null,
+      "barriere": null,
+      "eingangAnfrage": null,
+      "interneBearbeitung": null,
+      "ausgangRueckmeldung": null,
+      "standDerDigitalenReife": null,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "behoerdenLeistungen",
+      "createdAt": "2026-04-30T13:38:20.053220Z",
+      "description": "Test 1",
+      "displayName": "Behördenleistung Test 1",
+      "fullName": "Behördenleistung Test 1",
+      "id": "3b981cdd-7be7-4b74-865a-4a293245bfac",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "Behördenleistung Test 1",
+      "rev": 34,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-06T13:07:02.561693Z",
+      "kanal": [
+        "schalter",
+        "telefon",
+        "mail",
+        "externesProtal"
+      ],
+      "serviceAnzahlGeschaftsfalle": 6,
+      "serviceVerrechnung": "neinVerrechenbar",
+      "serviceAufwand": "hoherAufwand",
+      "serviceEffizienzPotenzial": "hohesPotential",
+      "barriere": [
+        "kalenderfunktion",
+        "hardwareAnforderungen",
+        "identification"
+      ],
+      "eingangAnfrage": "sehrHoch",
+      "interneBearbeitung": "sehrHoch",
+      "ausgangRueckmeldung": "sehrHoch",
+      "standDerDigitalenReife": 12,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-09-15T11:50:24.081577Z",
+      "description": "Vernehmlassung oder Mitwirkung online durchführen – mit der Unterstützung, die zu Ihrem Vorhaben passt.\\\n\\\n**Beschreibung:**\\\nSie erhalten ein eigenes Verfahren auf der Plattform [mitwirken.so.ch](http://mitwirken.so.ch). Im Antrag wählen Sie, wie viel Unterstützung Sie brauchen:\n\n- **Rundum-Service:** Ein spezialisierter Partner setzt das Verfahren um.\n- **Coaching:** Sie setzen selbst um und werden begleitet.\n- **Eigenständig:** Sie erhalten den Zugang und arbeiten selbst.\n\n\\\nDas AIO prüft Ihren Antrag und stellt den Kontakt her.",
+      "displayName": "Digitale Mitwirkungs- und Vernehmlassungsverfahren starten",
+      "fullName": "Digitale Mitwirkungs- und Vernehmlassungsverfahren starten",
+      "id": "2f483a4f-bb12-428e-b620-47bd23fcab86",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "Digitale Mitwirkungs- und Vernehmlassungsverfahren starten",
+      "rev": 25,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:56.153323Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": 12,
+      "serviceVerrechnung": "jaVerrechenbar",
+      "serviceAufwand": "mitlererAufwand",
+      "serviceEffizienzPotenzial": "mittleresPotential",
+      "barriere": [
+        "sonstiges"
+      ],
+      "eingangAnfrage": "hoch",
+      "interneBearbeitung": "mittel",
+      "ausgangRueckmeldung": "sehrHoch",
+      "standDerDigitalenReife": 9,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "9fbe0c6a-523f-4c6b-bd31-0fe20cb458fb",
+                "name": "Digitales Mitwirkungsverfahren",
+                "displayName": "Business IT-Servicekatalog / Unterstützungs-Services / Digitales Mitwirkungsverfahren",
+                "type": "Leistungskategorie"
+              }
+            }
+          }
+        ]
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-08-07T06:36:30.755161Z",
+      "description": "Die Leistung E-Learning bündelt, was der Kanton Solothurn für digitales Lernen bereitstellt. Mitarbeitende finden Kurse zu Fach-, Führungs-, Kommunikations- und Informatikthemen und bearbeiten sie am eigenen Arbeitsplatz – ohne Anreise und ohne festen Termin. Dienststellen erhalten Unterstützung, wenn sie eigene Themen digital vermitteln wollen: von der Klärung des Bedarfs über die Erstellung der Lerninhalte bis zur Ausbildung eigener Mitarbeitender, die künftig selbst Kurse gestalten.",
+      "displayName": "eLearning Bedarf anmelden",
+      "fullName": "eLearning Bedarf anmelden",
+      "id": "02344a12-39a5-417c-a2ca-ac65b0fadfef",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "eLearning Bedarf anmelden",
+      "rev": 29,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:43:05.294297Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": "mittleresPotential",
+      "barriere": [
+        "WorksflowEngine"
+      ],
+      "eingangAnfrage": "mittel",
+      "interneBearbeitung": "mittel",
+      "ausgangRueckmeldung": "sehrHoch",
+      "standDerDigitalenReife": 8,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "34be0167-938b-43a2-89f9-dc56cf9ab759",
+                "name": "Service eLearning",
+                "displayName": "Business IT-Servicekatalog / Unterstützungs-Services / Service eLearning",
+                "type": "Leistungskategorie"
+              }
+            }
+          }
+        ]
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-11-06T14:55:35.059566Z",
+      "description": "Ihr eLearning ist fertig und soll die richtigen Personen erreichen. Sie übergeben die Inhalte dem AIO, das sie nach Ihren Angaben auf der kantonalen Lernplattform veröffentlicht. Woher die Inhalte stammen, spielt keine Rolle: selbst erstellt von ausgebildeten Mitarbeitenden Ihrer Dienststelle, extern produziert oder als fertiger Kurs erworben. Für den Inhalt bleiben Sie verantwortlich.",
+      "displayName": "eLearning Inhalte publizieren",
+      "fullName": "eLearning Inhalte publizieren",
+      "id": "5a839ed9-19c3-40fe-b231-d211be3c95bd",
+      "level": 1,
+      "lxState": "BROKEN_QUALITY_SEAL",
+      "name": "eLearning Inhalte publizieren",
+      "rev": 35,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:56.297420Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": "mittleresPotential",
+      "barriere": [
+        "WorksflowEngine"
+      ],
+      "eingangAnfrage": "mittel",
+      "interneBearbeitung": "mittel",
+      "ausgangRueckmeldung": "sehrHoch",
+      "standDerDigitalenReife": 8,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": [
+          {
+            "cursor": "bGlzdC1jdXJzb3I6MA==",
+            "node": {
+              "activeFrom": null,
+              "activeUntil": null,
+              "factSheet": {
+                "id": "34be0167-938b-43a2-89f9-dc56cf9ab759",
+                "name": "Service eLearning",
+                "displayName": "Business IT-Servicekatalog / Unterstützungs-Services / Service eLearning",
+                "type": "Leistungskategorie"
+              },
+              "id": "ae8f3b4f-ade9-4abc-86b1-db1153cb5ace",
+              "type": "RelbehoerdenLeistungenToLeistungskategorie"
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": "bGlzdC1jdXJzb3I6MA==",
+          "endCursor": "bGlzdC1jdXJzb3I6MA=="
+        },
+        "skippedCount": 0,
+        "totalCount": 1
+      },
+      "subscriptions": {
+        "edges": [
+          {
+            "cursor": "c2ltcGxlLWN1cnNvcjA=",
+            "node": {
+              "createdAt": "2026-11-06T14:55:35.062450Z",
+              "factSheet": {
+                "id": "5a839ed9-19c3-40fe-b231-d211be3c95bd",
+                "name": "eLearning Inhalte publizieren",
+                "displayName": "eLearning Inhalte publizieren",
+                "type": "behoerdenLeistungen"
+              },
+              "id": "88c84770-d67d-49f8-a2f9-e5f693f1214c",
+              "roles": [
+                {
+                  "comment": null,
+                  "id": "538fdfdc-78e4-409f-830f-4578f2d9dec8",
+                  "name": "Leistungsverantwortliche/r"
+                }
+              ],
+              "type": "RESPONSIBLE",
+              "user": {
+                "id": "user-1",
+                "displayName": "Person 1"
+              }
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": "c2ltcGxlLWN1cnNvcjA=",
+          "endCursor": "c2ltcGxlLWN1cnNvcjA="
+        },
+        "totalCount": 1
+      },
+      "relToChild": {
+        "edges": [],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": null,
+          "endCursor": null
+        },
+        "skippedCount": 0,
+        "totalCount": 0
+      },
+      "relbehoerdenLeistungenToProcess": {
+        "edges": [
+          {
+            "cursor": "bGlzdC1jdXJzb3I6MA==",
+            "node": {
+              "activeFrom": null,
+              "activeUntil": null,
+              "factSheet": {
+                "id": "77c1a295-8d9c-4b7f-88ec-6e7c992a03fb",
+                "name": "eLearning Content freigeben",
+                "displayName": "eLearning Content freigeben",
+                "type": "Process"
+              },
+              "id": "bc371b15-30e8-49d4-ac19-267fa4100cfc",
+              "type": "RelbehoerdenLeistungenToProcess"
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": "bGlzdC1jdXJzb3I6MA==",
+          "endCursor": "bGlzdC1jdXJzb3I6MA=="
+        },
+        "skippedCount": 0,
+        "totalCount": 1
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": [
+          {
+            "cursor": "bGlzdC1jdXJzb3I6MA==",
+            "node": {
+              "activeFrom": null,
+              "activeUntil": null,
+              "factSheet": {
+                "id": "6c618db7-840d-4735-95d7-3917b0bf5b28",
+                "name": "Service-Management",
+                "displayName": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Service-Management",
+                "type": "Organisationseinheit"
+              },
+              "id": "a9e51bcc-efb9-4eba-9d35-46455a418a68",
+              "type": "RelbehoerdenLeistungenToOrganisationseinheit"
+            }
+          },
+          {
+            "cursor": "bGlzdC1jdXJzb3I6MQ==",
+            "node": {
+              "activeFrom": null,
+              "activeUntil": null,
+              "factSheet": {
+                "id": "e875189c-3f32-43a9-9508-26bf68c90753",
+                "name": "Personalentwicklung und Information",
+                "displayName": "Finanzdepartement (FD) / Personalamt (PA) / Personalentwicklung und Information",
+                "type": "Organisationseinheit"
+              },
+              "id": "e073cf76-4e2f-4062-bff1-edee1b76c392",
+              "type": "RelbehoerdenLeistungenToOrganisationseinheit"
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": "bGlzdC1jdXJzb3I6MA==",
+          "endCursor": "bGlzdC1jdXJzb3I6MQ=="
+        },
+        "skippedCount": 0,
+        "totalCount": 2
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": [
+          {
+            "cursor": "bGlzdC1jdXJzb3I6MA==",
+            "node": {
+              "activeFrom": null,
+              "activeUntil": null,
+              "factSheet": {
+                "id": "6a088e66-5c65-4746-9193-6698e8a5655a",
+                "name": "Articulate",
+                "displayName": "Articulate",
+                "type": "Application"
+              },
+              "id": "570c8c74-d9ae-44a3-b1e1-13cc20c74d59",
+              "type": "RelbehoerdenLeistungenToApplication"
+            }
+          },
+          {
+            "cursor": "bGlzdC1jdXJzb3I6MQ==",
+            "node": {
+              "activeFrom": null,
+              "activeUntil": null,
+              "factSheet": {
+                "id": "9914c79f-495f-434b-9224-ccd8bf853851",
+                "name": "easylearn",
+                "displayName": "easylearn",
+                "type": "Application"
+              },
+              "id": "ce23c193-02e2-46a5-a68a-2175c212def2",
+              "type": "RelbehoerdenLeistungenToApplication"
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": "bGlzdC1jdXJzb3I6MA==",
+          "endCursor": "bGlzdC1jdXJzb3I6MQ=="
+        },
+        "skippedCount": 0,
+        "totalCount": 2
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": [
+          {
+            "cursor": "bGlzdC1jdXJzb3I6MA==",
+            "node": {
+              "activeFrom": null,
+              "activeUntil": null,
+              "factSheet": {
+                "id": "dca36a45-99d3-4371-93df-e5b1a33b518d",
+                "name": "Kantonale Verwaltung",
+                "displayName": "Kantonale Verwaltung",
+                "type": "UserGroup"
+              },
+              "id": "a3b61602-3ea3-4dd7-a62b-4335dfbf4c54",
+              "type": "RelbehoerdenLeistungenToUserGroup"
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": "bGlzdC1jdXJzb3I6MA==",
+          "endCursor": "bGlzdC1jdXJzb3I6MA=="
+        },
+        "skippedCount": 0,
+        "totalCount": 1
+      },
+      "relToPredecessor": {
+        "edges": [],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": null,
+          "endCursor": null
+        },
+        "skippedCount": 0,
+        "totalCount": 0
+      },
+      "relToSuccessor": {
+        "edges": [],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": null,
+          "endCursor": null
+        },
+        "skippedCount": 0,
+        "totalCount": 0
+      },
+      "relToParent": {
+        "edges": [],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": null,
+          "endCursor": null
+        },
+        "skippedCount": 0,
+        "totalCount": 0
+      },
+      "relToRequires": {
+        "edges": [],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": null,
+          "endCursor": null
+        },
+        "skippedCount": 0,
+        "totalCount": 0
+      },
+      "relbehoerdenLeistungenToITComponent": {
+        "edges": [],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": null,
+          "endCursor": null
+        },
+        "skippedCount": 0,
+        "totalCount": 0
+      },
+      "relToRequiredBy": {
+        "edges": [],
+        "pageInfo": {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+          "startCursor": null,
+          "endCursor": null
+        },
+        "skippedCount": 0,
+        "totalCount": 0
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-11-06T14:53:41.415898Z",
+      "description": "Sie möchten Themen Ihrer Dienststelle selbst als eLearning umsetzen, ohne auf Dritte angewiesen zu sein? Dafür lässt sich eine Person aus Ihrem Team zur eLearning-Publisherin oder zum eLearning-Publisher ausbilden. Diese Person lernt, eLearning-Inhalte selbständig zu erarbeiten. Den fertigen Kurs übergeben Sie anschliessend dem AIO, das ihn auf der Lernplattform veröffentlicht.",
+      "displayName": "eLearning Inhalte selbständig erstellen",
+      "fullName": "eLearning Inhalte selbständig erstellen",
+      "id": "8106b084-6172-4bb2-9165-91fb7bdaf274",
+      "level": 1,
+      "lxState": "BROKEN_QUALITY_SEAL",
+      "name": "eLearning Inhalte selbständig erstellen",
+      "rev": 32,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:56.436002Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": "mittleresPotential",
+      "barriere": [
+        "WorksflowEngine"
+      ],
+      "eingangAnfrage": "mittel",
+      "interneBearbeitung": "mittel",
+      "ausgangRueckmeldung": "sehrHoch",
+      "standDerDigitalenReife": 8,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "34be0167-938b-43a2-89f9-dc56cf9ab759",
+                "name": "Service eLearning",
+                "displayName": "Business IT-Servicekatalog / Unterstützungs-Services / Service eLearning",
+                "type": "Leistungskategorie"
+              }
+            }
+          }
+        ]
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-11-06T14:56:06.884016Z",
+      "description": "Sie lernen, wie im Kanton Solothurn eLearning-Inhalte mit den Standardtools erstellt und für die Lernwelt bereitgestellt werden. Sie arbeiten mit Articulate Rise 360 (inkl. KI-Funktionen), bereiten einfache Medien mit Canva auf und sehen sinnvolle Einsatzmöglichkeiten von KI-Tools (z. B. ChatGPT, ElevenLabs). Zusätzlich erhalten Sie einen Überblick über den Publishing-Prozess ins Learning Management System ([lernwelt.so.ch](http://lernwelt.so.ch)) - von Bedarf und Zuständigkeiten bis zur Veröffentlichung.",
+      "displayName": "eLearning Publisher Ausbildung absolvieren",
+      "fullName": "eLearning Publisher Ausbildung absolvieren",
+      "id": "22d00340-50d6-440d-ba1f-f8bf4eccc9e4",
+      "level": 1,
+      "lxState": "BROKEN_QUALITY_SEAL",
+      "name": "eLearning Publisher Ausbildung absolvieren",
+      "rev": 38,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:56.662029Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": "mittleresPotential",
+      "barriere": [
+        "WorksflowEngine"
+      ],
+      "eingangAnfrage": "mittel",
+      "interneBearbeitung": "mittel",
+      "ausgangRueckmeldung": "sehrHoch",
+      "standDerDigitalenReife": 8,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "34be0167-938b-43a2-89f9-dc56cf9ab759",
+                "name": "Service eLearning",
+                "displayName": "Business IT-Servicekatalog / Unterstützungs-Services / Service eLearning",
+                "type": "Leistungskategorie"
+              }
+            }
+          }
+        ]
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "behoerdenLeistungen",
+      "createdAt": "2026-05-26T07:13:07.709856Z",
+      "description": null,
+      "displayName": "Inkassohilfe",
+      "fullName": "Inkassohilfe",
+      "id": "2311187b-cfe5-4dd8-8563-1bcbac3721d1",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "Inkassohilfe",
+      "rev": 5,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-06T13:07:02.561693Z",
+      "kanal": null,
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": null,
+      "barriere": null,
+      "eingangAnfrage": null,
+      "interneBearbeitung": null,
+      "ausgangRueckmeldung": null,
+      "standDerDigitalenReife": null,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "behoerdenLeistungen",
+      "createdAt": "2026-05-27T06:10:59.450832Z",
+      "description": null,
+      "displayName": "Lehrvertrag",
+      "fullName": "Lehrvertrag",
+      "id": "01e0440c-6c0c-4784-ace3-f78bcd2af16d",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "Lehrvertrag",
+      "rev": 7,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-06T13:07:02.561693Z",
+      "kanal": null,
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": null,
+      "barriere": null,
+      "eingangAnfrage": null,
+      "interneBearbeitung": null,
+      "ausgangRueckmeldung": null,
+      "standDerDigitalenReife": null,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-08-13T06:20:47.058376Z",
+      "description": null,
+      "displayName": "Mobile",
+      "fullName": "Mobile",
+      "id": "2c212a22-0ca6-4f6b-a377-07f24b1fc941",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "Mobile",
+      "rev": 4,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:56.790726Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": null,
+      "barriere": null,
+      "eingangAnfrage": null,
+      "interneBearbeitung": null,
+      "ausgangRueckmeldung": null,
+      "standDerDigitalenReife": null,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "93e91cb4-2cce-468a-8f97-cb9332b7587d",
+                "name": "Geschäftliches Mobile Abo",
+                "displayName": "Mobile / Geschäftliches Mobile Abo",
+                "type": "behoerdenLeistungen"
+              }
+            }
+          },
+          {
+            "node": {
+              "factSheet": {
+                "id": "d94ca94c-6b6a-40e6-8a12-366934a3f9b1",
+                "name": "privates Smartphone: eMail und Kalender",
+                "displayName": "Mobile / privates Smartphone: eMail und Kalender",
+                "type": "behoerdenLeistungen"
+              }
+            }
+          }
+        ]
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-08-13T06:22:25.693913Z",
+      "description": null,
+      "displayName": "Mobile / Geschäftliches Mobile Abo",
+      "fullName": "Geschäftliches Mobile Abo",
+      "id": "93e91cb4-2cce-468a-8f97-cb9332b7587d",
+      "level": 2,
+      "lxState": "APPROVED",
+      "name": "Geschäftliches Mobile Abo",
+      "rev": 6,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:56.954134Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": null,
+      "barriere": null,
+      "eingangAnfrage": null,
+      "interneBearbeitung": null,
+      "ausgangRueckmeldung": null,
+      "standDerDigitalenReife": null,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "2c212a22-0ca6-4f6b-a377-07f24b1fc941",
+                "name": "Mobile",
+                "displayName": "Mobile",
+                "type": "behoerdenLeistungen"
+              }
+            }
+          }
+        ]
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-08-13T06:27:58.111218Z",
+      "description": null,
+      "displayName": "Mobile / privates Smartphone: eMail und Kalender",
+      "fullName": "privates Smartphone: eMail und Kalender",
+      "id": "d94ca94c-6b6a-40e6-8a12-366934a3f9b1",
+      "level": 2,
+      "lxState": "APPROVED",
+      "name": "privates Smartphone: eMail und Kalender",
+      "rev": 5,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:57.100692Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": null,
+      "barriere": null,
+      "eingangAnfrage": null,
+      "interneBearbeitung": null,
+      "ausgangRueckmeldung": null,
+      "standDerDigitalenReife": null,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "2c212a22-0ca6-4f6b-a377-07f24b1fc941",
+                "name": "Mobile",
+                "displayName": "Mobile",
+                "type": "behoerdenLeistungen"
+              }
+            }
+          }
+        ]
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-08-12T06:33:03.277849Z",
+      "description": null,
+      "displayName": "Schulung",
+      "fullName": "Schulung",
+      "id": "4e557cb8-50c5-4764-aad8-f9f4ef8e766c",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "Schulung",
+      "rev": 9,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:57.254645Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": null,
+      "barriere": null,
+      "eingangAnfrage": null,
+      "interneBearbeitung": null,
+      "ausgangRueckmeldung": null,
+      "standDerDigitalenReife": null,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "bc2a42fe-98d3-40b7-a610-845f4e35afa6",
+                "name": "KICK Schulung",
+                "displayName": "Schulung / KICK Schulung",
+                "type": "behoerdenLeistungen"
+              }
+            }
+          }
+        ]
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-08-13T06:40:00.038206Z",
+      "description": null,
+      "displayName": "Schulung / KICK Schulung",
+      "fullName": "KICK Schulung",
+      "id": "bc2a42fe-98d3-40b7-a610-845f4e35afa6",
+      "level": 2,
+      "lxState": "APPROVED",
+      "name": "KICK Schulung",
+      "rev": 3,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:57.389903Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": null,
+      "barriere": null,
+      "eingangAnfrage": null,
+      "interneBearbeitung": null,
+      "ausgangRueckmeldung": null,
+      "standDerDigitalenReife": null,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "4e557cb8-50c5-4764-aad8-f9f4ef8e766c",
+                "name": "Schulung",
+                "displayName": "Schulung",
+                "type": "behoerdenLeistungen"
+              }
+            }
+          }
+        ]
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-11-06T15:00:31.096139Z",
+      "description": "Vernehmlassung oder Mitwirkung online durchführen – mit der Unterstützung, die zu Ihrem Vorhaben passt.\\\n\\\n**Beschreibung:**\\\nSie erhalten ein eigenes Verfahren auf der Plattform [mitwirken.so.ch](http://mitwirken.so.ch). Im Antrag wählen Sie, wie viel Unterstützung Sie brauchen:\n\n- **Rundum-Service:** Ein spezialisierter Partner setzt das Verfahren um.\n- **Coaching:** Sie setzen selbst um und werden begleitet.\n- **Eigenständig:** Sie erhalten den Zugang und arbeiten selbst.\n\n\\\nDas AIO prüft Ihren Antrag und stellt den Kontakt her.",
+      "displayName": "SO!Desk Teamadministrator festlegen",
+      "fullName": "SO!Desk Teamadministrator festlegen",
+      "id": "a0456a21-9599-43ee-8e4c-1e5338548381",
+      "level": 1,
+      "lxState": "BROKEN_QUALITY_SEAL",
+      "name": "SO!Desk Teamadministrator festlegen",
+      "rev": 30,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:57.526431Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": 12,
+      "serviceVerrechnung": "jaVerrechenbar",
+      "serviceAufwand": "mitlererAufwand",
+      "serviceEffizienzPotenzial": "mittleresPotential",
+      "barriere": [
+        "sonstiges"
+      ],
+      "eingangAnfrage": "hoch",
+      "interneBearbeitung": "mittel",
+      "ausgangRueckmeldung": "sehrHoch",
+      "standDerDigitalenReife": 9,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "08781d02-a117-4468-b53d-7bb9cdfca3a9",
+                "name": "Service Kollaboration",
+                "displayName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service Kollaboration",
+                "type": "Leistungskategorie"
+              }
+            }
+          }
+        ]
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "behoerdenLeistungen",
+      "createdAt": "2026-06-22T04:34:08.014924Z",
+      "description": null,
+      "displayName": "Testleistung bestellen",
+      "fullName": "Testleistung bestellen",
+      "id": "3432ba1e-e412-4bfe-9e01-9750d0e7e89d",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "Testleistung bestellen",
+      "rev": 12,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-06T13:07:02.561693Z",
+      "kanal": [
+        "mySO"
+      ],
+      "serviceAnzahlGeschaftsfalle": 500,
+      "serviceVerrechnung": "neinVerrechenbar",
+      "serviceAufwand": "mitlererAufwand",
+      "serviceEffizienzPotenzial": "geringesPotential",
+      "barriere": [
+        "rechtlicheVorgaben"
+      ],
+      "eingangAnfrage": "mittel",
+      "interneBearbeitung": "mittel",
+      "ausgangRueckmeldung": "hoch",
+      "standDerDigitalenReife": 7,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-05-20T07:33:42.098220Z",
+      "description": "Dies ist ein Test",
+      "displayName": "Verwaltungsleistung Test 1",
+      "fullName": "Verwaltungsleistung Test 1",
+      "id": "0ccd7a7a-3dc9-4a9c-ba69-e1abc37a706f",
+      "level": 1,
+      "lxState": "APPROVED",
+      "name": "Verwaltungsleistung Test 1",
+      "rev": 10,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:57.672886Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": null,
+      "serviceVerrechnung": null,
+      "serviceAufwand": null,
+      "serviceEffizienzPotenzial": null,
+      "barriere": null,
+      "eingangAnfrage": null,
+      "interneBearbeitung": null,
+      "ausgangRueckmeldung": null,
+      "standDerDigitalenReife": null,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    },
+    {
+      "category": "verwaltungsLeistungen",
+      "createdAt": "2026-11-06T14:38:30.289156Z",
+      "description": "Weitere Personen zu einem laufenden Mitwirkungsverfahren Ihrer Dienststelle hinzufügen.\n\n**Beschreibung:**\\\nSollen weitere Mitarbeitende an einem bestehenden Verfahren mitarbeiten, beantragen Sie hier ihren persönlichen Zugang. Sie geben an, um welches Verfahren es geht und wer Zugang erhalten soll. Die Person kann danach Stellungnahmen einsehen und bei der Auswertung mitwirken. Das AIO richtet den Zugang ein.\n\n**Gut zu wissen:** Für ein neues Verfahren brauchen Sie diesen Service nicht. Beantragen Sie stattdessen ein [digitales Mitwirkungsverfahren](https://ktso.leanix.net/eamktsosandbox/portals/Leistungen?transientUser=true#state=5f52fd6d-3ccd-4d51-8aca-984b4f61c5bb&session_state=TV2NdWWU7s75h8j1q8nn-TP5&iss=https://ch-signin.leanix.net/realms/service-provider&code=df7c2c8f-8fc9-08cc-3984-e021639057cb.TV2NdWWU7s75h8j1q8nn-TP5.317ce67f-06e0-4eba-b95e-a24e61726b4f), Ihr eigener Zugang ist darin enthalten.\n\n**Vorgehen**: Informieren Sie Ihren KICK, dass er über das ky2help einen Personenberechtigungsantrag erstellen soll.",
+      "displayName": "Zugang zur Mitwirkungsplattform beantragen",
+      "fullName": "Zugang zur Mitwirkungsplattform beantragen",
+      "id": "76003983-8413-4db8-ab66-e85494dda325",
+      "level": 1,
+      "lxState": "BROKEN_QUALITY_SEAL",
+      "name": "Zugang zur Mitwirkungsplattform beantragen",
+      "rev": 27,
+      "status": "ACTIVE",
+      "type": "behoerdenLeistungen",
+      "updatedAt": "2026-11-09T08:44:57.819297Z",
+      "kanal": [
+        "Business_IT_Servicekatalog"
+      ],
+      "serviceAnzahlGeschaftsfalle": 12,
+      "serviceVerrechnung": "jaVerrechenbar",
+      "serviceAufwand": "mitlererAufwand",
+      "serviceEffizienzPotenzial": "mittleresPotential",
+      "barriere": [
+        "sonstiges"
+      ],
+      "eingangAnfrage": "hoch",
+      "interneBearbeitung": "mittel",
+      "ausgangRueckmeldung": "sehrHoch",
+      "standDerDigitalenReife": 9,
+      "documents": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToLeistungskategorie": {
+        "edges": [
+          {
+            "node": {
+              "factSheet": {
+                "id": "9fbe0c6a-523f-4c6b-bd31-0fe20cb458fb",
+                "name": "Digitales Mitwirkungsverfahren",
+                "displayName": "Business IT-Servicekatalog / Unterstützungs-Services / Digitales Mitwirkungsverfahren",
+                "type": "Leistungskategorie"
+              }
+            }
+          }
+        ]
+      },
+      "relbehoerdenLeistungenToOrganisationseinheit": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToUserGroup": {
+        "edges": []
+      },
+      "relbehoerdenLeistungenToApplication": {
+        "edges": []
+      },
+      "relToParent": {
+        "edges": []
+      },
+      "relToChild": {
+        "edges": []
+      },
+      "subscriptions": {
+        "edges": []
+      }
+    }
+  ]
+}

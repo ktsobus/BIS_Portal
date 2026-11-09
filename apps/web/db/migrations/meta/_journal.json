@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1794133592987,
-      "tag": "0000_blue_riptide",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1794135071396,
-      "tag": "0001_fluffy_warpath",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1794135480807,
-      "tag": "0002_many_whizzer",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1794136035046,
-      "tag": "0003_pink_mesmero",
+      "when": 1794230994882,
+      "tag": "0000_quick_smasher",
       "breakpoints": true
     }
   ]

@@ -16,7 +16,7 @@ export default async function AdminLayout({
       <header className="flex items-center gap-4">
         <h1 className="mr-auto text-2xl font-semibold">Admin</h1>
         <Button variant="outline" size="sm" asChild>
-          <Link href="/dashboard">Back to app</Link>
+          <Link href="/">Zum Portal</Link>
         </Button>
       </header>
       <AdminNav />
