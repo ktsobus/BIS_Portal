@@ -16,10 +16,10 @@ import { LeistungGrid } from "@/features/catalog/components/leistung-card"
 import { MarkdownText } from "@/features/catalog/components/markdown"
 import {
   OrgUnitList,
-  orgUnitNames,
   PersonList,
 } from "@/features/catalog/components/org-units"
 import { Section } from "@/features/catalog/components/section"
+import { NoRequestPathHint } from "@/features/catalog/components/support-contact"
 import { loadLeistung } from "@/features/catalog/load"
 import { plainExcerpt } from "@/features/catalog/text"
 
@@ -67,6 +67,7 @@ export default async function LeistungPage({
     ? leistung.responsible
     : (primary?.service.responsible ?? [])
   const infoLinks = leistung.links.filter((link) => safeHref(link.url))
+  const actions = leistung.actions.filter((action) => safeHref(action.url))
   const updatedAt = formatDate(leistung.updatedAt)
 
   return (
@@ -91,21 +92,14 @@ export default async function LeistungPage({
             >
               Nächste Schritte
             </h2>
-            {leistung.actions.length > 0 ? (
-              <ActionLinks actions={leistung.actions} layout="stacked" />
+            {actions.length > 0 ? (
+              <ActionLinks actions={actions} layout="stacked" />
             ) : (
-              <p>
-                Für diese Leistung ist im Portal noch kein Bestell- oder
-                Anfrageweg hinterlegt.{" "}
-                {responsible.length > 0 ? (
-                  <>
-                    Bitte wenden Sie sich an die verantwortliche Stelle:{" "}
-                    <strong>{orgUnitNames(responsible)}</strong>.
-                  </>
-                ) : (
-                  "Bitte wenden Sie sich an den Service Desk des AIO."
-                )}
-              </p>
+              <NoRequestPathHint
+                message="Für diese Leistung ist im Portal noch kein Bestell- oder Anfrageweg hinterlegt."
+                responsible={responsible}
+                contact={result.data.status.contact}
+              />
             )}
           </section>
 

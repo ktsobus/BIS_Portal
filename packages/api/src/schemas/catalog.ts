@@ -162,8 +162,38 @@ export const catalogStatusSchema = z.object({
   stale: z.boolean(),
 })
 
-export const familySummarySchema = familySchema.extend({
+/**
+ * Zentraler Kontakt (Service Desk) aus der Konfiguration, unabhängig vom
+ * Snapshot. Erscheint, wo eine Leistung oder ein Service keinen eigenen
+ * Bestell- oder Anfrageweg hat, in der Fusszeile und bei einem Ausfall.
+ */
+export const supportContactSchema = z.object({
+  /** Standard-Anfrageweg (`CATALOG_FALLBACK_REQUEST_URL`): https, mailto oder tel. */
+  request: catalogLinkSchema.nullable(),
+  /** E-Mail-Adresse (`CATALOG_SUPPORT_EMAIL`). */
+  email: z.string().nullable(),
+  /** Telefonnummer zur Anzeige (`CATALOG_SUPPORT_PHONE`). */
+  phone: z.string().nullable(),
+})
+
+/** Status für die öffentlichen Seiten: zusätzlich der zentrale Kontakt. */
+export const catalogPublicStatusSchema = catalogStatusSchema.extend({
+  /** `null`, wenn kein Kontakt konfiguriert ist. */
+  contact: supportContactSchema.nullable(),
+})
+
+/*
+ * Öffentliche Sicht ohne Links ins LeanIX-Fact-Sheet: Sie verraten Workspace
+ * und interne IDs und funktionieren ohne LeanIX-Konto ohnehin nicht. Der
+ * Admin-Bericht behält die Links (`qualityIssueSchema`).
+ */
+export const publicFamilySchema = familySchema.omit({ leanixUrl: true })
+export const publicServiceSchema = serviceSchema.omit({ leanixUrl: true })
+export const publicLeistungSchema = leistungSchema.omit({ leanixUrl: true })
+
+export const familySummarySchema = publicFamilySchema.extend({
   serviceCount: z.number().int(),
+  /** Anzahl verschiedener Leistungen (eine Leistung kann mehreren Services angehören). */
   leistungCount: z.number().int(),
 })
 
@@ -191,29 +221,29 @@ export const leistungSummarySchema = leistungSchema.pick({
 })
 
 export const catalogOverviewSchema = z.object({
-  status: catalogStatusSchema,
+  status: catalogPublicStatusSchema,
   families: z.array(familySummarySchema),
 })
 
 export const catalogFamilyPageSchema = z.object({
-  status: catalogStatusSchema,
-  family: familySchema,
+  status: catalogPublicStatusSchema,
+  family: familySummarySchema,
   services: z.array(serviceSummarySchema),
 })
 
 export const catalogServicePageSchema = z.object({
-  status: catalogStatusSchema,
-  family: familySchema,
-  service: serviceSchema,
-  leistungen: z.array(leistungSchema),
+  status: catalogPublicStatusSchema,
+  family: publicFamilySchema,
+  service: publicServiceSchema,
+  leistungen: z.array(publicLeistungSchema),
 })
 
 export const catalogLeistungPageSchema = z.object({
-  status: catalogStatusSchema,
-  leistung: leistungSchema,
+  status: catalogPublicStatusSchema,
+  leistung: publicLeistungSchema,
   /** Alle Einordnungen (eine Leistung kann mehreren Services angehören). */
   placements: z.array(
-    z.object({ family: familySchema, service: serviceSchema })
+    z.object({ family: publicFamilySchema, service: publicServiceSchema })
   ),
   parent: leistungSummarySchema.nullable(),
   children: z.array(leistungSummarySchema),
@@ -235,7 +265,7 @@ export const searchEntrySchema = z.object({
 })
 
 export const catalogSearchIndexSchema = z.object({
-  status: catalogStatusSchema,
+  status: catalogPublicStatusSchema,
   entries: z.array(searchEntrySchema),
   /** Filterwerte für die Suche. */
   facets: z.object({
@@ -295,15 +325,22 @@ export const catalogAdminOverviewSchema = z.object({
     minRatio: z.number(),
     staleAfterHours: z.number(),
     rootCategoryId: z.string(),
+    /** Standard-Aktion für Leistungen ohne Aktion (`CATALOG_FALLBACK_REQUEST_URL`) gesetzt. */
+    fallbackActionConfigured: z.boolean(),
   }),
 })
 
 export type CatalogSnapshot = z.infer<typeof catalogSnapshotSchema>
 export type CatalogStatus = z.infer<typeof catalogStatusSchema>
+export type CatalogPublicStatus = z.infer<typeof catalogPublicStatusSchema>
+export type SupportContact = z.infer<typeof supportContactSchema>
 export type CatalogStats = z.infer<typeof catalogStatsSchema>
 export type Family = z.infer<typeof familySchema>
 export type Service = z.infer<typeof serviceSchema>
 export type Leistung = z.infer<typeof leistungSchema>
+export type PublicFamily = z.infer<typeof publicFamilySchema>
+export type PublicService = z.infer<typeof publicServiceSchema>
+export type PublicLeistung = z.infer<typeof publicLeistungSchema>
 export type CatalogLink = z.infer<typeof catalogLinkSchema>
 export type LinkKind = z.infer<typeof linkKindSchema>
 export type OrgUnit = z.infer<typeof orgUnitSchema>

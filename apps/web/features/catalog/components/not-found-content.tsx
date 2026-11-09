@@ -29,7 +29,7 @@ export function NotFoundContent() {
               key: "suche",
               content: (
                 <Link href="/suche" className="link-cd">
-                  Leistung suchen
+                  Services und Leistungen suchen
                 </Link>
               ),
             },

@@ -175,6 +175,60 @@
   box-shadow: none;
 }
 
+/*
+ * Meldungen (sonner) im CD: schwarz auf weiss, Haarlinie, keine Schatten,
+ * Hausschrift. sonner fügt sein CSS ungeschichtet am Ende von <head> ein;
+ * Tailwind-Klassen (Layer) verlieren dagegen. Daher ungeschichtet und mit
+ * höherer Spezifität als die sonner-Regeln. Der Typ ist an Symbol und
+ * linker Kante erkennbar, der Text bleibt schwarz (Kontrast 21:1).
+ */
+:root [data-sonner-toaster] {
+  font-family: inherit;
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
+  border: 1px solid var(--so-line-strong);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: #ffffff;
+  color: var(--so-black);
+  box-shadow: none;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-title] {
+  font-weight: 700;
+}
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"]
+  [data-description] {
+  color: var(--so-black);
+  font-size: 1rem;
+}
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"][data-type="error"] {
+  border-left-color: var(--so-red);
+}
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"][data-type="error"]
+  [data-icon] {
+  color: var(--so-red);
+}
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"]:is(
+    [data-type="warning"],
+    [data-type="success"]
+  ) {
+  border-left-color: var(--so-black);
+}
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"]:is(
+    [data-type="info"],
+    [data-type="loading"],
+    [data-type="default"]
+  ) {
+  border-left-color: var(--so-grey);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -23,7 +23,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider>
         <TooltipProvider>
           {children}
-          <Toaster richColors />
+          {/* Ohne `richColors`: CD-Farben und Kontrast regelt globals.css. */}
+          <Toaster />
         </TooltipProvider>
       </ThemeProvider>
       <ReactQueryDevtools buttonPosition="bottom-left" />

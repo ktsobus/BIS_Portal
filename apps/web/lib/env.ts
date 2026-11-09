@@ -43,11 +43,34 @@ const serverEnvSchema = z.object({
     .enum(["true", "false"])
     .default("false")
     .transform((value) => value === "true"),
-  /** Standard-Aktion, wenn eine Leistung keine Aktions-Ressource hat. */
-  CATALOG_FALLBACK_REQUEST_URL: optionalString,
+  /**
+   * Standard-Aktion, wenn eine Leistung keine Aktions-Ressource hat, und
+   * zentraler Kontakt (Service Desk): https://…, mailto:… oder tel:….
+   * Ein ungültiger Wert bricht den Start ab, statt still ignoriert zu werden.
+   */
+  CATALOG_FALLBACK_REQUEST_URL: optionalString.pipe(
+    z
+      .string()
+      .regex(
+        /^(?:https?:\/\/\S+|mailto:\S+@\S+|tel:\+?[\d\s()./-]{3,})$/i,
+        "Nur https://…, http://…, mailto:… oder tel:… erlaubt"
+      )
+      .optional()
+  ),
   CATALOG_FALLBACK_REQUEST_LABEL: z
     .string()
     .default("Anfrage an den Service Desk"),
+  /** Optional: E-Mail-Adresse des Service Desk (Fusszeile, Kontaktangaben). */
+  CATALOG_SUPPORT_EMAIL: optionalString.pipe(
+    z.email("Keine gültige E-Mail-Adresse").optional()
+  ),
+  /** Optional: Telefonnummer des Service Desk, z. B. «032 627 00 00». */
+  CATALOG_SUPPORT_PHONE: optionalString.pipe(
+    z
+      .string()
+      .regex(/^\+?[\d\s()./-]{6,30}$/, "Keine gültige Telefonnummer")
+      .optional()
+  ),
 })
 
 export const env = serverEnvSchema.parse(process.env)

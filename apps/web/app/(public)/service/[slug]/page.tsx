@@ -15,10 +15,10 @@ import { LeistungGrid } from "@/features/catalog/components/leistung-card"
 import { MarkdownText } from "@/features/catalog/components/markdown"
 import {
   OrgUnitList,
-  orgUnitNames,
   PersonList,
 } from "@/features/catalog/components/org-units"
 import { Section } from "@/features/catalog/components/section"
+import { NoRequestPathHint } from "@/features/catalog/components/support-contact"
 import { loadService } from "@/features/catalog/load"
 import { countLabel, plainExcerpt } from "@/features/catalog/text"
 
@@ -86,22 +86,12 @@ export default async function ServicePage({
               <LeistungGrid leistungen={leistungen} />
             ) : (
               <div className="flex max-w-[70ch] flex-col gap-3 border-l-4 border-primary bg-so-surface p-5">
-                <p className="font-bold">
-                  Für diesen Service sind im Portal noch keine Leistungen
-                  erfasst.
-                </p>
-                {service.responsible.length > 0 ? (
-                  <p>
-                    Bei Fragen wenden Sie sich bitte an die verantwortliche
-                    Stelle: <strong>{orgUnitNames(service.responsible)}</strong>
-                    .
-                  </p>
-                ) : (
-                  <p>
-                    Bei Fragen wenden Sie sich bitte an den Service Desk des
-                    Amts für Informatik und Organisation.
-                  </p>
-                )}
+                <NoRequestPathHint
+                  emphasize
+                  message="Für diesen Service sind im Portal noch keine Leistungen erfasst."
+                  responsible={service.responsible}
+                  contact={result.data.status.contact}
+                />
               </div>
             )}
           </Section>

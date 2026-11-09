@@ -1,10 +1,12 @@
 import "server-only"
 
+import type { CatalogPublicStatus, CatalogStatus } from "@workspace/api"
+
 import { getCatalog, getCatalogStatus } from "@/lib/catalog/store"
 import { env } from "@/lib/env"
 import { os } from "@/server/orpc"
 
-import { createFallbackAction } from "./fallback"
+import { createFallbackAction, createSupportContact } from "./fallback"
 import {
   buildFamilyPage,
   buildLeistungPage,
@@ -24,17 +26,33 @@ function viewOptions(): ViewOptions {
   }
 }
 
+/** Zentraler Kontakt aus der Konfiguration (unabhängig vom Snapshot). */
+function supportContact() {
+  return createSupportContact({
+    requestUrl: env.CATALOG_FALLBACK_REQUEST_URL,
+    requestLabel: env.CATALOG_FALLBACK_REQUEST_LABEL,
+    email: env.CATALOG_SUPPORT_EMAIL,
+    phone: env.CATALOG_SUPPORT_PHONE,
+  })
+}
+
+function publicStatus(status: CatalogStatus): CatalogPublicStatus {
+  return { ...status, contact: supportContact() }
+}
+
 async function load() {
   const [snapshot, status] = await Promise.all([
     getCatalog(),
     getCatalogStatus(),
   ])
-  return { snapshot, status }
+  return { snapshot, status: publicStatus(status) }
 }
 
 /** Öffentliche Katalog-Prozeduren (ohne Anmeldung), lesen nur den Snapshot. */
 export const catalogRouter = {
-  status: os.catalog.status.handler(() => getCatalogStatus()),
+  status: os.catalog.status.handler(async () =>
+    publicStatus(await getCatalogStatus())
+  ),
 
   overview: os.catalog.overview.handler(async ({ errors }) => {
     const { snapshot, status } = await load()

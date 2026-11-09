@@ -1,24 +1,23 @@
 import Link from "next/link"
-import type { CatalogStatus } from "@workspace/api"
 
-import { serverClient } from "@/lib/orpc-server"
+import {
+  hasSupportContact,
+  SupportContactLinks,
+} from "@/features/catalog/components/support-contact"
+import { loadStatus } from "@/features/catalog/load"
 import { cn } from "@/lib/utils"
 
 import { siteContainer } from "./container"
 import { formatDateTime } from "./format"
 
-async function loadStatus(): Promise<CatalogStatus | null> {
-  try {
-    return await serverClient.catalog.status()
-  } catch {
-    // Die Fusszeile darf eine Seite nie scheitern lassen.
-    return null
-  }
-}
-
-/** Fusszeile mit Absender (CD: Black Italic) und Stand der Katalogdaten. */
+/**
+ * Fusszeile mit Absender (CD: Black Italic), Kontakt zum Service Desk (falls
+ * konfiguriert) und Stand der Katalogdaten.
+ */
 export async function SiteFooter() {
+  // Scheitert nie: Die Fusszeile darf eine Seite nicht scheitern lassen.
   const status = await loadStatus()
+  const contact = status?.contact
   const generatedAt =
     status?.available && status.generatedAt
       ? formatDateTime(status.generatedAt)
@@ -40,6 +39,18 @@ export async function SiteFooter() {
             Kanton Solothurn · Business-IT-Serviceportal
           </p>
         </div>
+
+        {hasSupportContact(contact) ? (
+          <section
+            aria-labelledby="footer-kontakt"
+            className="flex flex-col gap-1.5"
+          >
+            <h2 id="footer-kontakt" className="text-sm font-bold">
+              Kontakt Service Desk
+            </h2>
+            <SupportContactLinks contact={contact} variant="links" />
+          </section>
+        ) : null}
 
         <div className="flex max-w-[44ch] flex-col gap-1.5">
           {generatedAt ? (

@@ -164,7 +164,11 @@ werden vor allem Links):
 | `policy`, `decision`, `jira`, `roadmap`, `task`, `request` (RFC/RFI), `security`, `certificate`, `image`, `verzeichnis`, `RRB`, `AIO-ServicePortfolio`, `AIO-Lizenzablage`, `Testkonzept` | nicht anzeigen (intern) |
 
 Hat eine Leistung keine Aktion, zeigt das Portal eine konfigurierbare Standard-Aktion
-(`CATALOG_FALLBACK_REQUEST_URL`, z. B. Service Desk) und die verantwortliche Stelle.
+(`CATALOG_FALLBACK_REQUEST_URL`, z. B. Service Desk; `https:`, `mailto:` oder `tel:`) und die
+verantwortliche Stelle. Derselbe zentrale Kontakt, optional ergänzt um
+`CATALOG_SUPPORT_EMAIL` und `CATALOG_SUPPORT_PHONE`, erscheint bei Services ohne Leistungen,
+in der Fusszeile und auf der Ausfallseite. Ohne Konfiguration bleibt es beim Hinweis auf die
+verantwortliche Stelle (offene Frage 2); der Admin-Bereich weist darauf hin.
 
 Hochgeladene **Dateien** sind nur mit LeanIX-Login abrufbar; sie werden im MVP nicht angezeigt
 (nur Links). Ressourcen-URLs werden auf `https:` geprüft; optional Allowlist der Zielhosts.

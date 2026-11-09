@@ -56,7 +56,13 @@ export function CatalogSearch({
   })
 
   const { data, error, isPending } = useQuery(
-    orpc.catalog.searchIndex.queryOptions({ staleTime: 5 * 60 * 1000 })
+    orpc.catalog.searchIndex.queryOptions({
+      staleTime: 5 * 60 * 1000,
+      // Katalog nicht verfügbar: sofort melden statt ~7 s «wird geladen»
+      // (TanStack-Standard: drei Wiederholungen). Sonst ein Versuch mehr.
+      retry: (failureCount, error) =>
+        !isCatalogUnavailable(error) && failureCount < 1,
+    })
   )
 
   const prepared = React.useMemo(
@@ -174,7 +180,7 @@ export function CatalogSearch({
 
         {error ? (
           <p className="max-w-[70ch]">
-            {error instanceof ORPCError && error.code === "CATALOG_UNAVAILABLE"
+            {isCatalogUnavailable(error)
               ? "Der Katalog ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut."
               : "Der Suchindex konnte nicht geladen werden. Bitte laden Sie die Seite neu."}
           </p>
@@ -204,6 +210,10 @@ export function CatalogSearch({
       </section>
     </div>
   )
+}
+
+function isCatalogUnavailable(error: unknown): boolean {
+  return error instanceof ORPCError && error.code === "CATALOG_UNAVAILABLE"
 }
 
 function resultHeading(count: number, query: string, hasFilter: boolean) {
