@@ -101,7 +101,7 @@ export function CatalogAdminOverview() {
         {data.snapshot ? (
           <CatalogStats stats={data.snapshot.stats} />
         ) : (
-          <p className="border border-dashed border-border p-6 text-muted-foreground">
+          <p className="rounded-tile bg-tile-teaser p-6">
             Noch kein Katalog-Stand vorhanden.
           </p>
         )}

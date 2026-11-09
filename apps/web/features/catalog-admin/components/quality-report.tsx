@@ -4,7 +4,7 @@ import type { QualityIssue } from "@workspace/api"
 import {
   CircleCheckIcon,
   CircleXIcon,
-  ExternalLinkIcon,
+  ArrowUpRightIcon,
   InfoIcon,
   TriangleAlertIcon,
 } from "lucide-react"
@@ -24,15 +24,25 @@ const severities: Severity[] = ["error", "warning", "info"]
 /** So viele Einträge je Gruppe zeigen, bevor «Alle anzeigen» nötig ist. */
 const GROUP_PREVIEW = 8
 
-const toggleItemClass =
-  "h-10 px-3 data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-background"
+/** Filter als graue Chips; der gewählte ist rot. */
+const toggleItemClass = "px-5"
 
 const severityIcons: Record<Severity, React.ReactNode> = {
-  error: <CircleXIcon aria-hidden="true" className="size-5 text-destructive" />,
-  warning: <TriangleAlertIcon aria-hidden="true" className="size-5" />,
-  info: (
-    <InfoIcon aria-hidden="true" className="size-5 text-muted-foreground" />
+  error: (
+    <CircleXIcon
+      aria-hidden="true"
+      strokeWidth={1.5}
+      className="size-6 text-primary"
+    />
   ),
+  warning: (
+    <TriangleAlertIcon
+      aria-hidden="true"
+      strokeWidth={1.5}
+      className="size-6"
+    />
+  ),
+  info: <InfoIcon aria-hidden="true" strokeWidth={1.5} className="size-6" />,
 }
 
 function matches(issue: QualityIssue, query: string) {
@@ -78,7 +88,7 @@ export function QualityReport({ issues }: { issues: QualityIssue[] }) {
 
   if (issues.length === 0) {
     return (
-      <p className="flex items-center gap-2 border border-border p-6">
+      <p className="flex items-center gap-2 rounded-tile bg-tile-service p-6">
         <CircleCheckIcon aria-hidden="true" className="size-5" />
         Keine Auffälligkeiten: Die Daten aus LeanIX sind vollständig erfasst.
       </p>
@@ -91,13 +101,12 @@ export function QualityReport({ issues }: { issues: QualityIssue[] }) {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-col gap-1.5">
-          <span id={`${searchId}-filter`} className="text-sm font-bold">
+          <span id={`${searchId}-filter`} className="type-body-sm">
             Schweregrad
           </span>
           <ToggleGroup
             type="single"
-            variant="outline"
-            spacing={0}
+            spacing={2}
             value={filter}
             onValueChange={(value) => {
               if (value) setFilter(value as Filter)
@@ -121,7 +130,7 @@ export function QualityReport({ issues }: { issues: QualityIssue[] }) {
           </ToggleGroup>
         </div>
         <div className="flex w-full flex-col gap-1.5 lg:max-w-sm">
-          <label htmlFor={searchId} className="text-sm font-bold">
+          <label htmlFor={searchId} className="type-body-sm">
             Suche
           </label>
           <Input
@@ -131,7 +140,6 @@ export function QualityReport({ issues }: { issues: QualityIssue[] }) {
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Fact Sheet, Meldung oder Code"
             autoComplete="off"
-            className="h-10"
           />
         </div>
       </div>
@@ -142,7 +150,7 @@ export function QualityReport({ issues }: { issues: QualityIssue[] }) {
       </p>
 
       {groups.length === 0 ? (
-        <p className="border border-dashed border-border p-6 text-muted-foreground">
+        <p className="rounded-tile bg-tile-teaser p-6">
           Keine Einträge für diesen Filter.
         </p>
       ) : (
@@ -182,14 +190,14 @@ function IssueGroup({
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="flex items-center gap-2 text-lg font-bold">
+      <h3 className="flex items-center gap-2 type-title-sm">
         {severityIcons[severity]}
         {label}{" "}
         <span className="font-normal text-muted-foreground">
           ({formatNumber(items.length)})
         </span>
       </h3>
-      <ul id={listId} className="border-t border-border">
+      <ul id={listId} className="border-t border-hairline">
         {visible.map((issue, index) => (
           <IssueItem
             key={`${issue.factSheetId}-${issue.code}-${index}`}
@@ -217,7 +225,7 @@ function IssueGroup({
 
 function IssueItem({ issue }: { issue: QualityIssue }) {
   return (
-    <li className="grid gap-x-6 gap-y-1 border-b border-border py-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+    <li className="grid gap-x-6 gap-y-1 border-b border-hairline py-4 sm:grid-cols-[minmax(0,1fr)_auto]">
       <div className="flex min-w-0 flex-col gap-0.5">
         <p className="flex flex-wrap items-baseline gap-x-2">
           <span className="font-bold [overflow-wrap:anywhere]">
@@ -228,16 +236,20 @@ function IssueItem({ issue }: { issue: QualityIssue }) {
           </span>
         </p>
         <p className="max-w-[70ch]">{issue.message}</p>
-        <p className="font-mono text-xs text-muted-foreground">{issue.code}</p>
+        <p className="font-mono type-body-sm">{issue.code}</p>
       </div>
       <a
         href={issue.leanixUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 self-start text-sm whitespace-nowrap underline decoration-1 underline-offset-4 hover:text-primary hover:decoration-2"
+        className="inline-flex min-h-11 items-center gap-1 self-start type-body-sm whitespace-nowrap underline decoration-1 underline-offset-4 transition-colors duration-200 hover:text-primary sm:min-h-0"
       >
         In LeanIX öffnen
-        <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
+        <ArrowUpRightIcon
+          aria-hidden="true"
+          strokeWidth={1.5}
+          className="size-5 text-primary"
+        />
         <span className="sr-only">
           : {issue.factSheetName} (öffnet in neuem Tab)
         </span>

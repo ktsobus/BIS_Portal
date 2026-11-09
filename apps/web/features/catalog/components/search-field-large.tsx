@@ -1,0 +1,46 @@
+import { SearchIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+/**
+ * Grosses Suchfeld (Startseite, Suche): 24-px-Eingabe ohne Rahmen mit
+ * Unterstrich in Stahlblau (beim Fokus rot), rechts «Suchen» in 24 px Black
+ * und ein roter 44-px-Kreis mit weisser Lupe. Muss in einem `<form>` stehen.
+ */
+export function SearchFieldLarge({
+  id,
+  label,
+  className,
+  ...inputProps
+}: Omit<React.ComponentProps<"input">, "type" | "id"> & {
+  id: string
+  /** Beschriftung für Screenreader (sichtbar ist der Platzhalter). */
+  label: string
+}) {
+  return (
+    <div className={cn("flex items-end gap-4 sm:gap-6", className)}>
+      <label htmlFor={id} className="sr-only">
+        {label}
+      </label>
+      <input
+        id={id}
+        type="search"
+        autoComplete="off"
+        className="field-underline h-16 w-full min-w-0 flex-1 rounded-none border-0 border-b border-steel bg-transparent px-0 type-input-lg text-ink transition-[border-color,box-shadow] duration-200 placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
+        {...inputProps}
+      />
+      <button
+        type="submit"
+        className="group/submit inline-flex min-h-11 shrink-0 items-center gap-3 pb-2.5"
+      >
+        <span className="sr-only type-headline-md sm:not-sr-only">Suchen</span>
+        <span
+          aria-hidden="true"
+          className="inline-flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground transition-shadow duration-150 group-hover/submit:shadow-press-dark group-active/submit:shadow-press-dark"
+        >
+          <SearchIcon strokeWidth={1.5} className="size-6" />
+        </span>
+      </button>
+    </div>
+  )
+}

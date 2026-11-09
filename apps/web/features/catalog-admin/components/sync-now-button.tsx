@@ -88,7 +88,7 @@ export function SyncNowButton({
   const busy = syncNow.isPending || running
 
   return (
-    <div className="flex flex-col items-start gap-3 bg-muted p-4 sm:flex-row sm:items-center sm:gap-6">
+    <div className="flex flex-col items-start gap-4 rounded-tile bg-tile-service p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-6">
       <Button
         size="lg"
         className="shrink-0"

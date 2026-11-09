@@ -14,14 +14,15 @@ export function safeHref(url: string | null | undefined): string | null {
   return /^(?:https?:\/\/|mailto:|tel:)/i.test(trimmed) ? trimmed : null
 }
 
-/** Kennzeichnung «extern, neuer Tab» (Symbol + Text für Screenreader). */
+/** Kennzeichnung «extern, neuer Tab» (rotes ↗ + Text für Screenreader). */
 export function ExternalLinkHint({ className }: { className?: string }) {
   return (
     <>
       <ArrowUpRightIcon
         aria-hidden="true"
+        strokeWidth={1.5}
         className={cn(
-          "ml-0.5 inline size-[0.95em] shrink-0 align-[-0.1em]",
+          "ml-0.5 inline size-[1.1em] shrink-0 align-[-0.15em] text-primary",
           className
         )}
       />
@@ -30,7 +31,7 @@ export function ExternalLinkHint({ className }: { className?: string }) {
   )
 }
 
-/** Link auf eine externe Ressource, z. B. unter «Weitere Informationen». */
+/** Textlink auf eine externe Ressource. */
 export function ExternalLink({
   href,
   children,
@@ -44,7 +45,7 @@ export function ExternalLink({
   return (
     <a
       href={href}
-      className={cn("link-cd", className)}
+      className={cn("link-text", className)}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       {children}

@@ -5,11 +5,15 @@ import Link from "next/link"
 import { ORPCError } from "@orpc/client"
 import type { SearchEntry } from "@workspace/api"
 import { useQuery } from "@tanstack/react-query"
+import { ArrowRightIcon } from "lucide-react"
 
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { orpc } from "@/lib/orpc"
 
 import { prepareEntries, searchEntries } from "../search"
+import { SearchFieldLarge } from "./search-field-large"
+import { CardGrid, ServiceCard } from "./service-card"
 
 export interface CatalogSearchProps {
   initialQuery?: string
@@ -37,12 +41,10 @@ function writeUrl(state: SearchState) {
   )
 }
 
-const selectClass =
-  "w-full [&_select]:h-11 [&_select]:rounded-[3px] [&_select]:border-input [&_select]:text-base"
-
 /**
  * Clientseitige Suche über den Suchindex (`catalog.searchIndex`). Die
- * Eingabe wird in der URL gehalten (`q`, `art`, `bezueger`).
+ * Eingabe wird in der URL gehalten (`q`, `art`, `bezueger`). Filter sind
+ * graue Chips, Treffer erscheinen als Servicekarten.
  */
 export function CatalogSearch({
   initialQuery = "",
@@ -54,6 +56,7 @@ export function CatalogSearch({
     subtype: initialSubtype,
     audience: initialAudience,
   })
+  const resultsHeadingRef = React.useRef<HTMLHeadingElement>(null)
 
   const { data, error, isPending } = useQuery(
     orpc.catalog.searchIndex.queryOptions({ staleTime: 5 * 60 * 1000 })
@@ -85,74 +88,49 @@ export function CatalogSearch({
   const hasFilter = Boolean(query || state.subtype || state.audience)
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-12">
       <form
         role="search"
         aria-label="Katalog durchsuchen"
-        onSubmit={(event) => event.preventDefault()}
-        className="flex flex-col gap-4 border-t-4 border-primary bg-so-surface p-5"
+        onSubmit={(event) => {
+          // Die Treffer erscheinen schon beim Tippen; «Suchen» springt hin.
+          event.preventDefault()
+          resultsHeadingRef.current?.focus()
+        }}
+        className="flex flex-col gap-8"
       >
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="suche-begriff" className="text-lg leading-tight">
-            Suchbegriff
-          </label>
-          <input
+        <div className="flex max-w-reading flex-col gap-3">
+          <SearchFieldLarge
             id="suche-begriff"
-            type="search"
+            label="Suchbegriff"
             value={state.query}
             onChange={(event) => update({ query: event.target.value })}
-            autoComplete="off"
-            placeholder="z. B. eLearning, Mitwirkung, Zugang"
+            placeholder="Suche nach Leistungen und Services"
             aria-describedby="suche-hinweis"
-            className="h-12 w-full max-w-[44rem] border border-input bg-background px-3 text-lg placeholder:text-muted-foreground"
           />
-          <p id="suche-hinweis" className="text-sm text-so-graphite">
+          <p id="suche-hinweis" className="type-body-sm">
             Mehrere Wörter grenzen die Suche ein. Gross-/Kleinschreibung und
             Umlaute (ä oder ae) spielen keine Rolle.
           </p>
         </div>
 
         {subtypes.length > 0 || audiences.length > 0 ? (
-          <div className="grid max-w-[44rem] gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-6">
             {subtypes.length > 0 ? (
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="suche-art" className="text-base">
-                  Art der Leistung
-                </label>
-                <NativeSelect
-                  id="suche-art"
-                  value={state.subtype}
-                  onChange={(event) => update({ subtype: event.target.value })}
-                  className={selectClass}
-                >
-                  <NativeSelectOption value="">Alle</NativeSelectOption>
-                  {subtypes.map((subtype) => (
-                    <NativeSelectOption key={subtype} value={subtype}>
-                      {subtype}
-                    </NativeSelectOption>
-                  ))}
-                </NativeSelect>
-              </div>
+              <ChipFilter
+                legend="Art der Leistung"
+                options={subtypes}
+                value={state.subtype}
+                onChange={(subtype) => update({ subtype })}
+              />
             ) : null}
             {audiences.length > 0 ? (
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="suche-bezueger" className="text-base">
-                  Leistungsbezüger
-                </label>
-                <NativeSelect
-                  id="suche-bezueger"
-                  value={state.audience}
-                  onChange={(event) => update({ audience: event.target.value })}
-                  className={selectClass}
-                >
-                  <NativeSelectOption value="">Alle</NativeSelectOption>
-                  {audiences.map((audience) => (
-                    <NativeSelectOption key={audience} value={audience}>
-                      {audience}
-                    </NativeSelectOption>
-                  ))}
-                </NativeSelect>
-              </div>
+              <ChipFilter
+                legend="Leistungsbezüger"
+                options={audiences}
+                value={state.audience}
+                onChange={(audience) => update({ audience })}
+              />
             ) : null}
           </div>
         ) : null}
@@ -160,10 +138,15 @@ export function CatalogSearch({
 
       <section
         aria-labelledby="suche-ergebnisse"
-        className="flex flex-col gap-2"
+        className="flex flex-col gap-6"
       >
         <div aria-live="polite" aria-atomic="true">
-          <h2 id="suche-ergebnisse" className="text-2xl leading-tight">
+          <h2
+            id="suche-ergebnisse"
+            ref={resultsHeadingRef}
+            tabIndex={-1}
+            className="type-body-lg font-normal outline-none"
+          >
             {isPending
               ? "Suchindex wird geladen …"
               : error
@@ -171,6 +154,8 @@ export function CatalogSearch({
                 : resultHeading(results.length, query, hasFilter)}
           </h2>
         </div>
+
+        {isPending ? <ResultsSkeleton /> : null}
 
         {error ? (
           <p className="max-w-[70ch]">
@@ -181,25 +166,26 @@ export function CatalogSearch({
         ) : null}
 
         {!isPending && !error && results.length === 0 ? (
-          <div className="flex max-w-[70ch] flex-col gap-2">
+          <div className="flex max-w-[70ch] flex-col items-start gap-6">
             <p>
               Versuchen Sie einen anderen oder kürzeren Begriff, oder setzen Sie
               die Filter auf «Alle».
             </p>
-            <p>
-              <Link href="/" className="link-cd">
-                Alle Service-Familien anzeigen
-              </Link>
-            </p>
+            <Link href="/" className={buttonVariants({ variant: "outline" })}>
+              Alle Service-Familien
+              <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
+            </Link>
           </div>
         ) : null}
 
         {results.length > 0 ? (
-          <ol className="flex flex-col border-b border-border">
+          <CardGrid>
             {results.map((entry) => (
-              <SearchResult key={`${entry.kind}-${entry.id}`} entry={entry} />
+              <li key={`${entry.kind}-${entry.id}`}>
+                <SearchResult entry={entry} />
+              </li>
             ))}
-          </ol>
+          </CardGrid>
         ) : null}
       </section>
     </div>
@@ -207,9 +193,42 @@ export function CatalogSearch({
 }
 
 function resultHeading(count: number, query: string, hasFilter: boolean) {
-  if (!hasFilter) return `Alle Einträge (${count})`
-  const hits = count === 1 ? "1 Treffer" : `${count} Treffer`
+  const hits = count === 1 ? "1 Resultat" : `${count} Resultate`
+  if (!hasFilter) return `Alle Einträge: ${hits}`
   return query ? `${hits} für «${query}»` : hits
+}
+
+/** Filter als graue Chips; der gewählte Chip ist rot (`aria-pressed`). */
+function ChipFilter({
+  legend,
+  options,
+  value,
+  onChange,
+}: {
+  legend: string
+  options: string[]
+  value: string
+  onChange: (value: string) => void
+}) {
+  return (
+    <fieldset className="flex flex-col gap-3">
+      <legend className="mb-3 type-body-sm">{legend}</legend>
+      <div className="flex flex-wrap gap-2">
+        {["", ...options].map((option) => (
+          <Button
+            key={option || "alle"}
+            type="button"
+            variant="chip"
+            size="sm"
+            aria-pressed={value === option}
+            onClick={() => onChange(option)}
+          >
+            {option || "Alle"}
+          </Button>
+        ))}
+      </div>
+    </fieldset>
+  )
 }
 
 function SearchResult({ entry }: { entry: SearchEntry }) {
@@ -218,25 +237,32 @@ function SearchResult({ entry }: { entry: SearchEntry }) {
       ? `/leistung/${entry.slug}`
       : `/service/${entry.slug}`
   return (
-    <li className="group relative flex flex-col gap-1.5 border-t border-border py-4">
-      <h3 className="text-lg leading-tight font-bold">
-        <Link
-          href={href}
-          className="group-hover:underline after:absolute after:inset-0"
-        >
-          {entry.name}
-        </Link>
-      </h3>
-      <p className="order-first text-sm text-so-graphite">
-        <span className="font-bold">
-          {entry.subtypeLabel ??
-            (entry.kind === "leistung" ? "Leistung" : "Service")}
-        </span>
-        {entry.context ? <> · {entry.context}</> : null}
-      </p>
-      {entry.summary ? (
-        <p className="max-w-[70ch] text-so-graphite">{entry.summary}</p>
-      ) : null}
-    </li>
+    <ServiceCard
+      id={`treffer-${entry.kind}-${entry.id}`}
+      href={href}
+      title={entry.name}
+      eyebrow={
+        entry.subtypeLabel ??
+        (entry.kind === "leistung" ? "Leistung" : "Service")
+      }
+      meta={entry.context || undefined}
+    >
+      {entry.summary ? <p className="line-clamp-3">{entry.summary}</p> : null}
+    </ServiceCard>
+  )
+}
+
+function ResultsSkeleton() {
+  return (
+    <ul
+      aria-hidden="true"
+      className="grid gap-3 md:grid-cols-2 md:gap-6 xl:grid-cols-3 xl:gap-12"
+    >
+      {[0, 1, 2].map((index) => (
+        <li key={index}>
+          <Skeleton className="h-[17.8125rem] rounded-tile bg-tile-service" />
+        </li>
+      ))}
+    </ul>
   )
 }

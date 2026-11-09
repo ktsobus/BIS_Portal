@@ -142,7 +142,7 @@ function ConfirmStep({ enrollment }: { enrollment: Enrollment }) {
   return (
     <div className="flex flex-col gap-6">
       <FieldGroup>
-        <div className="self-start border border-border bg-white p-4">
+        <div className="self-start rounded-tile border border-hairline bg-white p-4">
           <QRCode
             value={enrollment.totpURI}
             size={176}
@@ -162,7 +162,7 @@ function ConfirmStep({ enrollment }: { enrollment: Enrollment }) {
         </Field>
         <Field>
           <FieldLabel>Backup-Codes</FieldLabel>
-          <pre className="grid grid-cols-2 gap-1 border border-border bg-muted p-3 font-mono text-xs">
+          <pre className="grid grid-cols-2 gap-1 rounded-tile bg-tile-teaser p-4 font-mono text-sm">
             {enrollment.backupCodes.map((c) => (
               <span key={c}>{c}</span>
             ))}

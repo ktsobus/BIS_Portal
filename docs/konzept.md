@@ -303,7 +303,7 @@ Zod 4, better-auth, Drizzle + Postgres, Docker.
 | better-auth (Admin-Login)   | übernehmen; SAML mit kantonalem IdP (offene Frage 7) plus Passwort-Login           |
 | Feature `tasks`, Startseiteninhalt `overview` | entfernen (Beispielcode)                               |
 | E-Mail/2FA                  | nur behalten, wenn Passwort-Admins nötig sind                            |
-| Theme (`app/globals.css`)   | durch CD-Tokens ersetzen (Kapitel 6.2)                                   |
+| Theme (`app/globals.css`)   | durch Tokens aus design.md / CD-Manual ersetzen (Kapitel 6.2)            |
 | Neu: Sync-Scheduler         | `apps/web/instrumentation.ts` (Node-Runtime) + Advisory-Lock             |
 | Neu: Tests                  | Vitest für Mapper und Publikationsregel mit Fixtures aus der Discovery   |
 
@@ -366,29 +366,41 @@ Slugs aus Name + kurzer ID (stabil bei gleichen Namen); bei Umbenennung Weiterle
 
 | Seite        | Inhalt                                                                                   |
 | ------------ | ---------------------------------------------------------------------------------------- |
-| Start        | Suchfeld «Was benötigen Sie?»; fünf Service-Familien als Kacheln mit Anzahl Services      |
-| Familie (Ebene 2) | Liste der Services mit Definition (gekürzt)                                         |
-| Service (Ebene 3) | Definition, verantwortliche Stelle, Leistungen als Karten: Kurzbeschreibung, Subtyp, Schaltflächen «Bestellen» / «Anfrage stellen» |
-| Leistung     | Volle Beschreibung, Verantwortlich, Leistungsbezüger, Anwendungen, nächste Schritte, weitere Informationen, «Stand: …» |
-| Suche        | Volltext über Name, Beschreibung, Service, Anwendungen; Filter Subtyp und Leistungsbezüger; clientseitig (kleine Datenmenge) |
+| Start        | Titel, grosses Suchfeld «Was benötigen Sie?»; fünf Service-Familien als Servicekarten mit Anzahl Services und Vorschau |
+| Familie (Ebene 2) | Seitennavigation (alle Familien); Services als Servicekarten mit Stelle und Definition (gekürzt) |
+| Service (Ebene 3) | Seitennavigation (Services der Familie, aktueller Service mit seinen Leistungen); Definition, Inhaltsverzeichnis, Leistungen als Kacheln (Kurzbeschreibung, Subtyp, Schaltflächen «Bestellen» / «Anfrage stellen»), Zuständigkeit |
+| Leistung     | Box «Service nutzen» mit den Aktionen (Hauptaufgabe), Inhaltsverzeichnis, Beschreibung, Eckdaten (Leistungsbezüger, Anwendungen), Zuständigkeit, weitere Informationen, «Stand: …» |
+| Suche        | Volltext über Name, Beschreibung, Service, Anwendungen; Filter Subtyp und Leistungsbezüger als Chips; Treffer als Servicekarten; clientseitig (kleine Datenmenge) |
 
-Brotkrumen auf allen Seiten (Start › Familie › Service › Leistung). Leistungen ohne
-Aktions-Ressource zeigen einen Standard-Kontakt (z. B. Service Desk) – offene Frage 2.
+Brotkrumen auf allen Seiten (Start › Familie › Service › Leistung), mobil als Rücklink.
+Leistungen ohne Aktions-Ressource zeigen einen Standard-Kontakt (z. B. Service Desk) –
+offene Frage 2.
 
-### 6.2 Corporate Design ([CD-Manual](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn))
+### 6.2 Corporate Design
 
-| Vorgabe                                  | Umsetzung im Portal                                                          |
-| ---------------------------------------- | ---------------------------------------------------------------------------- |
-| Solothurner Rot `#CC0000`, Schwarz, Weiss | Akzent für Schaltflächen und Titelmarke; Kontrast auf Weiss 5,9:1 (WCAG AA) |
-| Grafik-Grau `#646B76`, Schwarz `#333333` | Sekundärtext (5,4:1 auf Weiss), Fliesstext                                   |
-| Tonwerte (z. B. DodgerBlue4 8 % `#ECF1F6`) | Flächen für Kacheln und Hinweise                                           |
-| Frutiger LT Std 55/56/75/76              | PoC: freie Schrift Source Sans 3 (humanistisch, ähnlicher Charakter), nur 400/700 + kursiv; Frutiger-Webfont später mit Lizenz |
-| Keine Verläufe, keine Schatten           | Flache Flächen, Haarlinien; shadcn-Schatten im Theme entfernen               |
-| Rotes Quadrat beim Seitentitel           | Titelkomponente mit rotem Quadrat                                            |
-| Linksbündig, max. ~70 Zeichen            | `max-w-[70ch]` für Fliesstext, nichts zentriert                              |
-| « », –, …                                | UI-Texte entsprechend; Listen mit Halbgeviertstrich                          |
-| Logo nur Originaldatei                   | SVG beim Kompetenzzentrum für Publikationsmedien beziehen; nicht nachbauen   |
-| Absender in Black Italic                 | Fusszeile «Amt für Informatik und Organisation»                               |
+Massgebend für die Bildschirmgestaltung ist das Designsystem von so.ch
+([docs/design.md](design.md)), die Webumsetzung des
+[CD-Manuals Kanton Solothurn](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn).
+Wo design.md nichts sagt, gilt das CD-Manual. Umgesetzt in `apps/web/app/globals.css`
+(Tokens, Typografie-Rollen `type-*`), den shadcn-Komponenten in `components/ui` und dem
+Seitenrahmen in `components/site`.
+
+| Vorgabe                                  | Quelle | Umsetzung im Portal                                                          |
+| ---------------------------------------- | ------ | ---------------------------------------------------------------------------- |
+| Solothurner Rot `#CC0000` nur für Aktion und Zustand | beide | Schaltflächen, Pfeile, aktive Navigation, Fokus (2 px rot), Hover; nie Dekoration, nie auf Schiefer |
+| Schiefer `#2F4858` statt Schwarz          | design.md | Alle Texte und dunklen Flächen (Fusszeile, Sekundär-Schaltfläche); Schwarz nur für Unterstriche von Eingabefeldern und das Copyright |
+| Getönte Kacheln nach Inhaltstyp          | design.md | Mint für Services und Leistungen (besucht dunkler), kühles Grau für Hinweise, Wolkengrau für Kennzahlen und Chips |
+| 10-px-Ecken, Pillen und Kreise           | design.md | Container 10 px, alle Schaltflächen als Pille bzw. Kreis, Auswahlfelder 8 px, Eingabefelder ohne Rahmen mit Unterstrich |
+| Keine Verläufe, keine Schattierungen     | beide | Flach; einzige Schatten: Anheben verlinkter Karten beim Überfahren und Einsinken gedrückter Schaltflächen (design.md). Kein Verlauf (es gibt keine Titelbilder) |
+| Frutiger LT Std 55/75 (Roman/Black)      | beide | Freie Ersatzschrift **Source Sans 3** (SIL OFL, selbst gehostet), nur 400 und 800; Kursiv nur für den Absender. Frutiger-Webfont später mit Lizenz (Schriftstapel nennt Frutiger bereits) |
+| Typografie-Skala, Basis 16 → 18 px ab 768 px | design.md | Rollen `type-display` … `type-eyebrow`, Überschriften mit `hyphens: auto` (`lang="de-CH"`) |
+| Linksbündig, max. ~70 Zeichen, nie zentriert | CD-Manual | Lesespalte 912 px, Fliesstext `max-w-[70ch]` |
+| Aufzählungen mit Halbgeviertstrich       | CD-Manual | `list-dash` (24 px Einzug) statt Punkten; design.md nennt Standardmarker, das CD-Manual geht vor |
+| « », –, …, Datum `09.11.2026`            | beide | UI-Texte entsprechend; Daten numerisch, Zeiten «14:16 Uhr» |
+| Absender: Amtsbezeichnung Black Italic   | CD-Manual | Fusszeile «*Amt für Informatik und Organisation*» |
+| Logo nur Originaldatei, Schutzraum, weisser Grund | CD-Manual | Original-SVG 16 px hoch auf weissem Kopf, mind. eine Logohöhe Freiraum; Logofarben nie in der Oberfläche |
+| Rotes Quadrat (Kanton-Element)           | CD-Manual | Entfällt am Bildschirm: es ist ein Druckelement (Umschläge), und design.md reserviert Rot für Interaktion |
+| Fotos des Kantons, Titel über Bild       | design.md | Entfällt vorerst: keine lizenzierten Bilder (CD-Manual «Bildsprache»); Start- und Inhaltsseiten mit schlichtem Titel |
 
 Barrierefreiheit nach eCH-0059 (WCAG 2.1 AA): Tastaturbedienung, Fokusrahmen, semantische
 Überschriften, Alternativtexte.

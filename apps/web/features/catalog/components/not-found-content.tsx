@@ -1,41 +1,37 @@
 import Link from "next/link"
+import { ArrowRightIcon } from "lucide-react"
 
+import { ContentPage } from "@/components/site/content-page"
 import { PageTitle } from "@/components/site/page-title"
-
-import { DashList } from "./dash-list"
+import { buttonVariants } from "@/components/ui/button"
 
 /** Inhalt der 404-Seite (öffentlicher Bereich und unbekannte Adressen). */
 export function NotFoundContent() {
   return (
-    <div className="flex flex-col gap-6">
-      <PageTitle eyebrow="Fehler 404">Seite nicht gefunden</PageTitle>
-      <div className="flex max-w-[70ch] flex-col gap-4">
-        <p className="text-lg">
-          Die gewünschte Seite gibt es nicht oder nicht mehr. Möglicherweise
-          wurde die Leistung umbenannt oder ist im Portal nicht mehr
-          veröffentlicht.
-        </p>
-        <DashList
-          items={[
-            {
-              key: "start",
-              content: (
-                <Link href="/" className="link-cd">
-                  Zur Startseite mit allen Service-Familien
-                </Link>
-              ),
-            },
-            {
-              key: "suche",
-              content: (
-                <Link href="/suche" className="link-cd">
-                  Leistung suchen
-                </Link>
-              ),
-            },
-          ]}
-        />
-      </div>
-    </div>
+    <ContentPage>
+      <PageTitle
+        eyebrow="Fehler 404"
+        lead="Die gewünschte Seite gibt es nicht oder nicht mehr. Möglicherweise wurde die Leistung umbenannt oder ist im Portal nicht mehr veröffentlicht."
+      >
+        Seite nicht gefunden
+      </PageTitle>
+      <ul className="flex flex-wrap gap-3">
+        <li>
+          <Link href="/" className={buttonVariants({ variant: "outline" })}>
+            Zur Startseite
+            <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/suche"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Leistung suchen
+            <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
+          </Link>
+        </li>
+      </ul>
+    </ContentPage>
   )
 }

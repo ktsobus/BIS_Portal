@@ -1,30 +1,41 @@
+import { cn } from "@/lib/utils"
+
 /**
- * Seitentitel mit rotem Quadrat gemäss CD-Manual: das Quadrat steht links vom
- * Titel auf der Grundlinie der ersten Zeile; ab Desktop-Breite hängt es in
- * den Seitenrand, damit der Titeltext mit dem Inhalt fluchtet.
+ * Seitentitel nach so.ch: schlichte H1 in Schiefer (36 px Black, auf der
+ * Startseite 48 px), mit Silbentrennung. Optional eine Zeile darüber (z. B.
+ * die Service-Familie) und ein Lead-Absatz darunter.
  */
 export function PageTitle({
   children,
   eyebrow,
+  lead,
+  size = "default",
+  className,
 }: {
   children: React.ReactNode
-  /** Kleine Zeile über dem Titel, z. B. die Service-Familie. */
+  /** Kleine Zeile über dem Titel, z. B. «Service-Familie». */
   eyebrow?: React.ReactNode
+  /** Einleitender Absatz (24 px). */
+  lead?: React.ReactNode
+  /** `large` für Einstiegsseiten (Startseite). */
+  size?: "default" | "large"
+  className?: string
 }) {
   return (
-    <div className="flex flex-col gap-2">
-      {eyebrow ? (
-        <p className="text-sm tracking-[0.06em] text-muted-foreground uppercase">
-          {eyebrow}
-        </p>
-      ) : null}
-      <h1 className="flex items-baseline gap-[0.3em] text-[2rem] leading-[1.12] font-normal text-balance text-foreground sm:text-[2.5rem] lg:-ml-[0.72em] lg:text-5xl">
-        <span
-          aria-hidden="true"
-          className="inline-block size-[0.42em] shrink-0 bg-primary"
-        />
-        <span className="min-w-0 [overflow-wrap:anywhere]">{children}</span>
+    <div className={cn("flex max-w-reading flex-col gap-4", className)}>
+      <h1
+        className={cn(
+          "text-pretty",
+          size === "large" ? "type-display" : "type-headline-lg"
+        )}
+      >
+        {children}
       </h1>
+      {eyebrow ? (
+        // Visuell über dem Titel, im Lesefluss danach.
+        <p className="order-first type-label-lg">{eyebrow}</p>
+      ) : null}
+      {lead ? <div className="type-lead">{lead}</div> : null}
     </div>
   )
 }

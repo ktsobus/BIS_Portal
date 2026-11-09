@@ -35,7 +35,7 @@ function Panel({
       className="flex flex-col gap-4 border-t border-border pt-6"
     >
       <div className="flex flex-col gap-1">
-        <h2 id={id} className="text-2xl leading-tight font-bold">
+        <h2 id={id} className="type-headline-md">
           {title}
         </h2>
         <p className="max-w-[70ch] text-muted-foreground">{description}</p>
@@ -89,7 +89,10 @@ export function SecuritySettings() {
         ) : settings.isPending ? (
           <Skeleton className="h-16 w-full" />
         ) : (
-          <Field orientation="horizontal" className="border border-border p-4">
+          <Field
+            orientation="horizontal"
+            className="rounded-tile bg-tile-teaser p-4 sm:p-6"
+          >
             <FieldContent>
               <FieldLabel htmlFor="require-admin-2fa" className="font-bold">
                 Zwei-Faktor-Authentisierung (TOTP) für Passwort-Admins verlangen

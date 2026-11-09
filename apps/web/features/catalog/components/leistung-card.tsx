@@ -6,7 +6,11 @@ import { plainExcerpt } from "../text"
 import { ActionLinks } from "./action-links"
 import { SubtypeBadge } from "./subtype-badge"
 
-/** Leistung als Karte: Subtyp, Name, Kurzbeschreibung, Aktionen. */
+/**
+ * Leistung als blassgrüne Kachel: Subtyp, Name, Kurzbeschreibung, Aktionen
+ * als weisse Pillen und «Details →». Nicht als Ganzes verlinkt, weil die
+ * Aktionen eigene Ziele haben.
+ */
 export function LeistungCard({
   leistung,
   headingLevel = 3,
@@ -15,14 +19,14 @@ export function LeistungCard({
   headingLevel?: 2 | 3
 }) {
   const Heading = `h${headingLevel}` as const
-  const summary = plainExcerpt(leistung.summary, 240)
+  const summary = plainExcerpt(leistung.summary, 200)
 
   return (
-    <article className="flex h-full flex-col gap-3 border border-border bg-background p-5">
-      <Heading className="text-xl leading-tight font-bold">
+    <article className="flex h-full flex-col gap-3 rounded-tile bg-tile-service p-6">
+      <Heading className="type-headline-sm text-pretty">
         <Link
           href={`/leistung/${leistung.slug}`}
-          className="hover:text-primary hover:underline"
+          className="transition-colors duration-200 hover:text-primary"
         >
           {leistung.name}
         </Link>
@@ -32,19 +36,19 @@ export function LeistungCard({
         label={leistung.subtypeLabel}
         className="order-first self-start"
       />
-      {summary ? <p className="text-so-graphite">{summary}</p> : null}
-      <div className="mt-auto flex flex-col items-start gap-3 pt-2">
+      {summary ? <p className="type-body-md">{summary}</p> : null}
+      <div className="mt-auto flex flex-col items-start gap-4 pt-2">
         <ActionLinks actions={leistung.actions} />
         <Link
           href={`/leistung/${leistung.slug}`}
-          className="inline-flex items-center gap-1.5 text-base hover:underline"
+          className="group/more inline-flex min-h-11 items-center gap-[0.35em] type-label-lg transition-colors duration-200 hover:text-primary"
         >
           Details
           <span className="sr-only"> zu «{leistung.name}»</span>
           <ArrowRightIcon
             aria-hidden="true"
             strokeWidth={1.5}
-            className="size-4 text-primary"
+            className="size-[1.375rem] text-primary"
           />
         </Link>
       </div>
@@ -61,7 +65,7 @@ export function LeistungGrid({
   headingLevel?: 2 | 3
 }) {
   return (
-    <ul className="grid gap-4 md:grid-cols-2">
+    <ul className="grid gap-3 md:grid-cols-2 md:gap-6">
       {leistungen.map((leistung) => (
         <li key={leistung.id}>
           <LeistungCard leistung={leistung} headingLevel={headingLevel} />

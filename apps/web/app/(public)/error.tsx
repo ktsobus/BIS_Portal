@@ -2,9 +2,11 @@
 
 import { useEffect } from "react"
 import Link from "next/link"
+import { ArrowRightIcon } from "lucide-react"
 
+import { ContentPage } from "@/components/site/content-page"
 import { PageTitle } from "@/components/site/page-title"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 
 export default function PublicError({
   error,
@@ -18,27 +20,28 @@ export default function PublicError({
   }, [error])
 
   return (
-    <div className="flex flex-col gap-6">
-      <PageTitle eyebrow="Fehler">Es ist ein Fehler aufgetreten</PageTitle>
-      <div className="flex max-w-[70ch] flex-col gap-4">
-        <p className="text-lg">
-          Die Seite konnte nicht vollständig geladen werden. Bitte versuchen Sie
-          es erneut. Besteht das Problem weiter, wenden Sie sich an den Service
-          Desk des Amts für Informatik und Organisation.
+    <ContentPage>
+      <PageTitle
+        eyebrow="Fehler"
+        lead="Die Seite konnte nicht vollständig geladen werden. Bitte versuchen Sie es erneut."
+      >
+        Es ist ein Fehler aufgetreten
+      </PageTitle>
+      <div className="flex max-w-[70ch] flex-col items-start gap-6">
+        <p>
+          Besteht das Problem weiter, wenden Sie sich an den Service Desk des
+          Amts für Informatik und Organisation.
         </p>
-        <div className="flex flex-wrap items-center gap-4">
-          <Button
-            type="button"
-            onClick={() => retry()}
-            className="h-auto min-h-10 px-4 text-base font-bold"
-          >
+        <div className="flex flex-wrap items-center gap-3">
+          <Button type="button" onClick={() => retry()}>
             Erneut versuchen
           </Button>
-          <Link href="/" className="link-cd">
+          <Link href="/" className={buttonVariants({ variant: "outline" })}>
             Zur Startseite
+            <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
           </Link>
         </div>
       </div>
-    </div>
+    </ContentPage>
   )
 }

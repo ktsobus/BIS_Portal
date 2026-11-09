@@ -66,7 +66,7 @@ export function SyncRunsTable({ runs }: { runs: SyncRun[] }) {
 
   if (runs.length === 0) {
     return (
-      <p className="border border-dashed border-border p-6 text-muted-foreground">
+      <p className="rounded-tile bg-tile-teaser p-6">
         Es wurde noch keine Synchronisierung durchgeführt.
       </p>
     )
@@ -77,12 +77,12 @@ export function SyncRunsTable({ runs }: { runs: SyncRun[] }) {
 
   return (
     <div className="flex flex-col items-start gap-3">
-      <div className="w-full border border-border">
+      <div className="w-full overflow-hidden rounded-tile border border-hairline">
         <Table>
           <caption className="sr-only">
             Letzte Synchronisierungen, neueste zuerst
           </caption>
-          <TableHeader className="bg-muted">
+          <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead scope="col">Start</TableHead>
               <TableHead scope="col">Auslöser</TableHead>

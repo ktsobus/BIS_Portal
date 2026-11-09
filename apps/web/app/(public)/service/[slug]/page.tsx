@@ -1,25 +1,26 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { redirect } from "next/navigation"
 
-import { Breadcrumbs } from "@/components/site/breadcrumbs"
+import { ContentPage } from "@/components/site/content-page"
+import { formatDate } from "@/components/site/format"
 import { PageTitle } from "@/components/site/page-title"
-import { ActionLinks } from "@/features/catalog/components/action-links"
 import { CatalogUnavailable } from "@/features/catalog/components/catalog-unavailable"
-import { DashList } from "@/features/catalog/components/dash-list"
+import { ServiceTreeSideNav } from "@/features/catalog/components/catalog-side-nav"
 import {
-  ExternalLink,
-  safeHref,
-} from "@/features/catalog/components/external-link"
+  ContactBox,
+  ResponsibleBox,
+  ServiceUseBox,
+} from "@/features/catalog/components/info-boxes"
+import {
+  InfoLinks,
+  visibleLinks,
+} from "@/features/catalog/components/info-links"
 import { LeistungGrid } from "@/features/catalog/components/leistung-card"
 import { MarkdownText } from "@/features/catalog/components/markdown"
-import {
-  OrgUnitList,
-  orgUnitNames,
-  PersonList,
-} from "@/features/catalog/components/org-units"
+import { orgUnitNames } from "@/features/catalog/components/org-units"
 import { Section } from "@/features/catalog/components/section"
-import { loadService } from "@/features/catalog/load"
+import { TableOfContents } from "@/features/catalog/components/table-of-contents"
+import { loadFamily, loadService } from "@/features/catalog/load"
 import { countLabel, plainExcerpt } from "@/features/catalog/text"
 
 export async function generateMetadata({
@@ -47,122 +48,91 @@ export default async function ServicePage({
   const { family, service, leistungen } = result.data
   if (service.slug !== slug) redirect(`/service/${service.slug}`)
 
-  const infoLinks = service.links.filter((link) => safeHref(link.url))
+  const familyPage = await loadFamily(family.slug)
+  const siblings = familyPage.ok ? familyPage.data.services : [service]
+  const hasActions = visibleLinks(service.actions).length > 0
+  const hasInfoLinks = visibleLinks(service.links).length > 0
+  const updatedAt = formatDate(service.updatedAt)
+
+  const toc = [
+    { id: "leistungen", label: "Leistungen" },
+    { id: "verantwortlich", label: "Zuständigkeit" },
+    ...(hasInfoLinks
+      ? [{ id: "weitere-informationen", label: "Weitere Informationen" }]
+      : []),
+  ]
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="flex flex-col gap-5">
-        <Breadcrumbs
-          items={[
-            { label: "Start", href: "/" },
-            { label: family.name, href: `/kategorie/${family.slug}` },
-            { label: service.name },
-          ]}
+    <ContentPage
+      breadcrumbs={[
+        { label: "Start", href: "/" },
+        { label: family.name, href: `/kategorie/${family.slug}` },
+        { label: service.name },
+      ]}
+      sideNav={
+        <ServiceTreeSideNav
+          family={family}
+          services={siblings}
+          currentServiceId={service.id}
+          leistungen={leistungen}
         />
-        <PageTitle eyebrow={family.name}>{service.name}</PageTitle>
+      }
+    >
+      <div className="flex flex-col gap-6">
+        <PageTitle eyebrow="Service">{service.name}</PageTitle>
+        {service.definition ? (
+          <MarkdownText headingLevel={2}>{service.definition}</MarkdownText>
+        ) : (
+          <p>Für diesen Service ist noch keine Beschreibung erfasst.</p>
+        )}
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-12">
-        <div className="flex min-w-0 flex-col gap-10">
-          {service.definition ? (
-            <MarkdownText headingLevel={2} className="text-[1.0625rem]">
-              {service.definition}
-            </MarkdownText>
-          ) : (
-            <p className="text-so-graphite">
-              Für diesen Service ist noch keine Beschreibung erfasst.
-            </p>
-          )}
+      <TableOfContents items={toc} />
 
-          <Section
-            id="leistungen"
-            title={
-              leistungen.length > 0
-                ? `Leistungen (${leistungen.length})`
-                : "Leistungen"
-            }
+      {hasActions ? (
+        <ServiceUseBox actions={service.actions} fallback={null} />
+      ) : null}
+
+      <Section id="leistungen" title="Leistungen">
+        {leistungen.length > 0 ? (
+          <>
+            <p>{countLabel(leistungen.length, "Leistung", "Leistungen")}</p>
+            <LeistungGrid leistungen={leistungen} />
+          </>
+        ) : (
+          <ContactBox
+            id="keine-leistungen"
+            title="Noch keine Leistungen erfasst"
           >
-            {leistungen.length > 0 ? (
-              <LeistungGrid leistungen={leistungen} />
-            ) : (
-              <div className="flex max-w-[70ch] flex-col gap-3 border-l-4 border-primary bg-so-surface p-5">
-                <p className="font-bold">
-                  Für diesen Service sind im Portal noch keine Leistungen
-                  erfasst.
-                </p>
-                {service.responsible.length > 0 ? (
-                  <p>
-                    Bei Fragen wenden Sie sich bitte an die verantwortliche
-                    Stelle: <strong>{orgUnitNames(service.responsible)}</strong>
-                    .
-                  </p>
-                ) : (
-                  <p>
-                    Bei Fragen wenden Sie sich bitte an den Service Desk des
-                    Amts für Informatik und Organisation.
-                  </p>
-                )}
-              </div>
-            )}
-          </Section>
-        </div>
+            <p className="max-w-[70ch]">
+              Für diesen Service sind im Portal noch keine Leistungen erfasst.{" "}
+              {service.responsible.length > 0 ? (
+                <>
+                  Bei Fragen wenden Sie sich bitte an die verantwortliche
+                  Stelle: <strong>{orgUnitNames(service.responsible)}</strong>.
+                </>
+              ) : (
+                "Bei Fragen wenden Sie sich bitte an den Service Desk des Amts für Informatik und Organisation."
+              )}
+            </p>
+          </ContactBox>
+        )}
+      </Section>
 
-        <aside
-          aria-label="Angaben zum Service"
-          className="flex flex-col gap-8 lg:border-l lg:border-border lg:pl-8"
-        >
-          <div className="flex flex-col gap-3">
-            <h2 className="text-xl leading-tight font-normal">
-              Verantwortlich
-            </h2>
-            {service.responsible.length > 0 ? (
-              <OrgUnitList units={service.responsible} />
-            ) : (
-              <p className="text-so-graphite">Keine Angabe</p>
-            )}
-            <PersonList persons={service.persons} />
-          </div>
+      <ResponsibleBox units={service.responsible} persons={service.persons} />
 
-          {service.actions.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              <h2 className="text-xl leading-tight font-normal">
-                Nächste Schritte
-              </h2>
-              <ActionLinks actions={service.actions} layout="stacked" />
-            </div>
-          ) : null}
+      {hasInfoLinks ? (
+        <Section id="weitere-informationen" title="Weitere Informationen">
+          <InfoLinks links={service.links} />
+        </Section>
+      ) : null}
 
-          {infoLinks.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              <h2 className="text-xl leading-tight font-normal">
-                Weitere Informationen
-              </h2>
-              <DashList
-                items={infoLinks.map((link) => ({
-                  key: link.id,
-                  content: (
-                    <ExternalLink href={link.url}>{link.label}</ExternalLink>
-                  ),
-                }))}
-              />
-            </div>
-          ) : null}
-
-          <p className="text-sm text-so-graphite">
-            Service-Familie:{" "}
-            <Link href={`/kategorie/${family.slug}`} className="link-cd">
-              {family.name}
-            </Link>
-            {leistungen.length > 0 ? (
-              <>
-                <br />
-                {countLabel(leistungen.length, "Leistung", "Leistungen")} im
-                Portal
-              </>
-            ) : null}
-          </p>
-        </aside>
-      </div>
-    </div>
+      {updatedAt ? (
+        <p className="type-body-sm">
+          Stand:{" "}
+          <time dateTime={service.updatedAt ?? undefined}>{updatedAt}</time>
+        </p>
+      ) : null}
+    </ContentPage>
   )
 }

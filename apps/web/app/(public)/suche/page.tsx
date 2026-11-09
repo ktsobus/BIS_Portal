@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { Breadcrumbs } from "@/components/site/breadcrumbs"
+import { ContentPage } from "@/components/site/content-page"
 import { PageTitle } from "@/components/site/page-title"
 import { CatalogSearch } from "@/features/catalog/components/catalog-search"
 
@@ -23,13 +23,11 @@ export default async function SearchPage({
   const audience = first(params.bezueger)
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-5">
-        <Breadcrumbs
-          items={[{ label: "Start", href: "/" }, { label: "Suche" }]}
-        />
-        <PageTitle>Suche</PageTitle>
-      </div>
+    <ContentPage
+      wide
+      breadcrumbs={[{ label: "Start", href: "/" }, { label: "Suche" }]}
+    >
+      <PageTitle>Leistungen und Services suchen</PageTitle>
       {/* Neu aufbauen, wenn die Suche über das Kopf-Suchfeld neu startet. */}
       <CatalogSearch
         key={`${query}|${subtype}|${audience}`}
@@ -37,6 +35,6 @@ export default async function SearchPage({
         initialSubtype={subtype}
         initialAudience={audience}
       />
-    </div>
+    </ContentPage>
   )
 }

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 
-/** Aufzählung mit Halbgeviertstrich (CD) statt Punkten. */
+/** Aufzählung mit Halbgeviertstrich (CD-Manual) statt Punkten. */
 export function DashList({
   items,
   className,
@@ -10,14 +10,9 @@ export function DashList({
 }) {
   if (items.length === 0) return null
   return (
-    <ul className={cn("flex flex-col gap-1", className)}>
+    <ul className={cn("list-dash flex flex-col gap-1", className)}>
       {items.map((item) => (
-        <li
-          key={item.key}
-          className="relative pl-5 before:absolute before:left-0 before:content-['–']"
-        >
-          {item.content}
-        </li>
+        <li key={item.key}>{item.content}</li>
       ))}
     </ul>
   )

@@ -1,47 +1,96 @@
 import type { CatalogLink } from "@workspace/api"
-import { PhoneIcon } from "lucide-react"
+import {
+  ArrowRightIcon,
+  ArrowUpRightIcon,
+  MailIcon,
+  PhoneIcon,
+} from "lucide-react"
 
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-import { ExternalLinkHint, isExternalUrl, safeHref } from "./external-link"
+import { isExternalUrl, safeHref } from "./external-link"
 
-const actionClass =
-  "h-auto min-h-10 justify-start gap-2 px-4 py-2 text-left text-base font-bold whitespace-normal"
+/** Symbol je Ziel: Telefon, E-Mail, extern (↗) oder weiter (→). */
+function ActionIcon({ href, className }: { href: string; className?: string }) {
+  const props = {
+    "aria-hidden": true as const,
+    strokeWidth: 1.5,
+    className,
+  }
+  if (href.startsWith("tel:")) return <PhoneIcon {...props} />
+  if (href.startsWith("mailto:")) return <MailIcon {...props} />
+  if (isExternalUrl(href)) return <ArrowUpRightIcon {...props} />
+  return <ArrowRightIcon {...props} />
+}
+
+function targetProps(href: string) {
+  return isExternalUrl(href)
+    ? { target: "_blank", rel: "noopener noreferrer" }
+    : {}
+}
+
+function ExternalHint({ href }: { href: string }) {
+  return isExternalUrl(href) ? (
+    <span className="sr-only"> (externer Link, öffnet in neuem Tab)</span>
+  ) : null
+}
 
 /**
- * Aktion als Schaltfläche: `order` rot (primär), `request` und `contact`
- * sekundär (weiss mit schwarzem Rahmen). Externe Ziele öffnen in neuem Tab.
+ * Aktionsschaltfläche («Service nutzen»): rote Pille, 62 px hoch, vorne ein
+ * weisser 42-px-Kreis mit rotem Symbol. Für die Hauptaufgabe einer Seite.
  */
-export function ActionLink({ action }: { action: CatalogLink }) {
+export function ActionButton({ action }: { action: CatalogLink }) {
   const href = safeHref(action.url)
   if (!href) return null
-  const external = isExternalUrl(href)
-  const primary = action.kind === "order"
+
+  return (
+    <a
+      href={href}
+      data-kind={action.kind}
+      className="group/action inline-flex min-h-[3.875rem] w-full items-center gap-4 rounded-full bg-primary py-2.5 pr-[1.875rem] pl-2.5 text-left type-label-md text-primary-foreground transition-shadow duration-150 hover:shadow-press-dark active:shadow-press-dark sm:w-auto"
+      {...targetProps(href)}
+    >
+      <span className="inline-flex size-[2.625rem] shrink-0 items-center justify-center rounded-full bg-background text-primary">
+        <ActionIcon href={href} className="size-[1.375rem]" />
+      </span>
+      <span>
+        {action.label}
+        <ExternalHint href={href} />
+      </span>
+    </a>
+  )
+}
+
+/**
+ * Aktion als weisse Standard-Pille (klein), z. B. in Leistungskarten, wo
+ * mehrere Karten nebeneinander stehen und Rot der Hauptaufgabe vorbehalten
+ * bleibt.
+ */
+export function ActionPill({ action }: { action: CatalogLink }) {
+  const href = safeHref(action.url)
+  if (!href) return null
 
   return (
     <a
       href={href}
       data-kind={action.kind}
       className={cn(
-        buttonVariants({ variant: primary ? "default" : "outline" }),
-        actionClass,
-        !primary && "border-foreground bg-background hover:bg-so-surface"
+        buttonVariants({ variant: "outline", size: "sm" }),
+        "h-auto min-h-[2.625rem] py-2.5 text-left whitespace-normal"
       )}
-      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      {...targetProps(href)}
     >
-      {action.kind === "contact" && href.startsWith("tel:") ? (
-        <PhoneIcon aria-hidden="true" />
-      ) : null}
       <span>
         {action.label}
-        {external ? <ExternalLinkHint /> : null}
+        <ExternalHint href={href} />
       </span>
+      <ActionIcon href={href} />
     </a>
   )
 }
 
-/** Aktionen nebeneinander (Karten) bzw. untereinander mit Beschreibung. */
+/** Aktionen nebeneinander (Pillen in Karten) bzw. untereinander (rot). */
 export function ActionLinks({
   actions,
   layout = "inline",
@@ -58,7 +107,7 @@ export function ActionLinks({
     return (
       <div className={cn("flex flex-wrap gap-2", className)}>
         {visible.map((action) => (
-          <ActionLink key={action.id} action={action} />
+          <ActionPill key={action.id} action={action} />
         ))}
       </div>
     )
@@ -67,10 +116,10 @@ export function ActionLinks({
   return (
     <ul className={cn("flex flex-col gap-4", className)}>
       {visible.map((action) => (
-        <li key={action.id} className="flex flex-col items-start gap-1.5">
-          <ActionLink action={action} />
+        <li key={action.id} className="flex flex-col items-start gap-2">
+          <ActionButton action={action} />
           {action.description ? (
-            <p className="text-sm text-so-graphite">{action.description}</p>
+            <p className="max-w-[60ch] type-body-sm">{action.description}</p>
           ) : null}
         </li>
       ))}

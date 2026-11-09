@@ -1,7 +1,9 @@
 import type { Metadata } from "next"
 
-// Source Sans 3 (frei, selbst gehostet): normal und kursiv, variable Gewichte.
-// Bewusst nicht über next/font/google, der Build-Server hat evtl. kein Internet.
+// Source Sans 3 (frei, selbst gehostet) als Ersatz für Frutiger: genutzt
+// werden nur 400 (≙ 55 Roman) und 800 (≙ 75 Black), kursiv nur für den
+// Absender (CD-Manual). Bewusst nicht über next/font/google, der Build-Server
+// hat evtl. kein Internet.
 import "@fontsource-variable/source-sans-3/wght.css"
 import "@fontsource-variable/source-sans-3/wght-italic.css"
 import "./globals.css"
@@ -30,7 +32,7 @@ export default function RootLayout({
       <body>
         <a
           href="#inhalt"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-background focus:px-4 focus:py-2 focus:font-bold focus:text-foreground focus:underline"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:border focus:border-hairline focus:bg-background focus:px-5 focus:py-3 focus:text-foreground"
         >
           Zum Inhalt
         </a>

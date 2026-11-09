@@ -1,7 +1,7 @@
 import type { CatalogAdminOverview } from "@workspace/api"
 import {
   CircleCheckIcon,
-  ExternalLinkIcon,
+  ArrowUpRightIcon,
   TriangleAlertIcon,
 } from "lucide-react"
 
@@ -34,13 +34,11 @@ function Item({
   hint?: React.ReactNode
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-0.5 border-b border-border py-3 sm:grid sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-6">
-      <dt className="text-muted-foreground">{label}</dt>
+    <div className="flex min-w-0 flex-col gap-0.5 border-b border-hairline py-4 sm:grid sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-6">
+      <dt className="font-bold">{label}</dt>
       <dd className="min-w-0">
         <div>{children}</div>
-        {hint ? (
-          <p className="max-w-[70ch] text-sm text-muted-foreground">{hint}</p>
-        ) : null}
+        {hint ? <p className="max-w-[70ch] type-body-sm">{hint}</p> : null}
       </dd>
     </div>
   )
@@ -53,7 +51,7 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
   const sourceIsDemo = config.source === "demo"
 
   return (
-    <dl className="border-t border-border">
+    <dl className="border-t border-hairline">
       <Item
         label="Datenquelle"
         hint={
@@ -100,12 +98,20 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
       >
         {status.stale ? (
           <span className="inline-flex items-center gap-1.5 font-bold">
-            <TriangleAlertIcon aria-hidden="true" className="size-4" />
+            <TriangleAlertIcon
+              aria-hidden="true"
+              strokeWidth={1.5}
+              className="size-5 text-primary"
+            />
             Veraltet
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5">
-            <CircleCheckIcon aria-hidden="true" className="size-4" />
+            <CircleCheckIcon
+              aria-hidden="true"
+              strokeWidth={1.5}
+              className="size-5"
+            />
             Aktuell
           </span>
         )}
@@ -152,10 +158,14 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
             )}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-sm underline decoration-1 underline-offset-4 hover:text-primary hover:decoration-2"
+            className="inline-flex items-center gap-1 type-body-sm underline decoration-1 underline-offset-4 transition-colors duration-200 hover:text-primary"
           >
             In LeanIX öffnen
-            <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
+            <ArrowUpRightIcon
+              aria-hidden="true"
+              strokeWidth={1.5}
+              className="size-5 text-primary"
+            />
             <span className="sr-only">(öffnet in neuem Tab)</span>
           </a>
         </span>

@@ -16,7 +16,7 @@ export function CopyField({ label, value }: { label: string; value: string }) {
         {label}
       </label>
       <div className="flex gap-2">
-        <Input id={id} readOnly value={value} className="font-mono text-xs" />
+        <Input id={id} readOnly value={value} className="font-mono text-sm" />
         <Button
           type="button"
           variant="outline"

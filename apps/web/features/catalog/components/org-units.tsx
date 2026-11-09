@@ -1,15 +1,15 @@
 import type { OrgUnit, Person } from "@workspace/api"
 
-/** Verantwortliche Stellen mit vollem Pfad aus LeanIX. */
+/** Verantwortliche Stellen: Name in 24 px Black, voller Pfad aus LeanIX. */
 export function OrgUnitList({ units }: { units: OrgUnit[] }) {
   if (units.length === 0) return null
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="flex flex-col gap-4">
       {units.map((unit) => (
-        <li key={unit.id} className="flex flex-col">
-          <span className="font-bold">{unit.name}</span>
+        <li key={unit.id} className="flex flex-col gap-1">
+          <span className="type-headline-md">{unit.name}</span>
           {unit.path && unit.path !== unit.name ? (
-            <span className="text-sm text-muted-foreground">{unit.path}</span>
+            <span className="type-body-sm">{unit.path}</span>
           ) : null}
         </li>
       ))}
@@ -26,13 +26,11 @@ export function orgUnitNames(units: OrgUnit[]): string | null {
 export function PersonList({ persons }: { persons: Person[] }) {
   if (persons.length === 0) return null
   return (
-    <ul className="flex flex-col gap-1">
+    <ul className="list-dash flex flex-col gap-1">
       {persons.map((person, index) => (
         <li key={`${index}-${person.name}`}>
           {person.name}
-          {person.role ? (
-            <span className="text-muted-foreground"> – {person.role}</span>
-          ) : null}
+          {person.role ? <> – {person.role}</> : null}
         </li>
       ))}
     </ul>

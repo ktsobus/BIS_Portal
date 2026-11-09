@@ -197,10 +197,10 @@ export function UsersTable({ currentUserId }: { currentUserId: string }) {
           className="h-10"
         />
       </div>
-      <div className="border border-border">
+      <div className="overflow-hidden rounded-tile border border-hairline">
         <Table>
           <caption className="sr-only">Benutzer</caption>
-          <TableHeader className="bg-muted">
+          <TableHeader>
             {table.getHeaderGroups().map((group) => (
               <TableRow key={group.id} className="hover:bg-transparent">
                 {group.headers.map((header) => (

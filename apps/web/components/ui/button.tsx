@@ -3,34 +3,49 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 import { Slot } from "radix-ui"
 
-const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/**
+ * Schaltflächen nach docs/design.md: immer Pillen (Text) oder Kreise
+ * (Symbol), 16-px-Beschriftung im Normalschnitt, Symbol 22 px mit
+ * 0,35 em Abstand. Beim Überfahren und Drücken sinken sie ein (Innenschatten),
+ * sie heben sich nie.
+ */
+const buttonCva = cva(
+  "group/button inline-flex shrink-0 items-center justify-center gap-[0.35em] rounded-full border border-transparent bg-clip-padding text-base leading-5 font-normal whitespace-nowrap transition-[background-color,color,border-color,box-shadow] duration-150 ease-in-out select-none disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[1.375rem]",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        /** Primär: rote Pille für die eine Hauptaktion eines Abschnitts. */
+        default:
+          "bg-primary text-primary-foreground hover:shadow-press-dark active:shadow-press-dark aria-expanded:shadow-press-dark",
+        /** Standard: weisse Pille mit Haarlinie, Symbol rot. */
         outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "border-hairline bg-background text-secondary hover:shadow-press-light active:shadow-press-light aria-expanded:shadow-press-light [&_svg]:text-primary",
+        /** Sekundär: Schiefer, beim Überfahren heller. */
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-secondary text-secondary-foreground hover:bg-slate-light active:shadow-press-dark aria-expanded:bg-slate-light",
+        /** Grauer Chip (Filter): beim Überfahren und gewählt rot. */
+        chip: "border-hairline bg-tile-teaser text-secondary hover:border-primary hover:bg-primary hover:text-primary-foreground aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground",
+        /** Ohne Fläche, z. B. Werkzeuge in Tabellen. */
         ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "text-secondary hover:bg-tile-teaser active:shadow-press-light aria-expanded:bg-tile-teaser [&_svg]:text-primary",
+        /** Bestätigung einer löschenden Aktion: wie Primär (Rot = Aktion). */
         destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-primary text-primary-foreground hover:shadow-press-dark active:shadow-press-dark",
+        /** Auf der Schieferfläche (Fusszeile). */
+        "on-dark":
+          "border-steel bg-transparent text-white hover:shadow-press-dark active:shadow-press-dark",
+        link: "h-auto rounded-none px-0 text-secondary underline decoration-1 underline-offset-[0.2em] transition-colors duration-200 hover:text-primary",
       },
       size: {
         default:
-          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        icon: "size-8",
-        "icon-xs":
-          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm":
-          "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
-        "icon-lg": "size-9",
+          "h-[3.125rem] px-5 has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4",
+        lg: "h-[3.25rem] px-5 has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4",
+        sm: "h-[2.625rem] px-5 text-sm leading-[1.125rem] has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4 [&_svg:not([class*='size-'])]:size-[1.125rem]",
+        xs: "h-9 gap-1 px-3.5 text-sm leading-[1.125rem] [&_svg:not([class*='size-'])]:size-4",
+        icon: "size-11",
+        "icon-xs": "size-8 [&_svg:not([class*='size-'])]:size-4",
+        "icon-sm": "size-9 [&_svg:not([class*='size-'])]:size-5",
+        "icon-lg": "size-[3.25rem]",
       },
     },
     defaultVariants: {
@@ -40,6 +55,15 @@ const buttonVariants = cva(
   }
 )
 
+/**
+ * Klassen einer Schaltfläche, zusammengeführt (`cn`), damit z. B. die
+ * Rahmenfarbe einer Variante die transparente Grundlinie sicher ersetzt –
+ * auch wenn Links die Klassen direkt verwenden.
+ */
+function buttonVariants(props?: Parameters<typeof buttonCva>[0]) {
+  return cn(buttonCva(props))
+}
+
 function Button({
   className,
   variant = "default",
@@ -47,7 +71,7 @@ function Button({
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
+  VariantProps<typeof buttonCva> & {
     asChild?: boolean
   }) {
   const Comp = asChild ? Slot.Root : "button"

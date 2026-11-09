@@ -1,51 +1,56 @@
-import Link from "next/link"
 import type { ServiceSummary } from "@workspace/api"
 
 import { countLabel, plainExcerpt } from "../text"
 import { orgUnitNames } from "./org-units"
+import { CardGrid, ServiceCard } from "./service-card"
 
-/** Services einer Familie als Liste mit Haarlinien (Familienseite). */
-export function ServiceList({ services }: { services: ServiceSummary[] }) {
+/** Services einer Familie als Servicekarten (Familienseite). */
+export function ServiceList({
+  services,
+  headingLevel = 3,
+}: {
+  services: ServiceSummary[]
+  headingLevel?: 2 | 3
+}) {
   if (services.length === 0) {
-    return (
-      <p className="max-w-[70ch]">
-        In dieser Service-Familie sind noch keine Services erfasst.
-      </p>
-    )
+    return <p>In dieser Service-Familie sind noch keine Services erfasst.</p>
   }
 
   return (
-    <ul className="flex flex-col border-b border-border">
+    <CardGrid columns={2}>
       {services.map((service) => {
-        const excerpt = plainExcerpt(service.definition, 240)
+        const excerpt = plainExcerpt(service.definition, 160)
         const responsible = orgUnitNames(service.responsible)
         return (
-          <li
-            key={service.id}
-            className="group relative flex flex-col gap-1.5 border-t border-border py-5"
-          >
-            <h2 className="text-xl leading-tight font-bold">
-              <Link
-                href={`/service/${service.slug}`}
-                className="group-hover:underline after:absolute after:inset-0"
-              >
-                {service.name}
-              </Link>
-            </h2>
-            <p className="text-sm text-so-graphite">
-              {service.leistungCount === 0 ? (
-                "Noch keine Leistungen erfasst"
-              ) : (
-                <strong>
-                  {countLabel(service.leistungCount, "Leistung", "Leistungen")}
-                </strong>
-              )}
-              {responsible ? <> · Verantwortlich: {responsible}</> : null}
-            </p>
-            {excerpt ? <p className="max-w-[70ch]">{excerpt}</p> : null}
+          <li key={service.id}>
+            <ServiceCard
+              id={`service-${service.id}`}
+              href={`/service/${service.slug}`}
+              title={service.name}
+              headingLevel={headingLevel}
+              meta={
+                <>
+                  {service.leistungCount === 0
+                    ? "Noch keine Leistungen erfasst"
+                    : countLabel(
+                        service.leistungCount,
+                        "Leistung",
+                        "Leistungen"
+                      )}
+                  {responsible ? (
+                    <>
+                      <br />
+                      {responsible}
+                    </>
+                  ) : null}
+                </>
+              }
+            >
+              {excerpt ? <p className="line-clamp-3">{excerpt}</p> : null}
+            </ServiceCard>
           </li>
         )
       })}
-    </ul>
+    </CardGrid>
   )
 }

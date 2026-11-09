@@ -8,7 +8,8 @@ Datenquelle ist SAP LeanIX (`https://ktso.leanix.net`); angezeigt werden Leistun
 - **[Discovery-Skript](scripts/leanix-discovery.mjs)** – liest das LeanIX-Datenmodell aus (nur lesend)
 
 Techstack: [Laeri/dev-template](https://github.com/Laeri/dev-template) ·
-Design: [CD-Manual Kanton Solothurn](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn)
+Design: [Designsystem so.ch](docs/design.md) auf Grundlage des
+[CD-Manuals Kanton Solothurn](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn)
 
 ## LeanIX-Discovery ausführen
 

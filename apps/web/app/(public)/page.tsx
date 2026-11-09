@@ -1,4 +1,8 @@
+import Link from "next/link"
+import { ArrowRightIcon } from "lucide-react"
+
 import { PageTitle } from "@/components/site/page-title"
+import { buttonVariants } from "@/components/ui/button"
 import { CatalogUnavailable } from "@/features/catalog/components/catalog-unavailable"
 import {
   FamilyTiles,
@@ -29,22 +33,33 @@ export default async function HomePage() {
   )
 
   return (
-    <div className="flex flex-col gap-10 sm:gap-12">
-      <div className="flex flex-col gap-5">
-        <PageTitle eyebrow="Amt für Informatik und Organisation">
+    <div className="container-page flex flex-col gap-16 pt-10 lg:gap-24 lg:pt-16">
+      {/* Einstieg: Titel und Suche als eine Aufgabe (so.ch: Suche zuerst). */}
+      <div className="flex max-w-reading flex-col gap-10 lg:gap-12">
+        <PageTitle
+          size="large"
+          eyebrow="Amt für Informatik und Organisation"
+          lead="Hier finden Sie die IT-Leistungen, die das AIO für die kantonale Verwaltung erbringt: was Sie beziehen können, wer dafür verantwortlich ist und wie Sie eine Leistung bestellen oder eine Anfrage stellen."
+        >
           Business-IT-Services
         </PageTitle>
-        <p className="max-w-[70ch] text-lg">
-          Hier finden Sie die IT-Leistungen, die das Amt für Informatik und
-          Organisation (AIO) für die kantonale Verwaltung erbringt: was Sie
-          beziehen können, wer dafür verantwortlich ist und wie Sie eine
-          Leistung bestellen oder eine Anfrage stellen.
-        </p>
+        <StartSearch />
       </div>
 
-      <StartSearch />
-
-      <Section id="familien" title="Service-Familien">
+      <Section
+        id="familien"
+        title="Service-Familien"
+        size="lg"
+        footer={
+          <Link
+            href="/suche"
+            className={buttonVariants({ variant: "secondary" })}
+          >
+            Alle Leistungen
+            <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
+          </Link>
+        }
+      >
         <FamilyTiles items={items} />
       </Section>
     </div>

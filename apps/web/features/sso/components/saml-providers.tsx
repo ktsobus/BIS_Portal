@@ -57,7 +57,7 @@ export function SamlProviders() {
   }
   if (data.length === 0) {
     return (
-      <div className="flex max-w-3xl flex-col gap-2 border border-dashed border-border p-6">
+      <div className="flex max-w-3xl flex-col gap-2 rounded-tile bg-tile-teaser p-6">
         <p className="font-bold">Noch kein SAML-Provider eingerichtet</p>
         <p className="max-w-[70ch] text-muted-foreground">
           Ohne Provider ist nur die Anmeldung mit Passwort möglich. Fügen Sie
@@ -81,10 +81,10 @@ export function SamlProviders() {
 
 function ProviderCard({ provider }: { provider: SamlProvider }) {
   return (
-    <article className="flex flex-col gap-4 border border-border p-4 sm:p-6">
+    <article className="flex flex-col gap-4 rounded-tile bg-tile-teaser p-4 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 flex-col gap-1">
-          <h2 className="flex flex-wrap items-center gap-2 text-xl font-bold">
+          <h2 className="flex flex-wrap items-center gap-2 type-headline-sm">
             {provider.providerId}
             {provider.domain.split(",").map((d) => (
               <Badge key={d} variant="secondary">

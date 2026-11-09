@@ -10,9 +10,10 @@ const shortDateTime = new Intl.DateTimeFormat(LOCALE, {
   timeZone: TIME_ZONE,
 })
 
-const longDate = new Intl.DateTimeFormat(LOCALE, {
-  day: "numeric",
-  month: "long",
+/** Datum numerisch wie auf so.ch (09.11.2026). */
+const numericDate = new Intl.DateTimeFormat(LOCALE, {
+  day: "2-digit",
+  month: "2-digit",
   year: "numeric",
   timeZone: TIME_ZONE,
 })
@@ -40,10 +41,10 @@ export function formatDateTime(value: string | null | undefined): string {
   return date ? shortDateTime.format(date) : "–"
 }
 
-/** z. B. «9. November 2026, 14:16 Uhr». */
+/** z. B. «09.11.2026, 14:16 Uhr». */
 export function formatDateTimeLong(value: string | null | undefined): string {
   const date = parse(value)
-  return date ? `${longDate.format(date)}, ${time.format(date)} Uhr` : "–"
+  return date ? `${numericDate.format(date)}, ${time.format(date)} Uhr` : "–"
 }
 
 /** z. B. «vor 5 Minuten», «gestern». */

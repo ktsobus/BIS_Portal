@@ -3,35 +3,75 @@
 @import "shadcn/tailwind.css";
 
 /*
- * Corporate Design Kanton Solothurn (CD-Manual, sinngemäss für Bildschirme):
- * Solothurner Rot, Schwarz, Weiss, Grafik-Grau/-Schwarz und Tonwerte davon;
- * flache Flächen, Haarlinien, keine Verläufe, keine Schatten, kleine Radien.
- * Kein Dark Mode im PoC: die Variante bleibt für shadcn-Komponenten
- * definiert, greift aber nie (der ThemeProvider erzwingt «light»).
+ * Designsystem so.ch (docs/design.md) auf Grundlage des CD-Manuals Kanton
+ * Solothurn: Schiefer-Tinte auf Weiss, getönte Kacheln je Inhaltstyp,
+ * Pillen und Kreise für Bedienelemente, 10-px-Ecken für Container und ein
+ * einziges Solothurner Rot für jede Aktion. Schrift: Source Sans 3 als freie
+ * Ersatzschrift für Frutiger, nur in zwei Gewichten (400 und 800).
+ *
+ * Kein Dark Mode: die Variante bleibt für shadcn-Komponenten definiert,
+ * greift aber nie (der ThemeProvider erzwingt «light»).
  */
 @custom-variant dark (&:is(.dark *));
 
-/* CD: keine Schatten – alle Schatten-Utilities ausser Kraft setzen. */
 @theme {
+  /* Breakpoints so.ch: Tablet 768, Desktop 992, gross 1200, breit 1480. */
+  --breakpoint-lg: 62rem;
+  --breakpoint-xl: 75rem;
+  --breakpoint-2xl: 92.5rem;
+
+  /* Container: Lesespalte 912, Seiteninhalt 1380, Kopf 1920. */
+  --container-reading: 57rem;
+  --container-page: 86.25rem;
+  --container-chrome: 120rem;
+  --spacing-sidenav: 15.625rem;
+
+  /*
+   * Flach: keine Schatten ausser dem Anheben verlinkter Karten beim
+   * Überfahren und dem Einsinken gedrückter Schaltflächen.
+   */
   --shadow-*: initial;
   --inset-shadow-*: initial;
   --drop-shadow-*: initial;
   --text-shadow-*: initial;
+  --shadow-lift: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  --shadow-press-light: inset 0 4px 10px rgb(0 0 0 / 0.225);
+  --shadow-press-dark: inset 0 4px 10px rgb(0 0 0 / 0.45);
+
+  /*
+   * Zwei Schnitte (Frutiger 55 Roman / 75 Black): alle Zwischengewichte der
+   * Komponenten auf 400 bzw. 800 abbilden.
+   */
+  --font-weight-light: 400;
+  --font-weight-normal: 400;
+  --font-weight-medium: 400;
+  --font-weight-semibold: 800;
+  --font-weight-bold: 800;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 800;
+
+  --ease-standard: ease;
 }
 
 @theme inline {
   --font-sans:
-    "Source Sans 3 Variable", "Source Sans 3", Arial, Helvetica, sans-serif;
+    "Source Sans 3 Variable", "Source Sans 3", Frutiger, "Frutiger LT",
+    "Segoe UI", Helvetica, Arial, sans-serif;
   --font-heading: var(--font-sans);
 
-  /* CD-Farben direkt als Utilities, z. B. `bg-so-surface`, `text-so-grey`. */
-  --color-so-red: var(--so-red);
-  --color-so-black: var(--so-black);
-  --color-so-graphite: var(--so-graphite);
-  --color-so-grey: var(--so-grey);
-  --color-so-surface: var(--so-surface);
-  --color-so-line: var(--so-line);
-  --color-so-line-strong: var(--so-line-strong);
+  /* Farben aus docs/design.md, z. B. `bg-tile-service`, `border-hairline`. */
+  --color-slate: var(--so-slate);
+  --color-slate-light: var(--so-slate-light);
+  --color-overlay-ink: var(--so-overlay-ink);
+  --color-ink: var(--so-ink);
+  --color-tile-service: var(--so-tile-service);
+  --color-tile-service-visited: var(--so-tile-service-visited);
+  --color-tile-news: var(--so-tile-news);
+  --color-tile-teaser: var(--so-tile-teaser);
+  --color-tile-contact: var(--so-tile-contact);
+  --color-hairline: var(--so-hairline);
+  --color-steel: var(--so-steel);
+  --color-placeholder: var(--so-placeholder);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -65,63 +105,78 @@
   --color-foreground: var(--foreground);
   --color-background: var(--background);
 
-  /* Kleine Radien (max. 4 px), auch für die grossen shadcn-Stufen. */
-  --radius-sm: 2px;
-  --radius-md: 2px;
+  /*
+   * Radien: 10 px für alle Container (Kacheln, Boxen, Dialoge), 8 px nur
+   * für Auswahlfelder in Formularen. Schaltflächen setzen `rounded-full`,
+   * Eingabefelder `rounded-none` selbst.
+   */
+  --radius-xs: 0.5rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.5rem;
   --radius-lg: var(--radius);
-  --radius-xl: 4px;
-  --radius-2xl: 4px;
-  --radius-3xl: 4px;
-  --radius-4xl: 4px;
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
+  --radius-tile: var(--radius);
 }
 
 :root {
   color-scheme: light;
 
-  /* Palette CD-Manual (Kontrast auf Weiss: Rot 5,9:1, Grau 5,4:1). */
+  /* Marke und Aktion (Solothurner Rot, CD-Manual RGB 204 | 0 | 0). */
   --so-red: #cc0000;
-  --so-black: #000000;
-  --so-graphite: #333333;
-  --so-grey: #646b76;
-  /* Tonwert DodgerBlue4 8 % (PowerPoint-Vorlage), Flächen. */
-  --so-surface: #ecf1f6;
-  /* Grafik-Grau 25 %: Haarlinien (dekorativ). */
-  --so-line: #d8dadd;
-  /* Grafik-Grau 80 %: Rahmen von Eingabefeldern (3,5:1 auf Weiss). */
-  --so-line-strong: #838991;
+  /* Schiefer: Farbe aller Texte und dunklen Flächen (9,6:1 auf Weiss). */
+  --so-slate: #2f4858;
+  --so-slate-light: #3a647f;
+  --so-overlay-ink: #152732;
+  /* Echtes Schwarz nur für Unterstriche von Eingabefeldern und Copyright. */
+  --so-ink: #000000;
+  /* Kachel-Tönungen: Farbcode nach Inhaltstyp. */
+  --so-tile-service: #f2f7f3;
+  --so-tile-service-visited: #e1f2e1;
+  --so-tile-news: #e9f1f7;
+  --so-tile-teaser: #f5f5f7;
+  --so-tile-contact: #e9ecef;
+  /* Linien. */
+  --so-hairline: #dfdfdf;
+  --so-steel: #59839e;
+  --so-placeholder: #757575;
 
   --background: #ffffff;
-  --foreground: #000000;
+  --foreground: var(--so-slate);
   --card: #ffffff;
-  --card-foreground: #000000;
+  --card-foreground: var(--so-slate);
   --popover: #ffffff;
-  --popover-foreground: #000000;
+  --popover-foreground: var(--so-slate);
   --primary: var(--so-red);
   --primary-foreground: #ffffff;
-  --secondary: var(--so-surface);
-  --secondary-foreground: #000000;
-  --muted: var(--so-surface);
-  --muted-foreground: var(--so-grey);
-  --accent: var(--so-surface);
-  --accent-foreground: #000000;
+  --secondary: var(--so-slate);
+  --secondary-foreground: #ffffff;
+  --muted: var(--so-tile-teaser);
+  /* Kein Grau für lesbaren Text: Sekundärtext bleibt Schiefer. */
+  --muted-foreground: var(--so-slate);
+  --accent: var(--so-tile-teaser);
+  --accent-foreground: var(--so-slate);
   --destructive: var(--so-red);
-  --border: var(--so-line);
-  --input: var(--so-line-strong);
-  --ring: var(--so-black);
+  --border: var(--so-hairline);
+  --input: var(--so-ink);
+  --ring: var(--so-red);
+  /* Diagramme: «Farben für Grafiken» aus dem CD-Manual. */
   --chart-1: var(--so-red);
   --chart-2: #104e8b;
-  --chart-3: var(--so-grey);
+  --chart-3: #646b76;
   --chart-4: #00b2ee;
   --chart-5: #228b22;
-  --radius: 3px;
-  --sidebar: var(--so-surface);
-  --sidebar-foreground: #000000;
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: var(--so-slate);
   --sidebar-primary: var(--so-red);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #000000;
-  --sidebar-border: var(--so-line);
-  --sidebar-ring: var(--so-black);
+  --sidebar-accent: var(--so-tile-teaser);
+  --sidebar-accent-foreground: var(--so-slate);
+  --sidebar-border: var(--so-hairline);
+  --sidebar-ring: var(--so-red);
 }
 
 @layer base {
@@ -134,9 +189,33 @@
   }
   body {
     @apply bg-background font-sans text-foreground;
-    font-size: 1.0625rem;
-    line-height: 1.55;
+    /* Grundschrift 16 px, ab Tablet 18 px; Zeilenhöhe 1,5. */
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 400;
     font-synthesis: none;
+    @media (width >= 48rem) {
+      font-size: 1.125rem;
+    }
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 800;
+    line-height: 1.2;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+  b,
+  strong {
+    font-weight: 800;
+  }
+  ::placeholder {
+    color: var(--so-placeholder);
+    opacity: 1;
   }
   ::selection {
     background-color: var(--so-red);
@@ -144,19 +223,182 @@
   }
 }
 
-/* Unterstrichener Textlink im CD: schwarz, beim Überfahren rot. */
-@utility link-cd {
+/*
+ * Typografie-Rollen aus docs/design.md (mobil → Tablet 768 → Desktop 992).
+ * Bewusst `type-*` statt `text-*`, damit das Zusammenführen der Klassen
+ * (`cn`) sie nicht mit Textfarben verwechselt.
+ */
+@utility type-display {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 800;
+  hyphens: auto;
+  @media (width >= 48rem) {
+    font-size: 1.875rem;
+  }
+  @media (width >= 62rem) {
+    font-size: 3rem;
+  }
+}
+@utility type-headline-lg {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 800;
+  hyphens: auto;
+  @media (width >= 48rem) {
+    font-size: 1.875rem;
+  }
+  @media (width >= 62rem) {
+    font-size: 2.25rem;
+  }
+}
+@utility type-headline-md {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: 800;
+  hyphens: auto;
+  @media (width >= 48rem) {
+    font-size: 1.5rem;
+  }
+}
+@utility type-headline-sm {
+  font-size: 1.125rem;
+  line-height: 1.2;
+  font-weight: 800;
+  hyphens: auto;
+  @media (width >= 48rem) {
+    font-size: 1.25rem;
+  }
+}
+@utility type-title-sm {
+  font-size: 1rem;
+  line-height: 1.2;
+  font-weight: 800;
+  hyphens: auto;
+  @media (width >= 48rem) {
+    font-size: 1.125rem;
+  }
+}
+@utility type-lead {
+  font-size: 1.25rem;
+  line-height: 1.5;
+  font-weight: 400;
+  @media (width >= 48rem) {
+    font-size: 1.5rem;
+  }
+}
+@utility type-body-lg {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 400;
+  @media (width >= 48rem) {
+    font-size: 1.125rem;
+  }
+}
+@utility type-body-md {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 400;
+}
+@utility type-body-sm {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 400;
+}
+@utility type-label-lg {
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  @media (width >= 48rem) {
+    font-size: 1.125rem;
+  }
+}
+@utility type-label-md {
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+}
+@utility type-label-sm {
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+  font-weight: 400;
+}
+@utility type-eyebrow {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  font-weight: 800;
+}
+@utility type-input-lg {
+  font-size: 1.25rem;
+  line-height: 1.15;
+  font-weight: 400;
+  @media (width >= 48rem) {
+    font-size: 1.5rem;
+  }
+}
+@utility type-nav-primary {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 800;
+  @media (width >= 62rem) {
+    font-size: 1.5rem;
+  }
+}
+@utility type-nav-meta {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 800;
+}
+
+/*
+ * Seitenränder: 16 px mobil, 24 px ab Desktop. `container-page` für
+ * Startseite, Kartenraster und Fuss, `container-chrome` für den Kopf.
+ */
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 62rem) {
+    padding-inline: 1.5rem;
+  }
+}
+@utility container-chrome {
+  width: 100%;
+  max-width: var(--container-chrome);
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 62rem) {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* Textlink im Lauftext: Schiefer, unterstrichen, beim Überfahren rot. */
+@utility link-text {
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
+  transition: color 0.2s ease;
   &:hover {
     color: var(--so-red);
-    text-decoration-thickness: 2px;
+  }
+}
+
+/* Aufzählung mit Halbgeviertstrich (CD-Manual «Satzzeichen»), 24 px Einzug. */
+@utility list-dash {
+  & > li {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  & > li::before {
+    content: "–";
+    position: absolute;
+    left: 0.25rem;
   }
 }
 
 /*
- * Fokus deutlich sichtbar (WCAG 2.4.7): schwarze 2-px-Outline mit Abstand.
+ * Fokus deutlich sichtbar (WCAG 2.4.7): rote 2-px-Outline mit Abstand.
  * Bewusst ausserhalb der Layer, damit `outline-none` und die Fokus-Ringe der
  * shadcn-Komponenten sie nicht übersteuern.
  */
@@ -170,9 +412,55 @@
   [role="button"],
   [tabindex]:not([tabindex="-1"])
 ):focus-visible {
-  outline: 2px solid var(--so-black);
+  outline: 2px solid var(--so-red);
   outline-offset: 2px;
-  box-shadow: none;
+}
+
+/*
+ * Outline-Farbe schon in Ruhe setzen: sonst blendet `transition-colors` sie
+ * beim Fokussieren von der Textfarbe nach Rot über.
+ */
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role="button"],
+  [tabindex]
+) {
+  outline-color: var(--so-red);
+}
+
+/* Auf der Schieferfläche (Fusszeile) ist Rot zu kontrastarm: weiss. */
+:where(.on-dark) :where(a, button, [tabindex]),
+:where(.on-dark) :focus-visible {
+  outline-color: #ffffff;
+}
+
+/* Verlinkte Karten: Outline innen, damit sie nicht im Raster überlappt. */
+.focus-inset:focus-visible,
+:where(.focus-inset-within):has(:focus-visible) {
+  outline: 2px solid var(--so-red);
+  outline-offset: -2px;
+}
+:where(.focus-inset-within) :focus-visible {
+  outline: none;
+}
+
+/*
+ * Eingabefelder haben keinen Rahmen, nur einen Unterstrich: schwarz in Ruhe,
+ * beim Fokus rot und doppelt so stark (statt der Outline).
+ */
+.field-underline:focus-visible,
+.field-underline:focus {
+  outline: none;
+  border-bottom-color: var(--so-red);
+  box-shadow: inset 0 -1px 0 var(--so-red);
+}
+.field-underline[aria-invalid="true"] {
+  border-bottom-color: var(--so-red);
 }
 
 @media (prefers-reduced-motion: reduce) {

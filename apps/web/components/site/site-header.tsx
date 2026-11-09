@@ -1,99 +1,176 @@
-import Form from "next/form"
 import Link from "next/link"
-import { ArrowLeftIcon, SearchIcon } from "lucide-react"
+import { CircleUserRoundIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 import { BrandLogo } from "./brand-logo"
-import { siteContainer } from "./container"
-import { SiteNav } from "./site-nav"
+import { HeaderSearch } from "./header-search"
+import { MobileMenu } from "./mobile-menu"
+import { PrimaryTabs, type PrimaryTab } from "./primary-tabs"
 
 /** Pfad des Original-Logos (wird separat bereitgestellt, nicht nachgebaut). */
 const LOGO_SRC = "/brand/kanton-solothurn-logo.svg"
 
+/** Reiter des öffentlichen Portals: Katalog und Suche. */
+const PUBLIC_TABS: PrimaryTab[] = [
+  {
+    href: "/",
+    label: "Services",
+    match: ["/", "/kategorie", "/service", "/leistung"],
+  },
+  { href: "/suche", label: "Suche" },
+]
+
+/** Einträge der Meta-Navigation (oben rechts bzw. im mobilen Menü). */
+export interface MetaItem {
+  key: string
+  node: React.ReactNode
+}
+
+/**
+ * Seitenkopf nach so.ch: Logo oben links, Meta-Navigation oben rechts,
+ * Hauptreiter unten links, Suchfeld unten rechts; weiss mit Haarlinie.
+ * Mobil wandern Meta-Navigation und Suche in ein aufklappbares Menü, die
+ * Reiter bleiben unter dem Logo sichtbar.
+ */
 export function SiteHeader({
   variant = "public",
+  tabs,
+  tabsLabel = "Hauptnavigation",
+  meta,
 }: {
-  /** `admin` zeigt zusätzlich die Admin-Kennzeichnung. */
+  /** `admin` kennzeichnet den Admin-Bereich und blendet die Suche aus. */
   variant?: "public" | "admin"
+  /** Standard: Reiter des Portals; `[]` für Seiten ohne Reiter. */
+  tabs?: PrimaryTab[]
+  tabsLabel?: string
+  meta?: MetaItem[]
 }) {
   const isAdmin = variant === "admin"
+  const items = tabs ?? (isAdmin ? [] : PUBLIC_TABS)
+  const metaItems: MetaItem[] = meta ?? [
+    {
+      key: "admin",
+      node: <MetaLink href="/admin">Administration</MetaLink>,
+    },
+  ]
+  const hasTabs = items.length > 0
+  const hasSearch = !isAdmin
 
   return (
-    <header data-variant={variant} className="border-b border-border">
+    <header data-variant={variant} className="border-b border-hairline">
       <div
         className={cn(
-          siteContainer,
-          "flex flex-wrap items-center gap-x-6 gap-y-2 py-3 sm:py-4"
+          "container-chrome grid grid-cols-[minmax(0,1fr)_auto] gap-x-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,35.625rem)] lg:gap-x-12",
+          !hasTabs && "pb-5 lg:pb-8"
         )}
       >
-        <div className="mr-auto flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+        {/* Logo mit Schutzraum (mindestens eine Logohöhe) und Portalname. */}
+        <div className="col-start-1 row-start-1 flex min-w-0 flex-col gap-y-4 pt-5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 lg:pt-8">
           <Link
             href="/"
-            className="group flex min-w-0 flex-col gap-x-4 gap-y-1 sm:flex-row sm:items-center"
+            aria-label="Business-IT-Serviceportal, Startseite"
+            className="-m-4 inline-flex shrink-0 self-start p-4 sm:self-auto"
           >
             <BrandLogo
               src={LOGO_SRC}
               alt="Kanton Solothurn"
-              className="block h-9 w-auto self-start sm:h-10 sm:self-center"
+              className="block h-4 w-auto"
             />
-            <span className="text-base leading-tight group-hover:underline sm:border-l sm:border-border sm:py-1.5 sm:pl-4 sm:text-lg">
-              Business-IT-Serviceportal
-            </span>
           </Link>
-          {isAdmin ? (
-            <span className="bg-foreground px-2 py-0.5 text-xs font-bold tracking-[0.06em] text-background uppercase sm:self-center">
-              Administration
-            </span>
-          ) : null}
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 type-nav-meta">
+            <span>Business-IT-Serviceportal</span>
+            {isAdmin ? <span className="sr-only">,</span> : null}
+            {isAdmin ? (
+              <span className="inline-flex min-h-6 items-center rounded-full bg-secondary px-2.5 py-1 type-eyebrow text-secondary-foreground">
+                Administration
+              </span>
+            ) : null}
+          </p>
         </div>
 
-        {isAdmin ? (
-          <nav aria-label="Hauptnavigation">
-            <Link
-              href="/"
-              className="inline-flex min-h-11 items-center gap-1.5 px-2 text-base hover:underline"
-            >
-              <ArrowLeftIcon aria-hidden="true" className="size-4" />
-              Zurück zum Portal
-            </Link>
+        {metaItems.length > 0 ? (
+          <nav
+            aria-label="Meta-Navigation"
+            className="col-start-2 row-start-1 hidden justify-self-end pt-7 lg:block"
+          >
+            <ul className="flex items-center gap-x-10">
+              {metaItems.map((item) => (
+                <li key={item.key}>{item.node}</li>
+              ))}
+            </ul>
           </nav>
-        ) : (
-          <div className="flex items-center gap-4">
-            <SiteNav
-              items={[
-                { href: "/", label: "Start" },
-                { href: "/suche", label: "Suche" },
-              ]}
-            />
-            <Form
-              action="/suche"
-              role="search"
-              aria-label="Katalog durchsuchen"
-              className="hidden items-stretch md:flex"
-            >
-              <label htmlFor="site-search" className="sr-only">
-                Suchbegriff
-              </label>
-              <input
-                id="site-search"
-                name="q"
-                type="search"
-                placeholder="Leistung suchen …"
-                autoComplete="off"
-                className="h-9 w-52 min-w-0 border border-r-0 border-input bg-background px-2.5 text-base placeholder:text-muted-foreground"
-              />
-              <button
-                type="submit"
-                className="inline-flex h-9 w-9 items-center justify-center border border-foreground bg-foreground text-background hover:border-primary hover:bg-primary"
-              >
-                <SearchIcon aria-hidden="true" className="size-4" />
-                <span className="sr-only">Suchen</span>
-              </button>
-            </Form>
+        ) : null}
+
+        {hasSearch || metaItems.length > 0 ? (
+          <MobileMenu
+            buttonClassName="col-start-2 row-start-1 mt-4 justify-self-end"
+            panelClassName="col-span-full row-start-3 mt-px flex flex-col gap-6"
+          >
+            {hasSearch ? <HeaderSearch id="suche-mobil" /> : null}
+            {metaItems.length > 0 ? (
+              <nav aria-label="Meta-Navigation (mobil)">
+                <ul className="flex flex-col">
+                  {metaItems.map((item) => (
+                    <li
+                      key={item.key}
+                      className="border-b border-hairline py-2 first:border-t"
+                    >
+                      {item.node}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ) : null}
+          </MobileMenu>
+        ) : null}
+
+        {hasTabs ? (
+          <div
+            className={cn(
+              "col-span-2 row-start-2 mt-4 self-end lg:mt-8",
+              hasSearch && "lg:col-span-1"
+            )}
+          >
+            <PrimaryTabs tabs={items} label={tabsLabel} />
           </div>
-        )}
+        ) : null}
+
+        {hasSearch ? (
+          <HeaderSearch
+            id="suche-kopf"
+            className="col-start-2 row-start-2 mb-1 hidden self-end lg:flex"
+          />
+        ) : null}
       </div>
     </header>
+  )
+}
+
+/** Link der Meta-Navigation (16 px Black, Schiefer, Symbol im Kreis). */
+export function MetaLink({
+  href,
+  children,
+  icon = true,
+}: {
+  href: string
+  children: React.ReactNode
+  /** Rundes Personensymbol wie bei «my.so.ch». */
+  icon?: boolean
+}) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex min-h-11 items-center gap-2 type-nav-meta text-secondary transition-colors duration-200 hover:text-primary"
+    >
+      {children}
+      {icon ? (
+        <CircleUserRoundIcon
+          aria-hidden="true"
+          strokeWidth={1.5}
+          className="size-6 text-primary"
+        />
+      ) : null}
+    </Link>
   )
 }

@@ -176,7 +176,7 @@ export function CreateSamlProviderDialog() {
       </DialogTrigger>
       <DialogContent
         showCloseButton={false}
-        className="max-h-[90svh] overflow-y-auto sm:max-w-lg"
+        className="max-h-[90svh] overflow-y-auto sm:max-w-xl"
       >
         <DialogHeader>
           <DialogTitle>SAML-Provider hinzufügen</DialogTitle>
@@ -205,7 +205,7 @@ export function CreateSamlProviderDialog() {
                         value={field.value ?? ""}
                         id={field.name}
                         placeholder={f.placeholder}
-                        className="min-h-24 font-mono text-xs"
+                        className="min-h-32 font-mono text-sm"
                         aria-invalid={fieldState.invalid}
                       />
                     ) : (

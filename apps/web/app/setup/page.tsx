@@ -15,7 +15,7 @@ export default async function SetupPage() {
 
   return (
     <AdminShell>
-      <div className="max-w-md">
+      <div className="max-w-xl">
         <SetupAdminForm />
       </div>
     </AdminShell>

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation"
 import * as React from "react"
 import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { signOut } from "@/lib/auth-client"
 
@@ -16,9 +15,9 @@ export function SignOutButton() {
   const [pending, setPending] = React.useState(false)
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
+    <button
+      type="button"
+      className="inline-flex min-h-11 items-center gap-2 type-nav-meta text-secondary transition-colors duration-200 hover:text-primary disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-6 [&_svg]:text-primary"
       disabled={pending}
       onClick={async () => {
         setPending(true)
@@ -36,12 +35,12 @@ export function SignOutButton() {
         router.refresh()
       }}
     >
+      Abmelden
       {pending ? (
         <Spinner aria-hidden="true" />
       ) : (
-        <LogOutIcon aria-hidden="true" />
+        <LogOutIcon aria-hidden="true" strokeWidth={1.5} />
       )}
-      Abmelden
-    </Button>
+    </button>
   )
 }

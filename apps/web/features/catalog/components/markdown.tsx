@@ -16,12 +16,13 @@ const urlTransform: UrlTransform = (url, key) => {
 
 type HeadingLevel = 2 | 3 | 4 | 5 | 6
 
+/** Inhaltstext nach so.ch: H2 24 px, H3 20 px, H4 18 px (alle Black). */
 const headingClass: Record<HeadingLevel, string> = {
-  2: "mt-6 text-2xl font-normal",
-  3: "mt-5 text-xl font-normal",
-  4: "mt-4 text-lg font-bold",
-  5: "mt-4 text-base font-bold",
-  6: "mt-4 text-base font-bold",
+  2: "mt-2 type-headline-md",
+  3: "mt-2 type-headline-sm",
+  4: "mt-1 type-title-sm",
+  5: "mt-1 type-title-sm",
+  6: "mt-1 type-title-sm",
 }
 
 function createComponents(baseLevel: HeadingLevel): Components {
@@ -50,7 +51,7 @@ function createComponents(baseLevel: HeadingLevel): Components {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="link-cd"
+            className="link-text"
           >
             {children}
             <ExternalLinkHint />
@@ -58,39 +59,37 @@ function createComponents(baseLevel: HeadingLevel): Components {
         )
       }
       return (
-        <a href={href} className="link-cd">
+        <a href={href} className="link-text">
           {children}
         </a>
       )
     },
+    // Aufzählungen mit Halbgeviertstrich (CD-Manual), 24 px Einzug.
     ul: ({ children }) => (
-      <ul className="flex flex-col gap-1 pl-5">{children}</ul>
+      <ul className="list-dash flex flex-col gap-1">{children}</ul>
     ),
     ol: ({ children }) => (
-      <ol className="flex list-decimal flex-col gap-1 pl-6">{children}</ol>
-    ),
-    li: ({ children }) => (
-      // Aufzählungen mit Halbgeviertstrich (CD).
-      <li className="relative [ul>&]:before:absolute [ul>&]:before:-left-5 [ul>&]:before:content-['–']">
+      <ol className="flex list-decimal flex-col gap-1 pl-6 marker:text-foreground">
         {children}
-      </li>
+      </ol>
     ),
+    li: ({ children }) => <li>{children}</li>,
     blockquote: ({ children }) => (
-      <blockquote className="border-l-2 border-so-line-strong pl-4 text-so-graphite">
+      <blockquote className="border-l border-hairline pl-6">
         {children}
       </blockquote>
     ),
     code: ({ children }) => (
-      <code className="bg-so-surface px-1 font-mono text-[0.9em]">
+      <code className="rounded-sm bg-tile-teaser px-1 font-mono text-[0.9em]">
         {children}
       </code>
     ),
     pre: ({ children }) => (
-      <pre className="overflow-x-auto bg-so-surface p-3 text-sm">
+      <pre className="overflow-x-auto rounded-tile bg-tile-teaser p-4 text-sm">
         {children}
       </pre>
     ),
-    hr: () => <hr className="border-border" />,
+    hr: () => <hr className="border-hairline" />,
     // Bilder werden nicht geladen; der Alternativtext bleibt lesbar.
     img: ({ alt }) => (alt ? <span>{alt}</span> : null),
   }
@@ -122,7 +121,8 @@ export function MarkdownText({
   return (
     <div
       className={cn(
-        "flex max-w-[70ch] flex-col gap-3 [overflow-wrap:anywhere]",
+        // Lesebreite max. ~70 Zeichen (CD-Manual), linksbündig.
+        "flex max-w-[70ch] flex-col gap-4 [overflow-wrap:anywhere]",
         className
       )}
     >

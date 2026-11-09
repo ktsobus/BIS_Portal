@@ -14,7 +14,7 @@ export default function AuthLayout({
 }) {
   return (
     <AdminShell>
-      <div className="max-w-md">{children}</div>
+      <div className="max-w-xl">{children}</div>
     </AdminShell>
   )
 }
