@@ -1,5 +1,6 @@
 **/node_modules
 **/.next
+.turbo
 **/.turbo
 **/.env*
 !**/.env.example
@@ -9,6 +10,15 @@
 .git
 .devcontainer
 .vscode
+# Agenten-Arbeitsordner (enthält u. a. Worktrees mit vollständigen Repo-Kopien)
+.claude
+# Ausgabe von scripts/leanix-discovery.mjs: echte LeanIX-Inhalte (Namen,
+# Organisationseinheiten, Abonnements), gehört nie in ein Image
+leanix-discovery
+# Dokumentation und Screenshots werden für den Build nicht gebraucht.
+# scripts/ bleibt: Tests in apps/web importieren den LeanIX-Mock, und
+# `next build` prüft die Typen aller Dateien.
+docs
+*.md
 Dockerfile
 docker-compose*.yml
-README.md
