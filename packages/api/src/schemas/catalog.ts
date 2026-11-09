@@ -131,6 +131,11 @@ export const catalogStatsSchema = z.object({
   leistungenInChannel: z.number().int(),
   /** Leistungen im Kanal, die nicht angezeigt werden (z. B. ohne Kategorie). */
   leistungenSkipped: z.number().int(),
+  /**
+   * Aktionen (Bestell-/Anfragewege) von Leistungen und Services, ohne
+   * Standard-Aktion. Optional, weil ältere Snapshots sie nicht enthalten.
+   */
+  actions: z.number().int().optional(),
   issues: z.number().int(),
 })
 
@@ -284,6 +289,11 @@ export const catalogAdminOverviewSchema = z.object({
       stats: catalogStatsSchema,
     })
     .nullable(),
+  /**
+   * Gespeicherte Snapshots, obwohl keiner geladen werden kann (z. B. nach
+   * einem Upgrade mit neuer Schemaversion). Fehlt oder 0 im Normalfall.
+   */
+  unreadableSnapshots: z.number().int().optional(),
   issues: z.array(qualityIssueSchema),
   runs: z.array(syncRunSchema),
   config: z.object({

@@ -50,9 +50,36 @@ export const leanixModel = {
       child: "relToChild",
     },
   },
-  /** Abo-Rolle der verantwortlichen Person einer Leistung. */
-  responsibleRole: "Leistungsverantwortliche/r",
+  /**
+   * Verantwortliche Personen (Abonnements; nur mit `CATALOG_SHOW_PERSONS`).
+   * Übernommen werden nur Abos dieses Typs mit genau dieser Rolle. Ein Abo
+   * ohne passende Rolle zählt nicht, auch wenn es vom Typ RESPONSIBLE ist.
+   * `role: null` übernimmt jedes Abo des Typs – nur bewusst setzen.
+   * Die Rolle für Services ist noch nicht bestätigt (offene Frage 4); heute
+   * haben die Abos auf Leistungskategorien keine Rolle.
+   */
+  responsiblePersons: {
+    leistung: {
+      subscriptionType: "RESPONSIBLE",
+      role: "Leistungsverantwortliche/r",
+    },
+    kategorie: {
+      subscriptionType: "RESPONSIBLE",
+      role: "Serviceverantwortliche/r",
+    },
+  },
+  /**
+   * Ressourcen, deren `origin` hierauf passt, sind hochgeladene Dateien (nur
+   * mit LeanIX-Login abrufbar) und werden nicht angezeigt.
+   */
+  fileOriginPattern: /storage|file|upload/i,
 } as const
+
+/** Regel, welche Abonnements als verantwortliche Person gelten. */
+export interface ResponsiblePersonRule {
+  subscriptionType: string | null
+  role: string | null
+}
 
 export interface ResourceTypeRule {
   kind: LinkKind

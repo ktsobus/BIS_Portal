@@ -3,14 +3,33 @@ import "server-only"
 import type { CatalogAdminOverview } from "@workspace/api"
 
 import {
+  countStoredSnapshots,
   getCatalogStatus,
   getStoredSnapshot,
   listSyncRuns,
 } from "@/lib/catalog/store"
-import { isSyncRunning, runSync, SyncBusyError } from "@/lib/catalog/sync"
+import {
+  failOrphanedRuns,
+  isSyncRunning,
+  startSync,
+  SyncBusyError,
+} from "@/lib/catalog/sync"
 import { catalogSource, env } from "@/lib/env"
 import { leanixModel } from "@/lib/leanix/model"
 import { adminOnly, os } from "@/server/orpc"
+
+/**
+ * Letzte Läufe. Steht einer auf «running», ohne dass irgendwo ein Sync
+ * läuft (Prozess während des Laufs beendet), wird er gleich abgeschlossen:
+ * Sonst bliebe der Sync-Knopf bis zum nächsten Lauf gesperrt.
+ */
+async function recentRuns() {
+  const runs = await listSyncRuns(20)
+  if (!runs.some((run) => run.status === "running") || isSyncRunning())
+    return runs
+  const closed = await failOrphanedRuns()
+  return closed > 0 ? listSyncRuns(20) : runs
+}
 
 /** Admin: Sync-Status, Datenqualität und manueller Sync. */
 export const catalogAdminRouter = {
@@ -20,8 +39,11 @@ export const catalogAdminRouter = {
       const [status, stored, runs] = await Promise.all([
         getCatalogStatus(),
         getStoredSnapshot(),
-        listSyncRuns(20),
+        recentRuns(),
       ])
+      // Gespeichert, aber nicht lesbar (z. B. andere Schemaversion)?
+      const unreadableSnapshots =
+        !stored && catalogSource === "leanix" ? await countStoredSnapshots() : 0
       return {
         status,
         snapshot: stored
@@ -32,6 +54,7 @@ export const catalogAdminRouter = {
               stats: stored.snapshot.stats,
             }
           : null,
+        unreadableSnapshots,
         issues: stored?.snapshot.issues ?? [],
         runs,
         config: {
@@ -48,13 +71,18 @@ export const catalogAdminRouter = {
       }
     }),
 
+  /**
+   * Startet einen Sync im Hintergrund und gibt den Lauf (Status `running`)
+   * sofort zurück. Die Admin-Übersicht lädt den Status nach, solange ein
+   * Lauf im Gang ist.
+   */
   syncNow: os.catalogAdmin.syncNow
     .use(adminOnly)
     .handler(async ({ errors }) => {
       if (catalogSource === "demo") throw errors.PRECONDITION_FAILED()
       if (isSyncRunning()) throw errors.CONFLICT()
       try {
-        return await runSync("manual")
+        return await startSync("manual")
       } catch (error) {
         if (error instanceof SyncBusyError) throw errors.CONFLICT()
         throw error

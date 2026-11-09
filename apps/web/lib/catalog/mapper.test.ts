@@ -7,8 +7,10 @@ import type { RawDocument, RawLeistung } from "@/lib/leanix/types"
 import { loadFixtureRaw } from "./__fixtures__"
 import {
   buildSnapshot,
+  checkResourceUrl,
   mapResources,
   normalizeResourceUrl,
+  personsOf,
   type BuildSnapshotOptions,
 } from "./mapper"
 
@@ -18,7 +20,13 @@ const options: BuildSnapshotOptions = {
   workspace: "eamktsoLive",
   rootId: leanixModel.kategorie.rootId,
   showPersons: false,
+  showEmptyServices: false,
   generatedAt: "2026-11-09T12:00:00.000Z",
+}
+/** Variante mit allen Services (auch ohne Leistung im Kanal). */
+const allServices: BuildSnapshotOptions = {
+  ...options,
+  showEmptyServices: true,
 }
 
 const ID = {
@@ -68,33 +76,76 @@ describe("buildSnapshot mit den Discovery-Fixtures", () => {
     expect(snapshot.generatedAt).toBe(options.generatedAt)
   })
 
-  it("bildet 5 Familien und 29 Services ab", () => {
+  it("zeigt nur Services mit Leistung im Kanal (Standard)", () => {
     expect(snapshot.families.map((f) => f.name)).toEqual([
+      "Arbeitsplatz-Services",
+      "Unterstützungs-Services",
+    ])
+    expect(snapshot.services.map((s) => s.name)).toEqual([
+      "Service Kollaboration",
+      "Digitales Mitwirkungsverfahren",
+      "Service eLearning",
+    ])
+    expect(snapshot.services.every((s) => s.leistungIds.length > 0)).toBe(true)
+    for (const service of snapshot.services) {
+      const family = snapshot.families.find((f) => f.id === service.familyId)
+      expect(family?.serviceIds).toContain(service.id)
+    }
+    // Ausgeblendete Services und Familien bleiben im Bericht sichtbar.
+    const withoutLeistung = snapshot.issues.filter(
+      (i) => i.code === "SERVICE_WITHOUT_LEISTUNG"
+    )
+    expect(withoutLeistung).toHaveLength(26)
+    expect(withoutLeistung.every((i) => i.severity === "warning")).toBe(true)
+    expect(withoutLeistung[0]?.message).toContain("nicht im Portal angezeigt")
+    expect(
+      snapshot.issues
+        .filter((i) => i.code === "FAMILY_WITHOUT_LEISTUNG")
+        .map((i) => i.factSheetName)
+    ).toEqual([
+      "Business IT-Servicekatalog / Backend-Services",
+      "Business IT-Servicekatalog / Kommunikations-Services",
+      "Business IT-Servicekatalog / Managed Application-Services",
+    ])
+  })
+
+  it("bildet mit showEmptyServices 5 Familien und 29 Services ab", () => {
+    const full = buildSnapshot(loadFixtureRaw(), allServices)
+    expect(full.families.map((f) => f.name)).toEqual([
       "Arbeitsplatz-Services",
       "Backend-Services",
       "Kommunikations-Services",
       "Managed Application-Services",
       "Unterstützungs-Services",
     ])
-    expect(snapshot.services).toHaveLength(29)
-    const total = snapshot.families.reduce(
-      (sum, f) => sum + f.serviceIds.length,
-      0
-    )
+    expect(full.services).toHaveLength(29)
+    const total = full.families.reduce((sum, f) => sum + f.serviceIds.length, 0)
     expect(total).toBe(29)
-    for (const service of snapshot.services) {
-      const family = snapshot.families.find((f) => f.id === service.familyId)
+    for (const service of full.services) {
+      const family = full.families.find((f) => f.id === service.familyId)
       expect(family?.serviceIds).toContain(service.id)
     }
+    expect(full.stats).toMatchObject({ families: 5, services: 29 })
+    const withoutLeistung = full.issues.filter(
+      (i) => i.code === "SERVICE_WITHOUT_LEISTUNG"
+    )
+    expect(withoutLeistung).toHaveLength(26)
+    expect(withoutLeistung.every((i) => i.severity === "info")).toBe(true)
+    expect(full.issues.some((i) => i.code === "FAMILY_WITHOUT_LEISTUNG")).toBe(
+      false
+    )
+    // Gleiche Leistungen wie im Standard.
+    expect(full.leistungen).toEqual(snapshot.leistungen)
   })
 
   it("zeigt 7 von 13 Leistungen im Kanal", () => {
     expect(snapshot.stats).toMatchObject({
-      families: 5,
-      services: 29,
+      families: 2,
+      services: 3,
       leistungen: 7,
       leistungenInChannel: 13,
       leistungenSkipped: 6,
+      actions: 0,
       issues: snapshot.issues.length,
     })
     expect(snapshot.leistungen.map((l) => l.name)).toEqual([
@@ -144,14 +195,21 @@ describe("buildSnapshot mit den Discovery-Fixtures", () => {
     expect(leistung.persons).toEqual([
       { name: "Person 1", role: "Leistungsverantwortliche/r" },
     ])
+    // Abos auf Kategorien haben heute keine Rolle: keine Personen.
+    expect(withPersons.services.every((s) => s.persons.length === 0)).toBe(true)
   })
 
   it("erzeugt eindeutige Slugs aus Name und ID", () => {
-    const slugs = snapshot.services.map((s) => s.slug)
+    const full = buildSnapshot(loadFixtureRaw(), allServices)
+    const slugs = full.services.map((s) => s.slug)
     expect(new Set(slugs).size).toBe(slugs.length)
     expect(slugs).toContain("service-kollaboration-08781d")
     expect(slugs).toContain("service-kollaboration-35da4c")
     expect(slugs).toContain("service-multifunktionsgeraet-mfg-drucker-0edf9a")
+    // Slugs angezeigter Services hängen nicht vom Filter ab.
+    for (const service of snapshot.services) {
+      expect(slugs).toContain(service.slug)
+    }
     expect(snapshot.families.map((f) => f.slug)).toContain(
       "unterstuetzungs-services-e5a717"
     )
@@ -161,9 +219,10 @@ describe("buildSnapshot mit den Discovery-Fixtures", () => {
   })
 
   it("bereinigt Beschreibungen und bildet Kurzbeschreibungen", () => {
-    const telefonie = snapshot.services.find((s) =>
-      s.name.startsWith("Service Telefonie")
-    )!
+    const telefonie = buildSnapshot(
+      loadFixtureRaw(),
+      allServices
+    ).services.find((s) => s.name.startsWith("Service Telefonie"))!
     expect(telefonie.definition?.startsWith("Bereitstellung")).toBe(true)
     expect(telefonie.definition?.endsWith("(nur auf Anfrage)")).toBe(true)
 
@@ -208,6 +267,29 @@ describe("buildSnapshot mit den Discovery-Fixtures", () => {
     expect(leanixLinks).toHaveLength(1)
     expect(leanixLinks[0]?.message).toContain("(ktso.leanix.net)")
     expect(leanixLinks[0]?.message).not.toContain("session_state")
+    // «SO!Desk Teamadministrator festlegen» hat wortgleich die Beschreibung
+    // von «Digitale Mitwirkungs- und Vernehmlassungsverfahren starten».
+    const duplicates = codes("DUPLICATE_DESCRIPTION").filter(
+      (i) => i.factSheetType === leanixModel.leistung.type
+    )
+    expect(duplicates.map((i) => i.factSheetName).sort()).toEqual([
+      "Digitale Mitwirkungs- und Vernehmlassungsverfahren starten",
+      "SO!Desk Teamadministrator festlegen",
+    ])
+    expect(duplicates.every((i) => i.severity === "warning")).toBe(true)
+    const soDesk = duplicates.find((i) => i.factSheetName.startsWith("SO!Desk"))
+    expect(soDesk?.message).toContain(
+      "«Digitale Mitwirkungs- und Vernehmlassungsverfahren starten» (https://ktso.leanix.net/eamktsoLive/factsheet/behoerdenLeistungen/2f483a4f"
+    )
+    expect(soDesk?.leanixUrl).toContain("a0456a21")
+    // Auch Service-Definitionen werden verglichen (alle Services, auch
+    // ausgeblendete): zwei Arbeitsplatz-Services teilen sich einen Text.
+    expect(
+      codes("DUPLICATE_DESCRIPTION")
+        .filter((i) => i.factSheetType === leanixModel.kategorie.type)
+        .map((i) => i.factSheetName.split(" / ").at(-1))
+        .sort()
+    ).toEqual(["Service IT-Arbeitsplatzinfrastruktur", "Service SO!Workplace"])
     // Sortiert nach Schweregrad.
     const order = { error: 0, warning: 1, info: 2 }
     const severities = snapshot.issues.map((i) => order[i.severity])
@@ -272,7 +354,7 @@ describe("buildSnapshot mit veränderten Daten", () => {
     findLeistung(raw, ID.publizieren).status = "ARCHIVED"
     const service = raw.kategorien.find((k) => k.id === ID.serviceElearning)!
     service.status = "ARCHIVED"
-    const snapshot = buildSnapshot(raw, options)
+    const snapshot = buildSnapshot(raw, allServices)
     expect(snapshot.services).toHaveLength(28)
     expect(snapshot.stats.leistungenInChannel).toBe(12)
     // Die übrigen eLearning-Leistungen haben keinen Service mehr.
@@ -301,6 +383,81 @@ describe("buildSnapshot mit veränderten Daten", () => {
     )
     expect(found).toHaveLength(1)
     expect(found[0]?.severity).toBe("warning")
+  })
+
+  it("entfernt Sitzungsparameter aus LeanIX-Links (Fixture)", () => {
+    const snapshot = buildSnapshot(loadFixtureRaw(), options)
+    const zugang = snapshot.leistungen.find((l) =>
+      l.name.startsWith("Zugang zur Mitwirkungsplattform")
+    )!
+    expect(zugang.description).not.toContain("session_state")
+    expect(zugang.description).not.toContain("code=")
+    expect(zugang.description).not.toContain("#state")
+    // Der Link selbst bleibt (Datenpflege korrigiert ihn in LeanIX).
+    expect(zugang.description).toContain(
+      "[digitales Mitwirkungsverfahren](https://ktso.leanix.net/eamktsosandbox/portals/Leistungen?transientUser=true)"
+    )
+    // Kein Snapshot-Text enthält noch Sitzungsartefakte.
+    const text = JSON.stringify(snapshot)
+    expect(text).not.toContain("session_state")
+    expect(text).not.toMatch(/[?&#]code=/)
+  })
+
+  it("meldet http-Links und entfernt Zugangsdaten aus Beschreibungen", () => {
+    const fixture = buildSnapshot(loadFixtureRaw(), options)
+    // Echte Daten: Links auf http://mitwirken.so.ch und http://lernwelt.so.ch.
+    const insecure = fixture.issues.filter(
+      (i) => i.code === "DESCRIPTION_INSECURE_LINK"
+    )
+    expect(insecure.length).toBeGreaterThan(0)
+    expect(insecure.every((i) => i.severity === "warning")).toBe(true)
+    expect(insecure.map((i) => i.message).join(" ")).toContain(
+      "mitwirken.so.ch"
+    )
+    // Freigegebene Hosts werden nicht gemeldet.
+    const allowed = buildSnapshot(loadFixtureRaw(), {
+      ...options,
+      httpAllowedHosts: ["so.ch"],
+    })
+    expect(
+      allowed.issues.some((i) => i.code === "DESCRIPTION_INSECURE_LINK")
+    ).toBe(false)
+
+    const raw = loadFixtureRaw()
+    findLeistung(raw, ID.publizieren).description =
+      "Login über [Portal](https://user:geheim@portal.example/start)."
+    const snapshot = buildSnapshot(raw, options)
+    const leistung = snapshot.leistungen.find((l) => l.id === ID.publizieren)!
+    expect(leistung.description).toBe(
+      "Login über [Portal](https://portal.example/start)."
+    )
+    expect(JSON.stringify(snapshot)).not.toContain("geheim")
+    expect(
+      snapshot.issues.some(
+        (i) =>
+          i.code === "DESCRIPTION_LINK_CREDENTIALS" &&
+          i.factSheetId === ID.publizieren
+      )
+    ).toBe(true)
+  })
+
+  it("bereinigt LeanIX-Links in Service- und Familienbeschreibungen", () => {
+    const raw = loadFixtureRaw()
+    const elearning = raw.kategorien.find((k) => k.id === ID.serviceElearning)!
+    elearning.description =
+      "Siehe https://ktso.leanix.net/eamktsoLive/factsheet/Application/1?state=a&code=b&x=1."
+    const family = raw.kategorien.find((k) => k.id.startsWith("e5a71732"))!
+    family.description =
+      "[Portal](https://ktso.leanix.net/p#session_state=geheim) und ktso.leanix.net"
+    const snapshot = buildSnapshot(raw, options)
+    expect(
+      snapshot.services.find((s) => s.id === ID.serviceElearning)?.definition
+    ).toBe(
+      "Siehe https://ktso.leanix.net/eamktsoLive/factsheet/Application/1?x=1."
+    )
+    expect(snapshot.families.find((f) => f.id === family.id)?.description).toBe(
+      "[Portal](https://ktso.leanix.net/p) und ktso.leanix.net"
+    )
   })
 
   it("bildet Ressourcen auf Aktionen und Links ab", () => {
@@ -361,11 +518,18 @@ describe("buildSnapshot mit veränderten Daten", () => {
       (i) => i.factSheetId === ID.publizieren
     )
     const invalid = forLeistung.filter((i) => i.code === "RESOURCE_INVALID_URL")
-    expect(invalid).toHaveLength(2)
+    expect(invalid).toHaveLength(1)
     expect(invalid.every((i) => i.severity === "error")).toBe(true)
+    // Ohne URL (z. B. Datei): bewusst nicht angezeigt, nur zur Information.
+    const files = forLeistung.filter(
+      (i) => i.code === "RESOURCE_FILE_NOT_SHOWN"
+    )
+    expect(files).toHaveLength(1)
+    expect(files[0]?.severity).toBe("info")
     expect(
       forLeistung.filter((i) => i.code === "RESOURCE_TYPE_NOT_SHOWN")
     ).toHaveLength(1)
+    expect(snapshot.stats.actions).toBe(3)
     expect(forLeistung.some((i) => i.code === "LEISTUNG_WITHOUT_ACTION")).toBe(
       false
     )
@@ -379,9 +543,30 @@ describe("Ressourcen", () => {
     expect(normalizeResourceUrl("https://example.org/a b")).toBe(
       "https://example.org/a%20b"
     )
-    expect(normalizeResourceUrl(" http://example.org ")).toBe(
+    // http nur für freigegebene Hosts (und deren Subdomains).
+    expect(normalizeResourceUrl(" http://example.org ")).toBeNull()
+    expect(checkResourceUrl("http://example.org")).toEqual({
+      ok: false,
+      reason: "insecure",
+    })
+    expect(normalizeResourceUrl(" http://example.org ", ["example.org"])).toBe(
       "http://example.org/"
     )
+    expect(
+      normalizeResourceUrl("http://intra.example.org/x", ["example.org"])
+    ).toBe("http://intra.example.org/x")
+    expect(
+      normalizeResourceUrl("http://badexample.org/", ["example.org"])
+    ).toBeNull()
+    // Zugangsdaten in der URL und Links auf LeanIX werden abgelehnt.
+    expect(checkResourceUrl("https://user:pass@evil.example/")).toEqual({
+      ok: false,
+      reason: "credentials",
+    })
+    expect(checkResourceUrl("https://ktso.leanix.net/eamktsoLive/x")).toEqual({
+      ok: false,
+      reason: "leanix",
+    })
     expect(normalizeResourceUrl("mailto:servicedesk@so.ch")).toBe(
       "mailto:servicedesk@so.ch"
     )
@@ -414,5 +599,141 @@ describe("Ressourcen", () => {
     expect(result.actions.map((a) => a.id)).toEqual(["2", "3", "4"])
     expect(result.links.map((a) => a.id)).toEqual(["5", "1"])
     expect(result.problems).toEqual([])
+  })
+
+  it("unterscheidet Dateien, LeanIX-Links und ungültige URLs", () => {
+    const result = mapResources(
+      [
+        {
+          id: "file",
+          name: "Handbuch.pdf",
+          url: "https://ktso.leanix.net/services/storage/file/1",
+          documentType: "documentation",
+          origin: "LX_STORAGE",
+        },
+        {
+          id: "lx",
+          name: "Fact Sheet",
+          url: "https://ktso.leanix.net/eamktsoLive/factsheet/Application/1",
+          documentType: "website",
+          origin: "CUSTOM_LINK",
+        },
+        {
+          id: "http",
+          name: "Bestellen",
+          url: "http://insecure.example/bestellen",
+          documentType: "ordering_form",
+          origin: "CUSTOM_LINK",
+        },
+        {
+          id: "creds",
+          name: "Login",
+          url: "https://user:pass@evil.example/",
+          documentType: "website",
+        },
+        {
+          id: "ok",
+          name: "Bidi ‮gnp.exe",
+          url: "https://example.org/ok",
+          documentType: "website",
+          description: "Zeile 1\nZeile‮ 2",
+        },
+      ],
+      []
+    )
+    expect(result.actions).toEqual([])
+    expect(result.links.map((l) => [l.id, l.label, l.description])).toEqual([
+      ["ok", "Bidi gnp.exe", "Zeile 1 Zeile 2"],
+    ])
+    expect(result.problems.map((p) => p.code)).toEqual([
+      "RESOURCE_FILE_NOT_SHOWN",
+      "RESOURCE_LINKS_TO_LEANIX",
+      "RESOURCE_INVALID_URL",
+      "RESOURCE_INVALID_URL",
+    ])
+    expect(result.problems[2]?.message).toContain("http (unverschlüsselt)")
+    expect(result.problems[3]?.message).toContain("Zugangsdaten")
+    expect(JSON.stringify(result)).not.toContain("pass@")
+
+    // Mit Freigabe des Hosts wird der http-Link übernommen.
+    const allowed = mapResources(
+      [
+        {
+          id: "http",
+          name: "Bestellen",
+          url: "http://insecure.example/bestellen",
+          documentType: "ordering_form",
+        },
+      ],
+      ["insecure.example"]
+    )
+    expect(allowed.actions.map((a) => a.url)).toEqual([
+      "http://insecure.example/bestellen",
+    ])
+  })
+
+  it("meldet Dateien als Hinweis, ungültige URLs als Fehler", () => {
+    const raw = loadFixtureRaw()
+    setDocuments(findLeistung(raw, ID.publizieren), [
+      {
+        id: "f",
+        name: "Datei",
+        url: null,
+        documentType: "faq",
+        origin: "LX_STORAGE",
+      },
+      { id: "x", name: "Kaputt", url: "nicht-url", documentType: "website" },
+    ])
+    const snapshot = buildSnapshot(raw, options)
+    const severities = Object.fromEntries(
+      snapshot.issues
+        .filter((i) => i.factSheetId === ID.publizieren)
+        .filter((i) => i.code.startsWith("RESOURCE_"))
+        .map((i) => [i.code, i.severity])
+    )
+    expect(severities).toEqual({
+      RESOURCE_FILE_NOT_SHOWN: "info",
+      RESOURCE_INVALID_URL: "error",
+    })
+  })
+})
+
+describe("Personen", () => {
+  const sub = (type: string, roles: string[], name: string) => ({
+    node: {
+      type,
+      roles: roles.map((r) => ({ name: r })),
+      user: { displayName: name },
+    },
+  })
+  const node = {
+    id: "n",
+    name: "N",
+    subscriptions: {
+      edges: [
+        sub("RESPONSIBLE", ["Leistungsverantwortliche/r"], "Anna"),
+        sub("RESPONSIBLE", [], "Bruno"),
+        sub("RESPONSIBLE", ["Stellvertretung"], "Chris"),
+        sub("OBSERVER", ["Leistungsverantwortliche/r"], "Dora"),
+      ],
+    },
+  }
+
+  it("übernimmt nur Abos mit der konfigurierten Rolle", () => {
+    expect(personsOf(node, leanixModel.responsiblePersons.leistung)).toEqual([
+      { name: "Anna", role: "Leistungsverantwortliche/r" },
+    ])
+    // Für Services ist eine eigene Rolle konfiguriert.
+    expect(personsOf(node, leanixModel.responsiblePersons.kategorie)).toEqual(
+      []
+    )
+  })
+
+  it("übernimmt Abos ohne Rolle nur, wenn ausdrücklich so konfiguriert", () => {
+    expect(
+      personsOf(node, { subscriptionType: "RESPONSIBLE", role: null }).map(
+        (p) => p.name
+      )
+    ).toEqual(["Anna", "Bruno", "Chris"])
   })
 })

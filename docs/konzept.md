@@ -81,7 +81,7 @@ Die **internen Schlüssel** sind in der UI nicht sichtbar. Die Discovery vom 9.1
 | Organisationseinheiten             | Typ `Organisationseinheit`, Relation `relbehoerdenLeistungenToOrganisationseinheit` |
 | Leistungsbezüger                   | Typ `UserGroup` (umbenannt), Relation `relbehoerdenLeistungenToUserGroup` |
 | Anwendungen / Prozesse             | `relbehoerdenLeistungenToApplication` / `…ToProcess` |
-| Leistungsverantwortliche/r         | Abonnement (`subscriptions`) Typ RESPONSIBLE mit Rolle «Leistungsverantwortliche/r» |
+| Leistungsverantwortliche/r         | Abonnement (`subscriptions`) Typ RESPONSIBLE mit Rolle «Leistungsverantwortliche/r»; nur Abos mit genau dieser Rolle zählen (Services: Rolle «Serviceverantwortliche/r», noch zu bestätigen) |
 
 **Datenstand (Discovery):** 18 Leistungen, davon 13 im Kanal BITS; 7 davon sind einem Service
 (Ebene 3) zugeordnet und erscheinen im Portal. Die übrigen 6 (u. a. «Mobile», «Schulung»,
@@ -116,14 +116,19 @@ Sonderfälle:
 - Leistung mit **mehreren Kategorien** → erscheint bei jedem Service (eine Detailseite, mehrere Einstiege).
 - Das Qualitätssiegel eignet sich **nicht** als Kriterium: die fachlich fertigen Leistungen
   (z. B. eLearning) stehen auf «Siegel gebrochen», weil sie nach der Freigabe bearbeitet wurden.
-- Leistungskategorien haben kein Kanal-Feld: Alles im Baum unter der Wurzel wird angezeigt,
-  auch Services ohne veröffentlichte Leistung (mit Definition und Kontakt).
+- Leistungskategorien haben kein Kanal-Feld. Freigegeben wird über den Kanal der Leistung:
+  Ein Service (Ebene 3) erscheint nur, wenn mindestens eine seiner Leistungen veröffentlicht ist;
+  eine Familie (Ebene 2) nur, wenn sie mindestens einen solchen Service hat. Ausgeblendete
+  Services und Familien stehen im Datenqualitätsbericht (`SERVICE_WITHOUT_LEISTUNG`,
+  `FAMILY_WITHOUT_LEISTUNG`). Mit `CATALOG_SHOW_EMPTY_SERVICES=true` erscheinen alle Services
+  unter der Wurzel, auch ohne Leistung (mit Definition und Kontakt). **Vorläufiger Entscheid:**
+  ausgeblendet (Standard `false`), offene Frage 10.
 
 ### 2.3 Abbildung der Anforderungen auf LeanIX
 
 | Anforderung (Auftrag)        | Quelle in LeanIX                                                                 | Status          |
 | ---------------------------- | -------------------------------------------------------------------------------- | --------------- |
-| Nur freigegebene Services    | Kanal enthält «Business IT-Servicekatalog»                                       | bestätigt       |
+| Nur freigegebene Services    | Leistung: Kanal enthält «Business IT-Servicekatalog». Service/Familie: nur mit mindestens einer freigegebenen Leistung (`CATALOG_SHOW_EMPTY_SERVICES`) | Leistung bestätigt; Service/Familie vorläufig, offene Frage 10 |
 | Gruppierung                  | Leistungskategorie Ebene 2 → Ebene 3 → Leistung                                  | bestätigt       |
 | Kurzbeschreibung             | Beschreibung der Leistung (erster Absatz als Teaser)                             | Annahme, offene Frage 3 |
 | Definition                   | Beschreibung der Leistungskategorie Ebene 3 (Service-Definition)                 | Annahme, offene Frage 3 |
@@ -167,7 +172,22 @@ Hat eine Leistung keine Aktion, zeigt das Portal eine konfigurierbare Standard-A
 (`CATALOG_FALLBACK_REQUEST_URL`, z. B. Service Desk) und die verantwortliche Stelle.
 
 Hochgeladene **Dateien** sind nur mit LeanIX-Login abrufbar; sie werden im MVP nicht angezeigt
-(nur Links). Ressourcen-URLs werden auf `https:` geprüft; optional Allowlist der Zielhosts.
+(nur Links). Erkannt werden sie an `origin` (z. B. `LX_STORAGE`) oder an der fehlenden URL; sie
+erscheinen im Datenqualitätsbericht als Hinweis (`RESOURCE_FILE_NOT_SHOWN`, «info»).
+
+Prüfung der Ressourcen-URLs (beim Sync, `apps/web/lib/catalog/mapper.ts`):
+
+- erlaubt sind `https:`, `mailto:` und `tel:`; `http:` nur für Hosts in
+  `CATALOG_HTTP_ALLOWED_HOSTS` (inkl. Subdomains, z. B. für Intranet-Formulare ohne TLS);
+- abgelehnt werden URLs mit Zugangsdaten (`https://user:pass@host`) und Links auf LeanIX selbst;
+- Beschriftungen werden von Steuer- und Bidi-Zeichen (z. B. U+202E) bereinigt;
+- abgelehnte Links fehlen im Portal und stehen als Fehler im Datenqualitätsbericht
+  (`RESOURCE_INVALID_URL`, LeanIX-Links als Warnung `RESOURCE_LINKS_TO_LEANIX`).
+
+Links in **Beschreibungen** werden nicht umgeschrieben, ausser: Sitzungsparameter in
+LeanIX-Links (Fragment, `state`, `session_state`, `code`, `iss`) und Zugangsdaten in URLs werden
+entfernt. Unverschlüsselte Links (`http:`) ausserhalb der Freigabeliste meldet der
+Datenqualitätsbericht (`DESCRIPTION_INSECURE_LINK`).
 
 Daneben gibt es in LeanIX die neueren **Vorlagen-Dokumente** (Documents API v2, z. B.
 Architekturentscheide). Der technische Benutzer erhält darauf HTTP 403; für das Portal sind nur
@@ -233,20 +253,40 @@ gültigen Snapshot.
 1. **Sync** – Der Sync-Job lädt Leistungen (im Kanal) und Leistungskategorien (BITS-Baum) mit
    wenigen paginierten GraphQL-Abfragen, wendet die Publikationsregel an und erzeugt einen
    normalisierten Katalog (JSON, versioniertes Schema, mit Zod validiert).
-2. **Plausibilisierung** – Ein neuer Snapshot wird nur übernommen, wenn er gültig ist und nicht
-   unplausibel schrumpft (z. B. weniger als 50 % der Leistungen des Vorgängers → nicht übernehmen,
-   Warnung im Admin-Bereich). Schützt vor Teilantworten und versehentlichem Massen-Entfernen.
-3. **Persistenz** – Snapshot in Postgres (`catalog_snapshot`, die letzten N Versionen); dazu
-   Protokoll jedes Laufs (`sync_run`: Auslöser, Dauer, Anzahl, Fehler).
-4. **Auslieferung** – Beim Start wird der neueste Snapshot in den Speicher geladen; Seiten lesen
-   nur daraus. Fällt LeanIX aus, läuft das Portal unverändert weiter. Fusszeile: «Stand: …»;
+2. **Plausibilisierung** – Ein neuer Snapshot wird nur übernommen, wenn er gültig und vollständig
+   ist und nicht unplausibel schrumpft:
+   - Teilfehler von LeanIX (GraphQL `errors` neben `data`) auf Ressourcen (`documents`), Kanal,
+     Status, Kategorie, Ebene, Relationen oder dem Fact Sheet selbst brechen den Lauf ab
+     (Status «failed», bisheriger Stand bleibt). Toleriert und nur protokolliert werden
+     Teilfehler auf Zusatzangaben (`subscriptions`, Berechtigungen).
+   - Liefert das Paging weniger Einträge als `totalCount`, bricht der Lauf ebenfalls ab.
+   - Schrumpft die Anzahl Leistungen oder die Anzahl Bestell-/Anfragewege (Aktionen) unter
+     `CATALOG_MIN_RATIO` (Standard 50 %) **und** fallen mehr als `CATALOG_SHRINK_TOLERANCE`
+     (Standard 5) weg, wird der Stand abgelehnt (Warnung im Admin-Bereich, mit den Namen der
+     wegfallenden Leistungen). Die Toleranz verhindert, dass gewollte Änderungen in einem kleinen
+     Katalog dauerhaft blockiert werden. Verglichen wird mit den Kennzahlen (Spalte `stats`) des
+     neuesten gespeicherten Stands, auch wenn dieser nach einem Upgrade nicht mehr lesbar ist.
+   Schützt vor Teilantworten und versehentlichem Massen-Entfernen.
+3. **Persistenz** – Snapshot in Postgres (`catalog_snapshot`, die letzten 20 Versionen); dazu
+   Protokoll jedes Laufs (`sync_run`: Auslöser, Dauer, Anzahl, Fehler). Ist
+   `CATALOG_SHOW_PERSONS` aus, werden Personen beim Start und nach jedem erfolgreichen Sync auch
+   aus älteren gespeicherten Snapshots entfernt (Datensparsamkeit).
+4. **Auslieferung** – Beim Start wird der neueste gültige Snapshot in den Speicher geladen; Seiten
+   lesen nur daraus. Gespeicherte Stände älterer Schemaversionen werden beim Laden migriert
+   (`apps/web/lib/catalog/snapshot-migrations.ts`); eine einzelne unlesbare Zeile wird
+   übersprungen. Fällt LeanIX aus, läuft das Portal unverändert weiter. Fusszeile: «Stand: …»;
    ab einem Schwellwert (z. B. 24 h ohne erfolgreichen Sync) Hinweis für Admins.
 5. **Aktualisierung** –
    - MVP: Intervall (z. B. alle 15 Minuten) + Schaltfläche «Jetzt synchronisieren» im Admin-Bereich.
+     Der manuelle Sync läuft im Hintergrund; die Anfrage kehrt sofort zurück (kein Timeout im
+     Reverse Proxy), der Admin-Bereich zeigt den Fortschritt.
    - Ausbau: Webhook-PULL-Subscription auf Fact-Sheet-Änderungen; bei relevanten Ereignissen
      (entprellt) Voll-Sync → Änderungen in LeanIX sind nach 1–2 Minuten sichtbar.
    - Der Voll-Sync bleibt in jedem Fall (wenige Requests, robust, kein Delta-Abgleich nötig).
-6. **Mehrere Instanzen** – Postgres-Advisory-Lock, damit nur eine Instanz synchronisiert.
+6. **Mehrere Instanzen** – Postgres-Advisory-Lock, damit nur eine Instanz synchronisiert. Jede
+   Instanz gleicht ihren Speicher jede Minute mit der Datenbank ab (nur `id` und `generated_at`
+   der neuesten Zeile) und übernimmt so Läufe der anderen Instanzen. Bleibt ein Lauf nach einem
+   Prozessende auf «running» stehen, schliesst ihn der Admin-Bereich ab, sobald das Lock frei ist.
 7. **Erststart ohne Snapshot und ohne LeanIX** – Seite «Katalog vorübergehend nicht verfügbar».
    Optional ein exportierter Snapshot als Datei im Volume als zweite Rückfallebene.
 
@@ -276,15 +316,21 @@ export const leanixMapping = {
 } as const
 ```
 
-Umgebungsvariablen (nur serverseitig): `LEANIX_BASE_URL`, `LEANIX_API_TOKEN`,
-`CATALOG_SYNC_INTERVAL_MINUTES`, `CATALOG_MIN_RATIO`.
+Umgebungsvariablen (nur serverseitig, geprüft in `apps/web/lib/env-schema.ts`; leere Werte gelten
+als nicht gesetzt): `LEANIX_BASE_URL`, `LEANIX_WORKSPACE`, `LEANIX_API_TOKEN`, `CATALOG_SOURCE`,
+`CATALOG_ROOT_ID`, `CATALOG_SYNC_INTERVAL_MINUTES`, `CATALOG_MIN_RATIO`,
+`CATALOG_SHRINK_TOLERANCE`, `CATALOG_STALE_AFTER_HOURS`, `CATALOG_SHOW_PERSONS`,
+`CATALOG_SHOW_EMPTY_SERVICES` (Services ohne Leistung anzeigen, vorläufig `false`),
+`CATALOG_HTTP_ALLOWED_HOSTS` (Hosts, für die `http:`-Ressourcen erlaubt sind),
+`CATALOG_FALLBACK_REQUEST_URL`, `CATALOG_FALLBACK_REQUEST_LABEL`.
 
 ### 4.3 Sicherheit
 
 - Technischer Benutzer nur mit Leserechten; Token als Secret, Ablaufdatum gesetzt, Erneuerung im
   Betriebshandbuch.
 - Beschreibungen aus LeanIX werden als Text gerendert (Zeilenumbrüche erhalten), kein HTML.
-- Links nur `https:`; externe Links mit `rel="noopener"`.
+- Ressourcen-Links nur `https:` (`http:` nur für freigegebene Hosts), ohne Zugangsdaten in der
+  URL (Kapitel 2.4); externe Links mit `rel="noopener"`.
 - Katalog ohne Anmeldung im Intranet; Admin-Bereich mit Anmeldung (SAML-SSO, im PoC zusätzlich Passwort).
 
 ---
@@ -403,8 +449,12 @@ auf das Fact Sheet in LeanIX:
 - Leistung im Kanal, aber ohne Kategorie im BITS-Baum
 - Leistung ohne Beschreibung oder ohne verantwortliche Organisationseinheit
 - Leistung ohne Aktions-Ressource (kein «nächster Schritt»)
-- Ressource mit ungültiger URL oder nicht konfiguriertem Typ
-- Kategorie Ebene 3 ohne veröffentlichte Leistung (leerer Service)
+- Ressource mit ungültiger oder unverschlüsselter URL (Fehler), Link auf LeanIX (Warnung),
+  hochgeladene Datei oder nicht konfigurierter Typ (Hinweis)
+- Kategorie Ebene 3 ohne veröffentlichte Leistung (Warnung, nicht im Portal angezeigt) und
+  Familie ohne solchen Service (Hinweis)
+- Wortgleiche Beschreibungen zweier Leistungen bzw. Services (`DUPLICATE_DESCRIPTION`, meist
+  kopiert), Links auf LeanIX und unverschlüsselte Links in Beschreibungen
 
 So kann das Service-Management die Daten in LeanIX gezielt nachpflegen.
 
@@ -479,6 +529,9 @@ Beteiligte Teams (Auftragstyp «mehrere Teams»):
 7. **SSO**: Welcher Identity Provider (z. B. Entra ID) und wer richtet die SAML-App ein?
 8. **ky2help / SmartForm**: Lassen sich Formulare per URL-Parameter vorbelegen (Leistungsname/-ID)?
 9. **Sprachen**: Nur Deutsch?
+10. **Services und Familien ohne veröffentlichte Leistung** anzeigen (Definition und Kontakt) oder
+    ausblenden? Im PoC vorläufig ausgeblendet (`CATALOG_SHOW_EMPTY_SERVICES=false`); heute
+    betrifft das 26 von 29 Services und 3 von 5 Familien.
 
 ---
 

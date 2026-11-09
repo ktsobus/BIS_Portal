@@ -63,10 +63,11 @@ describe("Fallback-Aktion", () => {
 
 describe("Katalog-Abfragen", () => {
   it("Übersicht zählt Services und Leistungen je Familie", () => {
+    // Demo-Snapshot: nur Services mit Leistung (CATALOG_SHOW_EMPTY_SERVICES).
     const { families } = buildOverview(snapshot, options)
-    expect(families).toHaveLength(5)
+    expect(families).toHaveLength(2)
     const support = families.find((f) => f.name === "Unterstützungs-Services")
-    expect(support?.serviceCount).toBe(6)
+    expect(support?.serviceCount).toBe(2)
     expect(support?.leistungCount).toBe(6)
   })
 
@@ -74,7 +75,7 @@ describe("Katalog-Abfragen", () => {
     expect(
       buildFamilyPage(snapshot, options, "unterstuetzungs-services-e5a717")
         ?.services
-    ).toHaveLength(6)
+    ).toHaveLength(2)
     const service = buildServicePage(
       snapshot,
       options,
