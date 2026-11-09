@@ -1,20 +1,20 @@
+import type { Metadata } from "next"
+
+import { AdminPageHeader } from "@/features/admin/components/admin-page-header"
 import { CreateSamlProviderDialog } from "@/features/sso/components/create-saml-provider-dialog"
 import { SamlProviders } from "@/features/sso/components/saml-providers"
 
+export const metadata: Metadata = { title: "SAML" }
+
 export default function AdminSamlPage() {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-medium">SAML providers</h2>
-          <p className="text-sm text-muted-foreground">
-            Users whose email domain matches a provider can sign in with SSO.
-            They are created on first sign-in with the role User.
-          </p>
-        </div>
-        <CreateSamlProviderDialog />
-      </div>
+    <>
+      <AdminPageHeader
+        title="SAML-Anmeldung"
+        description="Personen, deren E-Mail-Domäne zu einem Identity Provider passt, können sich mit SSO anmelden. Sie werden bei der ersten Anmeldung mit der Rolle «Benutzer» angelegt; Adminrechte vergeben Sie unter «Benutzer»."
+        action={<CreateSamlProviderDialog />}
+      />
       <SamlProviders />
-    </div>
+    </>
   )
 }

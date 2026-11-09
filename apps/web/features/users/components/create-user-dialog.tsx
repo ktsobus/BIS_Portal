@@ -1,16 +1,18 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createUserInputSchema, type CreateUserInput } from "@workspace/api"
+import { userRoleSchema, type CreateUserInput } from "@workspace/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { UserPlusIcon } from "lucide-react"
 import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -34,7 +36,18 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Spinner } from "@/components/ui/spinner"
+import { accountFields, errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
+
+import { roleLabels } from "./labels"
+
+/** Wie `createUserInputSchema`, aber mit deutschen Meldungen. */
+const formSchema = z.object({
+  name: accountFields.name,
+  email: accountFields.email,
+  password: accountFields.password,
+  role: userRoleSchema,
+}) satisfies z.ZodType<CreateUserInput>
 
 const defaultValues: CreateUserInput = {
   name: "",
@@ -45,13 +58,19 @@ const defaultValues: CreateUserInput = {
 
 const textFields = [
   { name: "name", label: "Name", type: "text", autoComplete: "off" },
-  { name: "email", label: "Email", type: "email", autoComplete: "off" },
+  {
+    name: "email",
+    label: "E-Mail-Adresse",
+    type: "email",
+    autoComplete: "off",
+  },
   {
     name: "password",
-    label: "Initial password",
+    label: "Erstes Passwort",
     type: "password",
     autoComplete: "new-password",
-    description: "At least 12 characters. Share it with the user securely.",
+    description:
+      "Mindestens 12 Zeichen. Teilen Sie es der Person auf sicherem Weg mit.",
   },
 ] as const
 
@@ -59,7 +78,7 @@ export function CreateUserDialog() {
   const [open, setOpen] = React.useState(false)
   const queryClient = useQueryClient()
   const form = useForm<CreateUserInput>({
-    resolver: zodResolver(createUserInputSchema),
+    resolver: zodResolver(formSchema),
     defaultValues,
   })
 
@@ -67,31 +86,39 @@ export function CreateUserDialog() {
     orpc.user.create.mutationOptions({
       onSuccess: async (user) => {
         await queryClient.invalidateQueries({ queryKey: orpc.user.key() })
-        toast.success(`Created ${user.email}`)
+        toast.success(`Benutzer ${user.email} erfasst`)
         form.reset(defaultValues)
         setOpen(false)
       },
-      onError: (error) => toast.error(error.message),
+      onError: (error) =>
+        toast.error(
+          errorMessage(error, {
+            CONFLICT:
+              "Es gibt bereits einen Benutzer mit dieser E-Mail-Adresse.",
+          })
+        ),
     })
   )
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <UserPlusIcon />
-          New user
+        <Button size="lg">
+          <UserPlusIcon aria-hidden="true" />
+          Neuer Benutzer
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>New user</DialogTitle>
+          <DialogTitle>Neuer Benutzer</DialogTitle>
           <DialogDescription>
-            Create an account that signs in with email and password.
+            Erfasst ein Konto, das sich mit E-Mail-Adresse und Passwort
+            anmeldet.
           </DialogDescription>
         </DialogHeader>
         <form
           id="create-user-form"
+          noValidate
           onSubmit={form.handleSubmit((values) => createUser.mutate(values))}
         >
           <FieldGroup>
@@ -125,29 +152,35 @@ export function CreateUserDialog() {
               control={form.control}
               render={({ field }) => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>Role</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Rolle</FieldLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger id={field.name} className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="user">User</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="user">{roleLabels.user}</SelectItem>
+                      <SelectItem value="admin">{roleLabels.admin}</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FieldDescription>
+                    Admins haben Zugriff auf den ganzen Admin-Bereich.
+                  </FieldDescription>
                 </Field>
               )}
             />
           </FieldGroup>
         </form>
         <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Abbrechen</Button>
+          </DialogClose>
           <Button
             type="submit"
             form="create-user-form"
             disabled={createUser.isPending}
           >
-            {createUser.isPending && <Spinner />}
-            Create user
+            {createUser.isPending && <Spinner aria-hidden="true" />}
+            Benutzer erfassen
           </Button>
         </DialogFooter>
       </DialogContent>

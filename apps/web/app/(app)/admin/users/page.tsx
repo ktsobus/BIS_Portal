@@ -1,23 +1,23 @@
+import type { Metadata } from "next"
+
+import { AdminPageHeader } from "@/features/admin/components/admin-page-header"
 import { CreateUserDialog } from "@/features/users/components/create-user-dialog"
 import { UsersTable } from "@/features/users/components/users-table"
 import { requireAdmin } from "@/lib/session"
+
+export const metadata: Metadata = { title: "Benutzer" }
 
 export default async function AdminUsersPage() {
   const { user } = await requireAdmin()
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-medium">Users</h2>
-          <p className="text-sm text-muted-foreground">
-            Public sign-up is disabled. Create password users here; SAML users
-            are created on their first sign-in.
-          </p>
-        </div>
-        <CreateUserDialog />
-      </div>
+    <>
+      <AdminPageHeader
+        title="Benutzer"
+        description="Eine öffentliche Registrierung gibt es nicht. Hier erfassen Sie Benutzer mit Passwort. Wer sich über SAML anmeldet, wird bei der ersten Anmeldung mit der Rolle «Benutzer» angelegt; für den Admin-Bereich machen Sie die Person hier zum Admin."
+        action={<CreateUserDialog />}
+      />
       <UsersTable currentUserId={user.id} />
-    </div>
+    </>
   )
 }

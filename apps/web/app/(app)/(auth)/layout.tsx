@@ -1,11 +1,20 @@
+import type { Metadata } from "next"
+
+import { AdminShell } from "@/features/admin/components/admin-shell"
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
+
+/** Anmeldung und Zwei-Faktor: schmale, linksbündige Spalte. */
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <div className="flex min-h-svh items-center justify-center p-6">
-      <div className="w-full max-w-sm">{children}</div>
-    </div>
+    <AdminShell>
+      <div className="max-w-md">{children}</div>
+    </AdminShell>
   )
 }

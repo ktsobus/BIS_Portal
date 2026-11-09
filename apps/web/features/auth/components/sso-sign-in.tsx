@@ -4,12 +4,13 @@ import * as React from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import { Field, FieldLabel } from "@/components/ui/field"
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { authClient } from "@/lib/auth-client"
+import { errorMessage } from "@/lib/messages"
 
-/** SAML sign-in: the email domain selects the identity provider. */
+/** SAML-Anmeldung: Die E-Mail-Domäne bestimmt den Identity Provider. */
 export function SsoSignIn({ callbackUrl }: { callbackUrl: string }) {
   const [email, setEmail] = React.useState("")
   const [pending, setPending] = React.useState(false)
@@ -24,16 +25,27 @@ export function SsoSignIn({ callbackUrl }: { callbackUrl: string }) {
     })
     if (error) {
       setPending(false)
-      toast.error(error.message ?? "No SSO provider for this email")
+      toast.error(
+        errorMessage(
+          error,
+          {
+            NOT_FOUND:
+              "Für diese E-Mail-Domäne ist keine Anmeldung über SSO eingerichtet.",
+          },
+          "Die Anmeldung über SSO ist nicht möglich."
+        )
+      )
       return
     }
     if (data?.url) window.location.href = data.url
   }
 
   return (
-    <form onSubmit={submit} className="flex w-full flex-col gap-3">
+    <form onSubmit={submit} className="flex w-full flex-col gap-6">
       <Field>
-        <FieldLabel htmlFor="sso-email">Work email</FieldLabel>
+        <FieldLabel htmlFor="sso-email">
+          Geschäftliche E-Mail-Adresse
+        </FieldLabel>
         <Input
           id="sso-email"
           type="email"
@@ -41,10 +53,19 @@ export function SsoSignIn({ callbackUrl }: { callbackUrl: string }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        <FieldDescription>
+          Sie werden zur Anmeldung des Kantons weitergeleitet.
+        </FieldDescription>
       </Field>
-      <Button type="submit" variant="outline" disabled={pending || !email}>
-        {pending && <Spinner />}
-        Continue with SSO
+      <Button
+        type="submit"
+        size="lg"
+        variant="outline"
+        className="w-full sm:w-auto sm:self-start"
+        disabled={pending || !email}
+      >
+        {pending && <Spinner aria-hidden="true" />}
+        Weiter mit SSO
       </Button>
     </form>
   )

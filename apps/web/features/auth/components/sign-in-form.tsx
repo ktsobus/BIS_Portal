@@ -1,24 +1,27 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import { CircleAlertIcon } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import * as React from "react"
-import { toast } from "sonner"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { PageTitle } from "@/components/site/page-title"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
 import { safeRedirectPath } from "@/lib/safe-redirect"
 
 import { PasswordSignInForm } from "./password-sign-in-form"
 import { SsoSignIn } from "./sso-sign-in"
+
+/** Meldung zu `?error=…` nach einer fehlgeschlagenen SSO-Anmeldung. */
+function ssoErrorMessage(code: string) {
+  return errorMessage(
+    { code },
+    {},
+    "Die Anmeldung über SSO ist fehlgeschlagen. Bitte versuchen Sie es erneut oder wenden Sie sich an den Service Desk."
+  )
+}
 
 export function SignInForm() {
   const searchParams = useSearchParams()
@@ -26,21 +29,17 @@ export function SignInForm() {
   const methods = useQuery(orpc.auth.methods.queryOptions())
   const error = searchParams.get("error")
 
-  React.useEffect(() => {
-    if (error) toast.error("Single sign-on failed. Please try again.")
-  }, [error])
-
   const tabs = [
     {
       value: "password",
-      label: "Password",
+      label: "Passwort",
       content: <PasswordSignInForm callbackUrl={callbackUrl} />,
     },
     ...(methods.data?.sso
       ? [
           {
             value: "sso",
-            label: "SSO",
+            label: "SSO (SAML)",
             content: <SsoSignIn callbackUrl={callbackUrl} />,
           },
         ]
@@ -48,36 +47,49 @@ export function SignInForm() {
   ]
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Sign in</CardTitle>
-        <CardDescription>Welcome back.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {tabs.length === 1 ? (
-          tabs[0]!.content
-        ) : (
-          <Tabs defaultValue="password">
-            <TabsList className="w-full">
-              {tabs.map((t) => (
-                <TabsTrigger key={t.value} value={t.value}>
-                  {t.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {tabs.map((t) => (
-              <TabsContent key={t.value} value={t.value} className="pt-4">
-                {t.content}
-              </TabsContent>
-            ))}
-          </Tabs>
-        )}
-      </CardContent>
-      <CardFooter>
-        <p className="text-sm text-muted-foreground">
-          No account? Ask an administrator to create one.
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-3">
+        <PageTitle>Anmelden</PageTitle>
+        <p className="text-muted-foreground">
+          Die Anmeldung ist nur für die Administration des Portals nötig. Der
+          Katalog ist ohne Anmeldung zugänglich.
         </p>
-      </CardFooter>
-    </Card>
+      </div>
+
+      {error ? (
+        <Alert variant="destructive" className="p-4">
+          <CircleAlertIcon aria-hidden="true" />
+          <AlertTitle className="text-base font-bold">
+            Anmeldung nicht möglich
+          </AlertTitle>
+          <AlertDescription className="text-foreground!">
+            {ssoErrorMessage(error)}
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
+      {tabs.length === 1 ? (
+        tabs[0]!.content
+      ) : (
+        <Tabs defaultValue="password" className="gap-6">
+          <TabsList className="w-full">
+            {tabs.map((t) => (
+              <TabsTrigger key={t.value} value={t.value}>
+                {t.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {tabs.map((t) => (
+            <TabsContent key={t.value} value={t.value}>
+              {t.content}
+            </TabsContent>
+          ))}
+        </Tabs>
+      )}
+
+      <p className="border-t border-border pt-4 text-sm text-muted-foreground">
+        Noch kein Konto? Konten werden von den Admins im Admin-Bereich erfasst.
+      </p>
+    </div>
   )
 }
