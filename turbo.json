@@ -21,7 +21,8 @@
     "CATALOG_STALE_AFTER_HOURS",
     "CATALOG_SHOW_PERSONS",
     "CATALOG_FALLBACK_REQUEST_URL",
-    "CATALOG_FALLBACK_REQUEST_LABEL"
+    "CATALOG_FALLBACK_REQUEST_LABEL",
+    "CATALOG_IT_DATABASE_URL"
   ],
   "tasks": {
     "build": {
@@ -42,5 +43,6 @@
       "cache": false,
       "persistent": true
     }
-  }
+  },
+  "globalPassThroughEnv": ["NEXT_RUNTIME", "NEXT_PHASE"]
 }
