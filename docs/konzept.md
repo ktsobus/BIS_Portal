@@ -1,6 +1,6 @@
 # BITS-Portal – Analyse und Umsetzungsplan
 
-Stand: 9. November 2026 · Status: Entwurf, offene Fragen in [Kapitel 10](#10-offene-fragen--benötigte-informationen)
+Stand: 10. November 2026 · Status: Discovery ausgewertet, PoC in Arbeit; offene Fragen in [Kapitel 10](#10-offene-fragen--benötigte-informationen)
 
 Kantonsinternes Serviceportal, das die Business-IT-Services des AIO aus SAP LeanIX
 (`https://ktso.leanix.net`, Workspace `eamktsoLive`) übersichtlich darstellt und Anfragen
@@ -64,13 +64,39 @@ erDiagram
 ```
 
 Was im Fact Sheet sonst noch steht (Operativer Aufwand, Digitalisierung, Digitale Reife,
-Barriere), ist intern und wird im Portal **nicht** angezeigt (Annahme, siehe Frage 6).
+Barriere), ist intern und wird im Portal **nicht** angezeigt (Annahme).
 
-Die **internen Schlüssel** (Name des Fact-Sheet-Typs, z. B. ein umbenannter Standardtyp oder ein
-eigener Typ; Feldschlüssel von «Kanal»; Optionsschlüssel von «Business IT-Servicekatalog»;
-Relationsnamen; Ressourcentyp-Schlüssel) sind in der UI nicht sichtbar. Sie werden mit dem
-Discovery-Skript ausgelesen (Kapitel 11) und im Portal **konfigurierbar** gehalten, damit eine
-weitere Modelländerung keine Code-Änderung erzwingt.
+Die **internen Schlüssel** sind in der UI nicht sichtbar. Die Discovery vom 9.11.2026
+(Kapitel 11) hat sie bestätigt; sie stehen zentral in `apps/web/lib/leanix/model.ts`:
+
+| Begriff in der UI                  | Interner Schlüssel                                   |
+| ---------------------------------- | ---------------------------------------------------- |
+| Fact-Sheet-Typ «Leistung»          | `behoerdenLeistungen` (eigener Typ)                  |
+| Subtyp                             | Feld `category`: `verwaltungsLeistungen`, `behoerdenLeistungen` |
+| Zugangskanal → Kanal               | Feld `kanal` (Mehrfachauswahl)                       |
+| Option «Business IT-Servicekatalog» | `Business_IT_Servicekatalog`                        |
+| Fact-Sheet-Typ «Leistungskategorie» | `Leistungskategorie` (Ebene über `level`, Hierarchie über `relToParent`) |
+| Wurzel «Business IT-Servicekatalog» | ID `f846f11a-5b18-4585-bc74-ef98c056a3c8`           |
+| Leistung → Leistungskategorie      | `relbehoerdenLeistungenToLeistungskategorie`         |
+| Organisationseinheiten             | Typ `Organisationseinheit`, Relation `relbehoerdenLeistungenToOrganisationseinheit` |
+| Leistungsbezüger                   | Typ `UserGroup` (umbenannt), Relation `relbehoerdenLeistungenToUserGroup` |
+| Anwendungen / Prozesse             | `relbehoerdenLeistungenToApplication` / `…ToProcess` |
+| Leistungsverantwortliche/r         | Abonnement (`subscriptions`) Typ RESPONSIBLE mit Rolle «Leistungsverantwortliche/r» |
+
+**Datenstand (Discovery):** 18 Leistungen, davon 13 im Kanal BITS; 7 davon sind einem Service
+(Ebene 3) zugeordnet und erscheinen im Portal. Die übrigen 6 (u. a. «Mobile», «Schulung»,
+Testeinträge) haben keine Kategorie und landen im Datenqualitätsbericht. Der Kategorienbaum
+umfasst 5 Familien und 29 Services; die meisten Services haben eine Definition und eine
+verantwortliche Organisationseinheit.
+
+**Hierarchie bei Leistungen:** Die Folie «Metamodell» sieht Leistungen ohne Hierarchie vor.
+In LeanIX gibt es trotzdem Eltern-Kind-Beziehungen (z. B. «Mobile» → «Geschäftliches Mobile
+Abo»). Das Portal unterstützt beides: Kind-Leistungen ohne eigene Kategorie erben die Services
+der Eltern-Leistung.
+
+**Beschreibungen** sind Markdown (fett, Links, Listen). Sie folgen oft dem Muster
+Kurzbeschreibung → «Beschreibung:» → «Gut zu wissen» → «Vorgehen». Das Portal zeigt den
+ersten Absatz als Kurzbeschreibung und rendert den Rest sicher (kein HTML).
 
 ### 2.2 Publikationsregel
 
@@ -88,7 +114,10 @@ Sonderfälle:
 - Leistung im Kanal, aber **ohne Kategorie** im BITS-Baum → nicht im Katalog angezeigt, aber im
   Datenqualitätsbericht (Kapitel 7) gemeldet. Alternativ Rubrik «Weitere Leistungen» – Entscheid offen.
 - Leistung mit **mehreren Kategorien** → erscheint bei jedem Service (eine Detailseite, mehrere Einstiege).
-- Optionale Zusatzbedingung, falls gewünscht: Qualitätssiegel «freigegeben» (Frage 7).
+- Das Qualitätssiegel eignet sich **nicht** als Kriterium: die fachlich fertigen Leistungen
+  (z. B. eLearning) stehen auf «Siegel gebrochen», weil sie nach der Freigabe bearbeitet wurden.
+- Leistungskategorien haben kein Kanal-Feld: Alles im Baum unter der Wurzel wird angezeigt,
+  auch Services ohne veröffentlichte Leistung (mit Definition und Kontakt).
 
 ### 2.3 Abbildung der Anforderungen auf LeanIX
 
@@ -96,10 +125,10 @@ Sonderfälle:
 | ---------------------------- | -------------------------------------------------------------------------------- | --------------- |
 | Nur freigegebene Services    | Kanal enthält «Business IT-Servicekatalog»                                       | bestätigt       |
 | Gruppierung                  | Leistungskategorie Ebene 2 → Ebene 3 → Leistung                                  | bestätigt       |
-| Kurzbeschreibung             | Beschreibung der Leistung (erster Absatz als Teaser)                             | Annahme, Frage 3 |
-| Definition                   | Beschreibung der Leistungskategorie Ebene 3 (Service-Definition)                 | Annahme, Frage 3 |
-| Verantwortlichkeit           | Relation Organisationseinheiten (Anzeige mit Pfad, z. B. «AIO / Business IT-Services / Service-Management») | Annahme, Frage 4 |
-| Mögliche nächste Schritte    | Ressourcen bestimmter Typen → Schaltflächen (z. B. «Bestellen» → ky2help, «Anfrage» → SmartForm KAM) | Typen offen, Frage 2 |
+| Kurzbeschreibung             | Beschreibung der Leistung (erster Absatz als Teaser)                             | Annahme, offene Frage 3 |
+| Definition                   | Beschreibung der Leistungskategorie Ebene 3 (Service-Definition)                 | Annahme, offene Frage 3 |
+| Verantwortlichkeit           | Relation Organisationseinheiten (Anzeige mit Pfad, z. B. «AIO / Business IT-Services / Service-Management») | Annahme, offene Frage 4 |
+| Mögliche nächste Schritte    | Ressourcen bestimmter Typen → Schaltflächen (z. B. «Bestellen» → ky2help, «Anfrage» → SmartForm KAM) | Typen offen, offene Frage 1 |
 | Zielsystem pro Service       | URL der Ressource; pro Leistung frei wählbar, ohne Code-Änderung                  | bestätigt (Konzept) |
 | Datenbezug aus LeanIX        | GraphQL-API, technischer Benutzer mit Leserechten                                | bestätigt       |
 
@@ -121,21 +150,28 @@ hat eine Ressource diese Felder:
 Abfrage per GraphQL direkt mit dem Fact Sheet (`documents { edges { node { … } } }`), also ohne
 Zusatz-Requests. Welche Ressourcentypen es gibt, liefert `GET /services/pathfinder/v1/models/factSheetResources`.
 
-Im Portal wird pro Ressourcentyp konfiguriert, was damit passiert:
+Im Portal wird pro Ressourcentyp konfiguriert, was damit passiert. Die Instanz kennt 27
+Ressourcentypen; aktuell hat noch keine Leistung eine Ressource. Vorläufige Zuordnung
+(`resourceTypeRules` in `apps/web/lib/leanix/model.ts`, fachlich noch zu bestätigen – erwartet
+werden vor allem Links):
 
-| Ressourcentyp (Beispiel, Schlüssel offen) | Darstellung im Portal                              |
-| ----------------------------------------- | -------------------------------------------------- |
-| Bestellung / Antrag                       | Primäre Schaltfläche «Bestellen» (z. B. ky2help-Systemantrag) |
-| Anfrage                                   | Schaltfläche «Anfrage stellen» (z. B. SmartForm KAM) |
-| Dokumentation / Anleitung                 | Link unter «Weitere Informationen»                 |
-| alle anderen                              | nicht anzeigen                                     |
+| Ressourcentyp (Schlüssel)                                   | Darstellung im Portal                          |
+| ----------------------------------------------------------- | ---------------------------------------------- |
+| `ordering_form` (Bestellformular), `ky2help`                | Primäre Schaltfläche (Bestellen)               |
+| `support_ticket`                                            | Schaltfläche «Anfrage stellen»                 |
+| `phone_contact`                                             | Kontakt                                        |
+| `website`, `Anwendungslink`, `documentation`, `information`, `faq`, `additional_help`, `wiki`, `AIO-Wiki`, `miscellaneous` | Link unter «Weitere Informationen» |
+| `policy`, `decision`, `jira`, `roadmap`, `task`, `request` (RFC/RFI), `security`, `certificate`, `image`, `verzeichnis`, `RRB`, `AIO-ServicePortfolio`, `AIO-Lizenzablage`, `Testkonzept` | nicht anzeigen (intern) |
+
+Hat eine Leistung keine Aktion, zeigt das Portal eine konfigurierbare Standard-Aktion
+(`CATALOG_FALLBACK_REQUEST_URL`, z. B. Service Desk) und die verantwortliche Stelle.
 
 Hochgeladene **Dateien** sind nur mit LeanIX-Login abrufbar; sie werden im MVP nicht angezeigt
 (nur Links). Ressourcen-URLs werden auf `https:` geprüft; optional Allowlist der Zielhosts.
 
 Daneben gibt es in LeanIX die neueren **Vorlagen-Dokumente** (Documents API v2, z. B.
-Architekturentscheide). Das Discovery-Skript prüft, ob Leistungen solche Dokumente haben; nach
-heutigem Stand sind für das Portal nur die Ressourcen relevant.
+Architekturentscheide). Der technische Benutzer erhält darauf HTTP 403; für das Portal sind nur
+die Ressourcen relevant.
 
 ### 2.5 API-Zugang (heute an der Instanz geprüft)
 
@@ -146,7 +182,7 @@ heutigem Stand sind für das Portal nur die Ressourcen relevant.
 | Daten            | GraphQL `POST /services/pathfinder/v1/graphql` (`allFactSheets` mit Facettenfilter, Paging) |
 | Modell           | `GET /services/pathfinder/v1/models/dataModel`, `…/models/factSheetResources`, `…/models/languages/de` |
 | Änderungsereignisse | Webhooks-API mit **PULL-Subscriptions** (`/services/webhooks/v1/subscriptions/{id}/events`): das Portal holt Ereignisse ab, LeanIX muss das kantonale Netz nicht erreichen |
-| Benutzer         | Technischer Benutzer mit Rolle **Viewer** (nur lesen). Token nur serverseitig, nie im Browser |
+| Benutzer         | Technischer Benutzer, heute mit Workspace-Rolle **Member**. Empfehlung: auf **Viewer** (nur lesen) reduzieren. Token nur serverseitig, nie im Browser |
 
 ---
 
@@ -249,7 +285,7 @@ Umgebungsvariablen (nur serverseitig): `LEANIX_BASE_URL`, `LEANIX_API_TOKEN`,
   Betriebshandbuch.
 - Beschreibungen aus LeanIX werden als Text gerendert (Zeilenumbrüche erhalten), kein HTML.
 - Links nur `https:`; externe Links mit `rel="noopener"`.
-- Admin-Bereich mit Anmeldung (SSO bevorzugt), Katalog lesend ohne Anmeldung im Intranet (Frage 9).
+- Katalog ohne Anmeldung im Intranet; Admin-Bereich mit Anmeldung (SAML-SSO, im PoC zusätzlich Passwort).
 
 ---
 
@@ -264,7 +300,7 @@ Zod 4, better-auth, Drizzle + Postgres, Docker.
 | Bereich                     | Vorgehen                                                                 |
 | --------------------------- | ------------------------------------------------------------------------ |
 | Monorepo, oRPC, Zod, Drizzle, Docker | unverändert übernehmen                                           |
-| better-auth (Admin-Login)   | übernehmen; SAML mit kantonalem IdP, falls verfügbar (Frage 9)           |
+| better-auth (Admin-Login)   | übernehmen; SAML mit kantonalem IdP (offene Frage 7) plus Passwort-Login           |
 | Feature `tasks`, Startseiteninhalt `overview` | entfernen (Beispielcode)                               |
 | E-Mail/2FA                  | nur behalten, wenn Passwort-Admins nötig sind                            |
 | Theme (`app/globals.css`)   | durch CD-Tokens ersetzen (Kapitel 6.2)                                   |
@@ -337,7 +373,7 @@ Slugs aus Name + kurzer ID (stabil bei gleichen Namen); bei Umbenennung Weiterle
 | Suche        | Volltext über Name, Beschreibung, Service, Anwendungen; Filter Subtyp und Leistungsbezüger; clientseitig (kleine Datenmenge) |
 
 Brotkrumen auf allen Seiten (Start › Familie › Service › Leistung). Leistungen ohne
-Aktions-Ressource zeigen einen Standard-Kontakt (z. B. Service Desk) – Frage 2.
+Aktions-Ressource zeigen einen Standard-Kontakt (z. B. Service Desk) – offene Frage 2.
 
 ### 6.2 Corporate Design ([CD-Manual](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn))
 
@@ -346,7 +382,7 @@ Aktions-Ressource zeigen einen Standard-Kontakt (z. B. Service Desk) – Frage 2
 | Solothurner Rot `#CC0000`, Schwarz, Weiss | Akzent für Schaltflächen und Titelmarke; Kontrast auf Weiss 5,9:1 (WCAG AA) |
 | Grafik-Grau `#646B76`, Schwarz `#333333` | Sekundärtext (5,4:1 auf Weiss), Fliesstext                                   |
 | Tonwerte (z. B. DodgerBlue4 8 % `#ECF1F6`) | Flächen für Kacheln und Hinweise                                           |
-| Frutiger LT Std 55/56/75/76              | Webfont nur mit Lizenz; sonst Arial. Nur Gewichte 400/700                    |
+| Frutiger LT Std 55/56/75/76              | PoC: freie Schrift Source Sans 3 (humanistisch, ähnlicher Charakter), nur 400/700 + kursiv; Frutiger-Webfont später mit Lizenz |
 | Keine Verläufe, keine Schatten           | Flache Flächen, Haarlinien; shadcn-Schatten im Theme entfernen               |
 | Rotes Quadrat beim Seitentitel           | Titelkomponente mit rotem Quadrat                                            |
 | Linksbündig, max. ~70 Zeichen            | `max-w-[70ch]` für Fliesstext, nichts zentriert                              |
@@ -413,39 +449,36 @@ Beteiligte Teams (Auftragstyp «mehrere Teams»):
 
 ## 10. Offene Fragen / benötigte Informationen
 
-**LeanIX und Daten**
+### Geklärt (10.11.2026)
 
-1. **API-Token**: Ist er für einen technischen Benutzer mit Rolle *Viewer* ausgestellt? Bitte das
-   Discovery-Skript ausführen (Kapitel 11) und den Ausgabeordner zurückgeben – damit sind fast alle
-   technischen Schlüssel geklärt.
-2. **Ressourcentypen**: Welche Typen in «Weitere Informationen» lösen was aus (z. B. «Bestellung»
-   → Schaltfläche, «Dokumentation» → Link)? Kann eine Leistung mehrere Aktionen haben? Was wird
-   angezeigt, wenn keine Aktion erfasst ist (Standard-Kontakt, z. B. Service Desk)?
-3. **Kurzbeschreibung und Definition**: Ist die Beschreibung der Leistung die Kurzbeschreibung und
-   die Beschreibung der Kategorie Ebene 3 die Definition? Oder gibt es dafür eigene Felder?
-4. **Verantwortlichkeit**: Alle verknüpften Organisationseinheiten anzeigen (im Beispiel zwei: AIO
-   Service-Management und Personalamt) oder nur eine? Gibt es ein Relationsattribut für die Rolle?
-   Sollen Personen (Abonnements, z. B. «Responsible») angezeigt werden?
-5. **Gruppierung**: Familie = Ebene 2, Service = Ebene 3, darunter Leistungen – richtig? Leistungen
-   ohne Kategorie ausblenden oder unter «Weitere Leistungen» zeigen?
-6. **Weitere Felder**: Leistungsbezüger als Filter anzeigen? Anwendungen (z. B. easylearn) und
-   Prozesse anzeigen? Digitalisierung und Operativer Aufwand ausblenden?
-7. **Freigabe**: Reicht der Kanal, oder zählt zusätzlich das Qualitätssiegel bzw. ein Lifecycle?
+| Thema | Antwort / Entscheid |
+| ----- | ------------------- |
+| API-Zugang | Discovery erfolgreich; Token-Rolle heute *Member* → auf *Viewer* reduzieren empfohlen |
+| Ressourcentypen | Noch offen, voraussichtlich vor allem Links → vorläufige Zuordnung (Kapitel 2.4), jederzeit änderbar |
+| Hosting | Interner Server (Docker-Image + Postgres) |
+| Zugriff | Katalog ohne Anmeldung; Admin mit SSO (SAML) wenn möglich, für den PoC zusätzlich einfache Anmeldung (Passwort) |
+| Schrift | Gratis-Schrift statt Frutiger: **Source Sans 3** (SIL OFL), lokal eingebunden, ohne Google-Fonts-Abruf |
+| Logo | Online beschaffen, wenn möglich über eine API (siehe `docs/branding.md`); muss im PoC nicht final sein |
+| Gruppierung | Gemäss Folien: Leistungskategorie Ebene 2 = Familie, Ebene 3 = Service, darunter Leistungen |
+| Freigabe | Kanal reicht; Qualitätssiegel ist kein Kriterium (Kapitel 2.2) |
 
-**Betrieb und Zugriff**
+### Noch offen
 
-8. **Hosting**: Wo läuft das Portal (Container-Plattform, VM)? Ist Postgres verfügbar? Geht
-   ausgehender Verkehr zu `ktso.leanix.net` über einen Proxy?
-9. **Zugriff**: Katalog ohne Anmeldung im Intranet? Admin-Anmeldung über kantonales SSO (SAML /
-   Entra ID) möglich?
-10. **URL** und Einbindung ins Intranet (Verlinkung, Navigation)?
-
-**Design und Zielsysteme**
-
-11. **Logo** (SVG, farbig und negativ) und **Frutiger-Webfont-Lizenz** verfügbar? Sonst Arial.
-12. **ky2help / SmartForm**: Beispiel-URLs; lassen sich Formulare per Parameter vorbelegen
-    (z. B. Leistungsname/-ID) für echte Medienbruchfreiheit?
-13. Nur Deutsch, oder auch Französisch/Italienisch?
+1. **Ressourcentypen** fachlich festlegen: Welche Typen werden Schaltflächen (Bestellen, Anfrage),
+   welche Links? Mehrere Aktionen pro Leistung erlaubt?
+2. **Standard-Aktion** ohne erfasste Ressource: Welche URL (Service Desk, ky2help-Startseite)?
+3. **Kurzbeschreibung und Definition**: Annahme im PoC – erster Absatz der Leistungsbeschreibung
+   = Kurzbeschreibung, Beschreibung der Kategorie Ebene 3 = Service-Definition. Bestätigen?
+4. **Verantwortlichkeit**: Im PoC werden alle verknüpften Organisationseinheiten angezeigt.
+   Personen (Leistungsverantwortliche/r) sind vorbereitet, aber ausgeschaltet
+   (`CATALOG_SHOW_PERSONS`). Sollen sie sichtbar sein?
+5. **Leistungen ohne Kategorie** (heute 6, u. a. «Mobile», «Schulung»): in LeanIX zuordnen oder
+   im Portal unter «Weitere Leistungen» zeigen? Im PoC: ausgeblendet, im Datenqualitätsbericht.
+6. **Hosting-Details**: Proxy für ausgehenden Verkehr zu `ktso.leanix.net`? Postgres vorhanden
+   oder als Container? URL des Portals, Einbindung ins Intranet?
+7. **SSO**: Welcher Identity Provider (z. B. Entra ID) und wer richtet die SAML-App ein?
+8. **ky2help / SmartForm**: Lassen sich Formulare per URL-Parameter vorbelegen (Leistungsname/-ID)?
+9. **Sprachen**: Nur Deutsch?
 
 ---
 
