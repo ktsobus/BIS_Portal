@@ -270,7 +270,19 @@ async function main() {
     log(`## Fundstellen für «${CHANNEL_LABEL}» in den deutschen Übersetzungen`)
     const paths = findPaths(langDe, CHANNEL_LABEL).slice(0, 30)
     for (const p of paths) log(`- ${p}`)
-    channelKeys = [...new Set(paths.map((p) => p.split(" = ")[0].split(".").pop()))]
+    // Pfad z. B. «…fields.kanal.values.Business_IT_Servicekatalog.label»: der
+    // Optionsschlüssel ist das Segment nach «values», nicht das letzte («label»).
+    channelKeys = [
+      ...new Set(
+        paths
+          .map((p) => {
+            const segments = p.split(" = ")[0].split(".")
+            const i = segments.lastIndexOf("values")
+            return i >= 0 && i + 1 < segments.length ? segments[i + 1] : undefined
+          })
+          .filter(Boolean),
+      ),
+    ]
     log(`- Kandidaten für Optionsschlüssel: ${channelKeys.join(", ") || "keine"}`)
     log()
   }

@@ -10,6 +10,8 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "catalog:demo": "tsx scripts/build-demo-catalog.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
