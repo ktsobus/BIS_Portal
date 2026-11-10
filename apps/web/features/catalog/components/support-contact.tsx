@@ -1,11 +1,12 @@
 import type { OrgUnit, SupportContact } from "@workspace/api"
 
-import { cn } from "@/lib/utils"
-
 import { phoneHref, safeHref } from "../links"
-import { ActionLink } from "./action-links"
-import { ExternalLink } from "./external-link"
-import { orgUnitNames } from "./org-units"
+import { ActionButton } from "./actions"
+
+/** Namen der Stellen, z. B. «Service-Management, Betrieb». */
+export function orgUnitNames(units: OrgUnit[]): string {
+  return units.map((unit) => unit.name).join(", ")
+}
 
 /** Hat der Kontakt mindestens einen nutzbaren Weg? */
 export function hasSupportContact(
@@ -19,73 +20,43 @@ export function hasSupportContact(
   )
 }
 
-/**
- * Zentraler Kontakt (Service Desk) aus der Konfiguration:
- * - `buttons`: Anfrageweg als Schaltfläche, darunter E-Mail und Telefon
- *   (Hinweise ohne eigenen Bestell- oder Anfrageweg, Ausfallseite)
- * - `links`: alles als Textlinks (Fusszeile)
- */
+/** Zentraler Kontakt (Service Desk): Anfrageweg als Knopf, E-Mail und Telefon als Links. */
 export function SupportContactLinks({
   contact,
-  variant = "buttons",
-  className,
+  primary = false,
 }: {
   contact: SupportContact
-  variant?: "buttons" | "links"
-  className?: string
+  primary?: boolean
 }) {
   const request =
     contact.request && safeHref(contact.request.url) ? contact.request : null
   if (!request && !contact.email && !contact.phone) return null
-
-  const details = (
+  return (
     <>
-      {contact.email ? (
-        <li>
-          E-Mail:{" "}
-          <a href={`mailto:${contact.email}`} className="link-cd">
-            {contact.email}
-          </a>
-        </li>
+      {request ? (
+        <div className="btn-row">
+          <ActionButton action={request} primary={primary} />
+        </div>
       ) : null}
-      {contact.phone ? (
-        <li>
-          Telefon:{" "}
-          <a href={phoneHref(contact.phone)} className="link-cd">
-            {contact.phone}
-          </a>
-        </li>
+      {contact.email || contact.phone ? (
+        <ul className="linklist">
+          {contact.email ? (
+            <li>
+              E-Mail: <a href={`mailto:${contact.email}`}>{contact.email}</a>
+            </li>
+          ) : null}
+          {contact.phone ? (
+            <li>
+              Telefon: <a href={phoneHref(contact.phone)}>{contact.phone}</a>
+            </li>
+          ) : null}
+        </ul>
       ) : null}
     </>
   )
-
-  if (variant === "links") {
-    return (
-      <ul className={cn("flex flex-col gap-1", className)}>
-        {request ? (
-          <li>
-            <ExternalLink href={request.url}>{request.label}</ExternalLink>
-          </li>
-        ) : null}
-        {details}
-      </ul>
-    )
-  }
-
-  return (
-    <div className={cn("flex flex-col items-start gap-3", className)}>
-      {request ? <ActionLink action={request} /> : null}
-      {contact.email || contact.phone ? (
-        <ul className="flex flex-col gap-1">{details}</ul>
-      ) : null}
-    </div>
-  )
 }
 
-/**
- * An wen wenden? Verantwortliche Stelle und/oder Service Desk; endet mit
- * Doppelpunkt, wenn darunter Kontaktangaben folgen.
- */
+/** An wen wenden? Endet mit Doppelpunkt, wenn darunter Kontaktangaben folgen. */
 export function ContactSentence({
   responsible,
   withContact,
@@ -114,8 +85,8 @@ export function ContactSentence({
 
 /**
  * Hinweis ohne eigenen Bestell- oder Anfrageweg (Leistung ohne Aktion,
- * Service ohne Leistungen): Text, verantwortliche Stelle und – falls
- * konfiguriert – der zentrale Kontakt als Schaltfläche bzw. Links.
+ * Service ohne Leistungen): Text, verantwortliche Stelle und, falls
+ * konfiguriert, der zentrale Kontakt.
  */
 export function NoRequestPathHint({
   message,
@@ -126,7 +97,7 @@ export function NoRequestPathHint({
   message: string
   responsible: OrgUnit[]
   contact: SupportContact | null | undefined
-  /** Einleitung fett und als eigener Absatz (Service ohne Leistungen). */
+  /** Einleitung hervorgehoben und als eigener Absatz. */
   emphasize?: boolean
 }) {
   const withContact = hasSupportContact(contact)
@@ -137,7 +108,9 @@ export function NoRequestPathHint({
     <>
       {emphasize ? (
         <>
-          <p className="font-bold">{message}</p>
+          <p>
+            <strong>{message}</strong>
+          </p>
           <p>{sentence}</p>
         </>
       ) : (
@@ -147,5 +120,37 @@ export function NoRequestPathHint({
       )}
       {withContact ? <SupportContactLinks contact={contact} /> : null}
     </>
+  )
+}
+
+/** Seite bei einem Ausfall: der Katalog kann nicht gezeigt werden. */
+export function CatalogUnavailable({
+  contact,
+}: {
+  contact: SupportContact | null | undefined
+}) {
+  return (
+    <div className="wrap">
+      <div className="page-head">
+        <h1>Der Katalog ist im Moment nicht erreichbar</h1>
+        <p className="t-lead">
+          Die Daten aus LeanIX konnten nicht geladen werden. Versuchen Sie es in
+          einigen Minuten erneut.
+        </p>
+        <div className="btn-row">
+          <a className="btn btn--primary" href="">
+            Seite neu laden
+          </a>
+        </div>
+      </div>
+      {hasSupportContact(contact) ? (
+        <div className="note" style={{ marginTop: "var(--s-7)" }}>
+          <p>
+            <strong>Dringend?</strong> Der Service Desk des AIO hilft weiter:
+          </p>
+          <SupportContactLinks contact={contact} />
+        </div>
+      ) : null}
+    </div>
   )
 }

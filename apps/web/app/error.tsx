@@ -1,35 +1,41 @@
 "use client"
 
-import { usePathname } from "next/navigation"
+import * as React from "react"
 
-import { AdminShell } from "@/features/admin/components/admin-shell"
-import { ErrorNotice } from "@/features/admin/components/error-notice"
-
-/** Bereiche mit Admin-Kopf (Anmeldung, Ersteinrichtung, Administration). */
-const ADMIN_PREFIXES = ["/admin", "/sign-in", "/two-factor", "/setup"]
-
-/**
- * Fehlerseite unterhalb des Root-Layouts (mit Schrift, CD und Providern).
- * Fängt u. a. Fehler aus `app/(app)/layout.tsx` (Setup-Prüfung),
- * `app/setup/page.tsx` und den Layouts darunter ab, z. B. wenn die
- * Datenbank nicht erreichbar ist.
- */
-export default function RootError({
+export default function ErrorPage({
   error,
-  retry,
+  reset,
 }: {
-  error: unknown
-  retry: () => void
+  error: Error & { digest?: string }
+  reset: () => void
 }) {
-  const pathname = usePathname()
-  const isAdminArea = ADMIN_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  )
+  React.useEffect(() => {
+    console.error(error)
+  }, [error])
 
   return (
-    <AdminShell variant={isAdminArea ? "admin" : "public"}>
-      <title>Fehler · Business-IT-Serviceportal · Kanton Solothurn</title>
-      <ErrorNotice error={error} retry={retry} />
-    </AdminShell>
+    <main id="top" className="app">
+      <div className="wrap">
+        <div className="page-head">
+          <p className="t-label muted">Fehler</p>
+          <h1>Die Seite konnte nicht geladen werden</h1>
+          <p className="t-lead">
+            Beim Laden ist ein Fehler aufgetreten. Meist hilft ein zweiter
+            Versuch.
+          </p>
+          <div className="btn-row">
+            <button type="button" className="btn btn--primary" onClick={reset}>
+              Seite neu laden
+            </button>
+            <a className="btn btn--secondary" href="/">
+              Zur Startseite gehen
+            </a>
+          </div>
+          {error.digest ? (
+            <p className="t-small muted">Fehlerkennung: {error.digest}</p>
+          ) : null}
+        </div>
+      </div>
+    </main>
   )
 }

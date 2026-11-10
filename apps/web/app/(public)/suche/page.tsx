@@ -1,13 +1,12 @@
 import type { Metadata } from "next"
 
-import { Breadcrumbs } from "@/components/site/breadcrumbs"
-import { PageTitle } from "@/components/site/page-title"
-import { CatalogSearch } from "@/features/catalog/components/catalog-search"
+import { CatalogFrame } from "@/features/catalog/components/page-frame"
+import { CatalogSearch } from "@/features/catalog/components/search"
 
 export const metadata: Metadata = {
-  title: "Suche",
+  title: "Leistung suchen",
   description:
-    "Business-IT-Services und Leistungen des AIO durchsuchen und filtern.",
+    "Den Katalog der Business-IT-Services nach Stichwort, Art und Leistungsbezüger durchsuchen.",
 }
 
 function first(value: string | string[] | undefined): string {
@@ -23,20 +22,20 @@ export default async function SearchPage({
   const audience = first(params.bezueger)
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-5">
-        <Breadcrumbs
-          items={[{ label: "Start", href: "/" }, { label: "Suche" }]}
-        />
-        <PageTitle>Suche</PageTitle>
+    <CatalogFrame search>
+      <div className="wrap">
+        <div className="page-head">
+          <h1>Leistung suchen</h1>
+        </div>
       </div>
-      {/* Neu aufbauen, wenn die Suche über das Kopf-Suchfeld neu startet. */}
-      <CatalogSearch
-        key={`${query}|${subtype}|${audience}`}
-        initialQuery={query}
-        initialSubtype={subtype}
-        initialAudience={audience}
-      />
-    </div>
+      <div className="wrap">
+        <CatalogSearch
+          key={`${query}|${subtype}|${audience}`}
+          initialQuery={query}
+          initialSubtype={subtype}
+          initialAudience={audience}
+        />
+      </div>
+    </CatalogFrame>
   )
 }

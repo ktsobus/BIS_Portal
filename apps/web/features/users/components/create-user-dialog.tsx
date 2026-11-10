@@ -3,34 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { CreateUserInput } from "@workspace/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { UserPlusIcon } from "lucide-react"
 import * as React from "react"
-import { Controller, useForm } from "react-hook-form"
-import { toast } from "sonner"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  fieldDescribedBy,
-} from "@/components/ui/field"
-import { FormAlert } from "@/components/ui/form-alert"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
+import { Dialog } from "@/components/ui/dialog"
+import { TextField } from "@/components/ui/field"
+import { Status } from "@/components/ui/status"
 import { accountFields, errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
 
@@ -50,7 +29,7 @@ type FormValues = z.infer<typeof formSchema>
 
 const defaultValues: FormValues = { name: "", email: "", password: "" }
 
-const FORM_ERROR_ID = "create-user-error"
+const STATUS_ID = "create-user-status"
 
 const textFields = [
   { name: "name", label: "Name", type: "text", autoComplete: "off" },
@@ -65,31 +44,27 @@ const textFields = [
     label: "Erstes Passwort",
     type: "password",
     autoComplete: "new-password",
-    description:
-      "Mindestens 12 Zeichen. Teilen Sie es der Person auf sicherem Weg mit.",
+    hint: "Mindestens 12 Zeichen. Teilen Sie es der Person auf sicherem Weg mit.",
   },
 ] as const
 
 export function CreateUserDialog() {
   const [open, setOpen] = React.useState(false)
+  // Bestätigung nach dem Schliessen des Dialogs, neben dem Knopf.
+  const [created, setCreated] = React.useState<string | null>(null)
   const queryClient = useQueryClient()
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   })
-  // Serverfehler ohne Feldbezug bleiben im Dialog stehen (kein Toast).
+  // Serverfehler ohne Feldbezug bleiben im Dialog stehen.
   const [formError, setFormError] = React.useState<string | null>(null)
-  const alertRef = React.useRef<HTMLDivElement>(null)
-  // Neuer Fehler: Hinweis fokussieren, damit er vorgelesen wird.
-  React.useEffect(() => {
-    if (formError) alertRef.current?.focus()
-  }, [formError])
 
   const createUser = useMutation(
     orpc.user.create.mutationOptions({
       onSuccess: async (user) => {
         await queryClient.invalidateQueries({ queryKey: orpc.user.key() })
-        toast.success(`Admin-Konto ${user.email} erfasst`)
+        setCreated(`Admin-Konto ${user.email} erfasst.`)
         form.reset(defaultValues)
         setOpen(false)
       },
@@ -116,100 +91,74 @@ export function CreateUserDialog() {
     createUser.mutate(input)
   }
 
+  function close() {
+    setOpen(false)
+    setFormError(null)
+    form.reset(defaultValues)
+  }
+
+  const { errors } = form.formState
+
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next)
-        if (!next) setFormError(null)
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button size="lg">
-          <UserPlusIcon aria-hidden="true" />
-          Admin-Konto erfassen
-        </Button>
-      </DialogTrigger>
-      <DialogContent showCloseButton={false}>
-        <DialogHeader>
-          <DialogTitle>Neues Admin-Konto</DialogTitle>
-          <DialogDescription>
-            Erfasst ein Konto mit E-Mail-Adresse und Passwort. Es hat Zugriff
-            auf den ganzen Admin-Bereich. Für den Katalog ist keine Anmeldung
-            nötig.
-          </DialogDescription>
-        </DialogHeader>
-        <form
-          id="create-user-form"
-          noValidate
-          onSubmit={form.handleSubmit(submit)}
-          className="flex flex-col gap-5"
-        >
-          {formError ? (
-            <FormAlert
-              ref={alertRef}
-              id={FORM_ERROR_ID}
-              title="Konto nicht erfasst"
-            >
-              {formError}
-            </FormAlert>
-          ) : null}
-          <FieldGroup>
+    <>
+      <button
+        type="button"
+        className="btn btn--primary"
+        onClick={() => {
+          setCreated(null)
+          setOpen(true)
+        }}
+      >
+        Admin-Konto erfassen
+      </button>
+      <p role="status" className="admin-head__status t-small">
+        {created}
+      </p>
+      <Dialog
+        open={open}
+        onClose={close}
+        title="Neues Admin-Konto"
+        description="Erfasst ein Konto mit E-Mail-Adresse und Passwort. Es hat Zugriff auf den ganzen Admin-Bereich. Für den Katalog ist keine Anmeldung nötig."
+      >
+        <form noValidate onSubmit={form.handleSubmit(submit)}>
+          <div className="form">
             {textFields.map((f) => (
-              <Controller
+              <TextField
                 key={f.name}
-                name={f.name}
-                control={form.control}
-                render={({ field, fieldState }) => {
-                  const description =
-                    "description" in f ? f.description : undefined
-                  const { descriptionId, errorId, describedBy } =
-                    fieldDescribedBy(`create-user-${field.name}`, {
-                      description: Boolean(description),
-                      invalid: Boolean(fieldState.error?.message),
-                    })
-                  return (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={`create-user-${field.name}`}>
-                        {f.label}
-                      </FieldLabel>
-                      <Input
-                        {...field}
-                        id={`create-user-${field.name}`}
-                        type={f.type}
-                        autoComplete={f.autoComplete}
-                        aria-invalid={fieldState.invalid}
-                        aria-describedby={describedBy}
-                      />
-                      {description ? (
-                        <FieldDescription id={descriptionId}>
-                          {description}
-                        </FieldDescription>
-                      ) : null}
-                      {fieldState.invalid && (
-                        <FieldError id={errorId} errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )
-                }}
+                id={`create-user-${f.name}`}
+                label={f.label}
+                type={f.type}
+                autoComplete={f.autoComplete}
+                hint={"hint" in f ? f.hint : undefined}
+                error={errors[f.name]?.message}
+                describedById={formError ? STATUS_ID : undefined}
+                {...form.register(f.name)}
               />
             ))}
-          </FieldGroup>
+            <div className="btn-row">
+              <button
+                type="button"
+                className="btn btn--secondary"
+                onClick={close}
+              >
+                Abbrechen
+              </button>
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={createUser.isPending}
+              >
+                {createUser.isPending
+                  ? "Konto wird erfasst …"
+                  : "Admin-Konto erfassen"}
+              </button>
+            </div>
+            <Status id={STATUS_ID} bad={Boolean(formError)}>
+              {formError ? `Konto nicht erfasst: ${formError}` : null}
+            </Status>
+          </div>
         </form>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Abbrechen</Button>
-          </DialogClose>
-          <Button
-            type="submit"
-            form="create-user-form"
-            disabled={createUser.isPending}
-          >
-            {createUser.isPending && <Spinner aria-hidden="true" />}
-            Admin-Konto erfassen
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </Dialog>
+    </>
   )
 }

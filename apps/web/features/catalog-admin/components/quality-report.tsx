@@ -1,18 +1,7 @@
 "use client"
 
 import type { QualityIssue } from "@workspace/api"
-import {
-  CircleCheckIcon,
-  CircleXIcon,
-  ExternalLinkIcon,
-  InfoIcon,
-  TriangleAlertIcon,
-} from "lucide-react"
 import * as React from "react"
-
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 import { factSheetTypeLabel, formatNumber, severityLabels } from "./format"
 
@@ -24,15 +13,10 @@ const severities: Severity[] = ["error", "warning", "info"]
 /** So viele Einträge je Gruppe zeigen, bevor «Alle anzeigen» nötig ist. */
 const GROUP_PREVIEW = 8
 
-const toggleItemClass =
-  "h-10 px-3 data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-background"
-
-const severityIcons: Record<Severity, React.ReactNode> = {
-  error: <CircleXIcon aria-hidden="true" className="size-5 text-destructive" />,
-  warning: <TriangleAlertIcon aria-hidden="true" className="size-5" />,
-  info: (
-    <InfoIcon aria-hidden="true" className="size-5 text-muted-foreground" />
-  ),
+const severityTags: Record<Severity, string> = {
+  error: "tag tag--bad",
+  warning: "tag tag--warn",
+  info: "tag",
 }
 
 function matches(issue: QualityIssue, query: string) {
@@ -52,6 +36,7 @@ export function QualityReport({ issues }: { issues: QualityIssue[] }) {
   const [filter, setFilter] = React.useState<Filter>("all")
   const [query, setQuery] = React.useState("")
   const searchId = React.useId()
+  const filterName = React.useId()
 
   const counts = React.useMemo(() => {
     const result: Record<Severity, number> = { error: 0, warning: 0, info: 0 }
@@ -78,73 +63,61 @@ export function QualityReport({ issues }: { issues: QualityIssue[] }) {
 
   if (issues.length === 0) {
     return (
-      <p className="flex items-center gap-2 border border-border p-6">
-        <CircleCheckIcon aria-hidden="true" className="size-5" />
+      <p>
         Keine Auffälligkeiten: Die Daten aus LeanIX sind vollständig erfasst.
       </p>
     )
   }
 
   const shown = groups.reduce((sum, group) => sum + group.items.length, 0)
+  const options: Array<{ value: Filter; label: string }> = [
+    { value: "all", label: `Alle (${formatNumber(issues.length)})` },
+    ...severities.map((severity) => ({
+      value: severity,
+      label: `${severityLabels[severity].plural} (${formatNumber(counts[severity])})`,
+    })),
+  ]
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="flex flex-col gap-1.5">
-          <span id={`${searchId}-filter`} className="text-sm font-bold">
-            Schweregrad
-          </span>
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            spacing={0}
-            value={filter}
-            onValueChange={(value) => {
-              if (value) setFilter(value as Filter)
-            }}
-            aria-labelledby={`${searchId}-filter`}
-            className="flex-wrap"
-          >
-            <ToggleGroupItem value="all" className={toggleItemClass}>
-              Alle ({formatNumber(issues.length)})
-            </ToggleGroupItem>
-            {severities.map((severity) => (
-              <ToggleGroupItem
-                key={severity}
-                value={severity}
-                className={toggleItemClass}
-              >
-                {severityLabels[severity].plural} (
-                {formatNumber(counts[severity])})
-              </ToggleGroupItem>
+    <div className="quality">
+      <div className="list-tools">
+        <div className="filters">
+          <fieldset>
+            <legend>Schweregrad</legend>
+            {options.map((option) => (
+              <label className="chip" key={option.value}>
+                <input
+                  type="radio"
+                  name={filterName}
+                  value={option.value}
+                  checked={filter === option.value}
+                  onChange={() => setFilter(option.value)}
+                />
+                <span>{option.label}</span>
+              </label>
             ))}
-          </ToggleGroup>
+          </fieldset>
         </div>
-        <div className="flex w-full flex-col gap-1.5 lg:max-w-sm">
-          <label htmlFor={searchId} className="text-sm font-bold">
-            Suche
-          </label>
-          <Input
+        <div className="field list-tools__search">
+          <label htmlFor={searchId}>Suche</label>
+          <input
             id={searchId}
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Fact Sheet, Meldung oder Code"
             autoComplete="off"
-            className="h-10"
           />
         </div>
       </div>
 
-      <p aria-live="polite" className="sr-only">
+      <p role="status" className="search__count">
         {formatNumber(shown)} von {formatNumber(issues.length)} Einträgen
         angezeigt
       </p>
 
       {groups.length === 0 ? (
-        <p className="border border-dashed border-border p-6 text-muted-foreground">
-          Keine Einträge für diesen Filter.
-        </p>
+        <p className="muted">Keine Einträge für diesen Filter.</p>
       ) : (
         groups.map((group) => (
           <IssueGroup
@@ -181,15 +154,12 @@ function IssueGroup({
       : severityLabels[severity].plural
 
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="flex items-center gap-2 text-lg font-bold">
-        {severityIcons[severity]}
-        {label}{" "}
-        <span className="font-normal text-muted-foreground">
-          ({formatNumber(items.length)})
-        </span>
+    <div className="quality__group">
+      <h3 className="quality__title">
+        <span className={severityTags[severity]}>{label}</span>
+        <span className="muted">{formatNumber(items.length)}</span>
       </h3>
-      <ul id={listId} className="border-t border-border">
+      <ul id={listId} className="entries">
         {visible.map((issue, index) => (
           <IssueItem
             key={`${issue.factSheetId}-${issue.code}-${index}`}
@@ -198,18 +168,19 @@ function IssueGroup({
         ))}
       </ul>
       {collapsible ? (
-        <Button
-          variant="outline"
-          size="sm"
-          className="self-start"
-          aria-expanded={expanded}
-          aria-controls={listId}
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded
-            ? "Weniger anzeigen"
-            : `Alle ${formatNumber(items.length)} ${severityLabels[severity].plural} anzeigen`}
-        </Button>
+        <div className="btn-row list-more">
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm"
+            aria-expanded={expanded}
+            aria-controls={listId}
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded
+              ? "Weniger anzeigen"
+              : `Alle ${formatNumber(items.length)} ${severityLabels[severity].plural} anzeigen`}
+          </button>
+        </div>
       ) : null}
     </div>
   )
@@ -217,27 +188,24 @@ function IssueGroup({
 
 function IssueItem({ issue }: { issue: QualityIssue }) {
   return (
-    <li className="grid gap-x-6 gap-y-1 border-b border-border py-3 sm:grid-cols-[minmax(0,1fr)_auto]">
-      <div className="flex min-w-0 flex-col gap-0.5">
-        <p className="flex flex-wrap items-baseline gap-x-2">
-          <span className="font-bold [overflow-wrap:anywhere]">
-            {issue.factSheetName}
-          </span>
-          <span className="text-sm text-muted-foreground">
+    <li className="issue">
+      <div className="issue__body">
+        <p>
+          <span className="issue__name">{issue.factSheetName}</span>{" "}
+          <span className="t-small muted">
             {factSheetTypeLabel(issue.factSheetType)}
           </span>
         </p>
-        <p className="max-w-[70ch]">{issue.message}</p>
-        <p className="font-mono text-xs text-muted-foreground">{issue.code}</p>
+        <p className="measure">{issue.message}</p>
+        <p className="code muted">{issue.code}</p>
       </div>
       <a
+        className="ext admin-link"
         href={issue.leanixUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 self-start text-sm whitespace-nowrap underline decoration-1 underline-offset-4 hover:text-primary hover:decoration-2"
       >
         In LeanIX öffnen
-        <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
         <span className="sr-only">
           : {issue.factSheetName} (öffnet in neuem Tab)
         </span>

@@ -1,27 +1,26 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { redirect } from "next/navigation"
 
-import { Breadcrumbs, type BreadcrumbItem } from "@/components/site/breadcrumbs"
-import { formatDate } from "@/components/site/format"
-import { PageTitle } from "@/components/site/page-title"
-import { ActionLinks } from "@/features/catalog/components/action-links"
-import { CatalogUnavailable } from "@/features/catalog/components/catalog-unavailable"
-import { DashList } from "@/features/catalog/components/dash-list"
+import { ActionButtons, TextLink } from "@/features/catalog/components/actions"
 import {
-  ExternalLink,
-  safeHref,
-} from "@/features/catalog/components/external-link"
-import { LeistungGrid } from "@/features/catalog/components/leistung-card"
+  LeistungEntries,
+  OrgUnits,
+  Persons,
+} from "@/features/catalog/components/lists"
 import { MarkdownText } from "@/features/catalog/components/markdown"
 import {
-  OrgUnitList,
-  PersonList,
-} from "@/features/catalog/components/org-units"
-import { Section } from "@/features/catalog/components/section"
-import { NoRequestPathHint } from "@/features/catalog/components/support-contact"
-import { loadLeistung } from "@/features/catalog/load"
-import { plainExcerpt } from "@/features/catalog/text"
+  CatalogFrame,
+  Crumbs,
+  type Crumb,
+} from "@/features/catalog/components/page-frame"
+import {
+  CatalogUnavailable,
+  NoRequestPathHint,
+} from "@/features/catalog/components/support-contact"
+import { safeHref } from "@/features/catalog/links"
+import { loadLeistung, loadStatus } from "@/features/catalog/load"
+import { markdownToPlainText, plainExcerpt } from "@/features/catalog/text"
+import { formatDate } from "@/lib/format"
 
 export async function generateMetadata({
   params,
@@ -44,205 +43,161 @@ export default async function LeistungPage({
 }: PageProps<"/leistung/[slug]">) {
   const { slug } = await params
   const result = await loadLeistung(slug)
-  if (!result.ok) return <CatalogUnavailable />
+  if (!result.ok) {
+    return (
+      <CatalogFrame>
+        <CatalogUnavailable contact={(await loadStatus())?.contact} />
+      </CatalogFrame>
+    )
+  }
 
-  const { leistung, placements, parent, children } = result.data
+  const { leistung, placements, parent, children, status } = result.data
   if (leistung.slug !== slug) redirect(`/leistung/${leistung.slug}`)
 
   const primary = placements[0]
-  const breadcrumbs: BreadcrumbItem[] = [{ label: "Start", href: "/" }]
+  const crumbs: Crumb[] = [{ label: "Katalog", href: "/#kategorien" }]
   if (primary) {
-    breadcrumbs.push(
+    crumbs.push(
       { label: primary.family.name, href: `/kategorie/${primary.family.slug}` },
       { label: primary.service.name, href: `/service/${primary.service.slug}` }
     )
   } else if (parent) {
-    breadcrumbs.push({ label: parent.name, href: `/leistung/${parent.slug}` })
+    crumbs.push({ label: parent.name, href: `/leistung/${parent.slug}` })
   }
-  breadcrumbs.push({ label: leistung.name })
+  crumbs.push({ label: leistung.name })
 
   // Ohne eigene Stelle gilt die verantwortliche Stelle des Services.
-  const ownResponsible = leistung.responsible.length > 0
-  const responsible = ownResponsible
-    ? leistung.responsible
-    : (primary?.service.responsible ?? [])
+  const responsible =
+    leistung.responsible.length > 0
+      ? leistung.responsible
+      : (primary?.service.responsible ?? [])
   const infoLinks = leistung.links.filter((link) => safeHref(link.url))
   const actions = leistung.actions.filter((action) => safeHref(action.url))
   const updatedAt = formatDate(leistung.updatedAt)
+  // Die Kurzbeschreibung ist oft der Anfang der Beschreibung: dann nicht doppelt zeigen.
+  const summaryStart = markdownToPlainText(leistung.summary).slice(0, 80)
+  const showLead =
+    Boolean(summaryStart) &&
+    !markdownToPlainText(leistung.description).startsWith(summaryStart)
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-5">
-        <Breadcrumbs items={breadcrumbs} />
-        <PageTitle eyebrow={leistung.subtypeLabel ?? "Leistung"}>
-          {leistung.name}
-        </PageTitle>
+    <CatalogFrame>
+      <div className="wrap">
+        <div className="page-head">
+          <Crumbs items={crumbs} />
+          <h1>{leistung.name}</h1>
+          {showLead ? <p className="t-lead">{leistung.summary}</p> : null}
+          {actions.length > 0 ? (
+            <div className="btn-row">
+              <ActionButtons actions={actions} />
+            </div>
+          ) : null}
+        </div>
       </div>
 
-      <div className="flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:grid-rows-[auto_1fr] lg:gap-x-12">
-        {/* Mobil: Nächste Schritte zuerst, Eckdaten nach der Beschreibung. */}
-        <div className="contents lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-8">
-          <section
-            aria-labelledby="naechste-schritte"
-            className="order-1 flex flex-col gap-4 border-t-4 border-primary bg-so-surface p-5"
-          >
-            <h2
-              id="naechste-schritte"
-              className="text-xl leading-tight font-normal"
-            >
-              Nächste Schritte
-            </h2>
-            {actions.length > 0 ? (
-              <ActionLinks actions={actions} layout="stacked" />
-            ) : (
+      <div className="wrap grid grid--top">
+        <div className="span-7">
+          {actions.length === 0 ? (
+            <div className="note" style={{ marginBottom: "var(--s-6)" }}>
               <NoRequestPathHint
                 message="Für diese Leistung ist im Portal noch kein Bestell- oder Anfrageweg hinterlegt."
                 responsible={responsible}
-                contact={result.data.status.contact}
+                contact={status.contact}
               />
-            )}
-          </section>
-
-          <div className="order-3 flex flex-col gap-8">
-            <FactBlock title="Verantwortlich">
-              {responsible.length > 0 ? (
-                <>
-                  <OrgUnitList units={responsible} />
-                  {ownResponsible ? null : (
-                    <p className="text-sm text-so-graphite">
-                      Verantwortliche Stelle des Services
-                    </p>
-                  )}
-                </>
-              ) : (
-                <p className="text-so-graphite">Keine Angabe</p>
-              )}
-              <PersonList persons={leistung.persons} />
-            </FactBlock>
-
-            {leistung.audiences.length > 0 ? (
-              <FactBlock title="Leistungsbezüger">
-                <DashList
-                  items={leistung.audiences.map((audience) => ({
-                    key: audience.id,
-                    content: audience.name,
-                  }))}
-                />
-              </FactBlock>
-            ) : null}
-
-            {leistung.applications.length > 0 ? (
-              <FactBlock title="Anwendungen">
-                <DashList
-                  items={leistung.applications.map((application) => ({
-                    key: application.id,
-                    content: application.name,
-                  }))}
-                />
-              </FactBlock>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="order-2 flex min-w-0 flex-col gap-10 lg:col-start-1 lg:row-start-1">
-          <Section id="beschreibung" title="Beschreibung">
-            {leistung.description ? (
-              <MarkdownText headingLevel={3}>
-                {leistung.description}
-              </MarkdownText>
-            ) : (
-              <p className="text-so-graphite">
-                Für diese Leistung ist noch keine Beschreibung erfasst.
-              </p>
-            )}
-          </Section>
-        </div>
-
-        <div className="order-4 flex min-w-0 flex-col gap-10 lg:col-start-1 lg:row-start-2">
-          {infoLinks.length > 0 ? (
-            <Section id="weitere-informationen" title="Weitere Informationen">
-              <ul className="flex max-w-[70ch] flex-col gap-3">
-                {infoLinks.map((link) => (
-                  <li key={link.id} className="flex flex-col gap-0.5">
-                    <ExternalLink href={link.url}>{link.label}</ExternalLink>
-                    {link.description ? (
-                      <span className="text-sm text-so-graphite">
-                        {link.description}
-                      </span>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </Section>
+            </div>
           ) : null}
-
-          {parent ? (
-            <Section id="uebergeordnet" title="Übergeordnete Leistung">
-              <LeistungGrid leistungen={[parent]} />
-            </Section>
-          ) : null}
-
-          {children.length > 0 ? (
-            <Section
-              id="untergeordnet"
-              title={`Untergeordnete Leistungen (${children.length})`}
-            >
-              <LeistungGrid leistungen={children} />
-            </Section>
-          ) : null}
-
-          {placements.length > 1 ? (
-            <Section id="einordnungen" title="Auch zu finden unter">
-              <DashList
-                items={placements.map(({ family, service }) => ({
-                  key: service.id,
-                  content: (
-                    <>
-                      <Link
-                        href={`/kategorie/${family.slug}`}
-                        className="link-cd"
-                      >
-                        {family.name}
-                      </Link>
-                      {" › "}
-                      <Link
-                        href={`/service/${service.slug}`}
-                        className="link-cd"
-                      >
-                        {service.name}
-                      </Link>
-                    </>
-                  ),
-                }))}
-              />
-            </Section>
-          ) : null}
-
-          {updatedAt ? (
-            <p className="text-sm text-so-graphite">
-              Stand:{" "}
-              <time dateTime={leistung.updatedAt ?? undefined}>
-                {updatedAt}
-              </time>
+          {leistung.description ? (
+            <MarkdownText headingLevel={2}>{leistung.description}</MarkdownText>
+          ) : (
+            <p className="muted">
+              Für diese Leistung ist noch keine Beschreibung erfasst.
             </p>
-          ) : null}
+          )}
         </div>
+        <aside className="span-4 start-9" aria-label="Angaben zur Leistung">
+          <div className="aside-card">
+            <dl className="facts">
+              <div>
+                <dt>Art</dt>
+                <dd>{leistung.subtypeLabel ?? "Leistung"}</dd>
+              </div>
+              <div>
+                <dt>Verantwortlich</dt>
+                <OrgUnits units={responsible} />
+                <Persons persons={leistung.persons} />
+              </div>
+              {leistung.audiences.length > 0 ? (
+                <div>
+                  <dt>Leistungsbezüger</dt>
+                  {leistung.audiences.map((audience) => (
+                    <dd key={audience.id}>{audience.name}</dd>
+                  ))}
+                </div>
+              ) : null}
+              {leistung.applications.length > 0 ? (
+                <div>
+                  <dt>Anwendungen</dt>
+                  {leistung.applications.map((application) => (
+                    <dd key={application.id}>{application.name}</dd>
+                  ))}
+                </div>
+              ) : null}
+              {infoLinks.length > 0 ? (
+                <div>
+                  <dt>Weitere Informationen</dt>
+                  {infoLinks.map((link) => (
+                    <dd key={link.id} className="linklist">
+                      <TextLink href={link.url}>{link.label}</TextLink>
+                      {link.description ? (
+                        <small>{link.description}</small>
+                      ) : null}
+                    </dd>
+                  ))}
+                </div>
+              ) : null}
+              {placements.length > 1 ? (
+                <div>
+                  <dt>Auch zu finden unter</dt>
+                  {placements.map(({ family, service }) => (
+                    <dd key={service.id} className="linklist">
+                      <a href={`/service/${service.slug}`}>{service.name}</a>
+                      <small>{family.name}</small>
+                    </dd>
+                  ))}
+                </div>
+              ) : null}
+              {updatedAt ? (
+                <div>
+                  <dt>Zuletzt geändert</dt>
+                  <dd>
+                    <time dateTime={leistung.updatedAt ?? undefined}>
+                      {updatedAt}
+                    </time>
+                  </dd>
+                </div>
+              ) : null}
+            </dl>
+          </div>
+        </aside>
       </div>
-    </div>
-  )
-}
 
-function FactBlock({
-  title,
-  children,
-}: {
-  title: string
-  children: React.ReactNode
-}) {
-  return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-xl leading-tight font-normal">{title}</h2>
-      {children}
-    </section>
+      {parent ? (
+        <div className="wrap">
+          <div className="block-head">
+            <h2>Übergeordnete Leistung</h2>
+          </div>
+          <LeistungEntries leistungen={[parent]} />
+        </div>
+      ) : null}
+      {children.length > 0 ? (
+        <div className="wrap">
+          <div className="block-head">
+            <h2>Untergeordnete Leistungen</h2>
+            <p>{children.length}</p>
+          </div>
+          <LeistungEntries leistungen={children} />
+        </div>
+      ) : null}
+    </CatalogFrame>
   )
 }

@@ -1,20 +1,7 @@
 "use client"
 
 import type { SyncRun } from "@workspace/api"
-import { BanIcon, CircleCheckIcon, CircleXIcon } from "lucide-react"
 import * as React from "react"
-
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 
 import {
   formatDateTimeCompact,
@@ -26,38 +13,15 @@ import {
 
 const INITIAL_ROWS = 8
 
-export function RunStatusBadge({ status }: { status: SyncRun["status"] }) {
-  const label = runStatusLabels[status]
-  switch (status) {
-    case "success":
-      return (
-        <Badge variant="outline">
-          <CircleCheckIcon aria-hidden="true" />
-          {label}
-        </Badge>
-      )
-    case "failed":
-      return (
-        <Badge variant="destructive">
-          <CircleXIcon aria-hidden="true" />
-          {label}
-        </Badge>
-      )
-    case "rejected":
-      return (
-        <Badge variant="secondary">
-          <BanIcon aria-hidden="true" />
-          {label}
-        </Badge>
-      )
-    case "running":
-      return (
-        <Badge variant="secondary">
-          <Spinner aria-hidden="true" />
-          {label}
-        </Badge>
-      )
-  }
+const statusTags: Record<SyncRun["status"], string> = {
+  success: "tag tag--good",
+  failed: "tag tag--bad",
+  rejected: "tag tag--warn",
+  running: "tag",
+}
+
+export function RunStatusTag({ status }: { status: SyncRun["status"] }) {
+  return <span className={statusTags[status]}>{runStatusLabels[status]}</span>
 }
 
 /** Protokoll der letzten Synchronisierungen (neueste zuerst). */
@@ -66,7 +30,7 @@ export function SyncRunsTable({ runs }: { runs: SyncRun[] }) {
 
   if (runs.length === 0) {
     return (
-      <p className="border border-dashed border-border p-6 text-muted-foreground">
+      <p className="muted">
         Es wurde noch keine Synchronisierung durchgeführt.
       </p>
     )
@@ -76,72 +40,68 @@ export function SyncRunsTable({ runs }: { runs: SyncRun[] }) {
   const hidden = runs.length - visible.length
 
   return (
-    <div className="flex flex-col items-start gap-3">
-      <div className="w-full border border-border">
-        <Table>
+    <>
+      <div className="table-wrap">
+        <table className="table table--stack">
           <caption className="sr-only">
             Letzte Synchronisierungen, neueste zuerst
           </caption>
-          <TableHeader className="bg-muted">
-            <TableRow className="hover:bg-transparent">
-              <TableHead scope="col">Start</TableHead>
-              <TableHead scope="col">Auslöser</TableHead>
-              <TableHead scope="col">Status</TableHead>
-              <TableHead scope="col" className="text-right">
+          <thead>
+            <tr>
+              <th scope="col">Start</th>
+              <th scope="col">Auslöser</th>
+              <th scope="col">Status</th>
+              <th scope="col" className="num">
                 Dauer
-              </TableHead>
-              <TableHead scope="col" className="text-right">
+              </th>
+              <th scope="col" className="num">
                 Leistungen
-              </TableHead>
-              <TableHead scope="col" className="w-full">
-                Meldung
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+              </th>
+              <th scope="col">Meldung</th>
+            </tr>
+          </thead>
+          <tbody>
             {visible.map((run) => (
-              <TableRow key={run.id} className="align-top">
-                <TableCell className="py-2.5 align-top tabular-nums">
+              <tr key={run.id}>
+                <td className="table__date" data-label="Start">
                   <time dateTime={run.startedAt}>
                     {formatDateTimeCompact(run.startedAt)}
                   </time>
-                </TableCell>
-                <TableCell className="py-2.5 align-top">
-                  {triggerLabels[run.trigger]}
-                </TableCell>
-                <TableCell className="py-2.5 align-top">
-                  <RunStatusBadge status={run.status} />
-                </TableCell>
-                <TableCell className="py-2.5 text-right align-top tabular-nums">
+                </td>
+                <td data-label="Auslöser">{triggerLabels[run.trigger]}</td>
+                <td data-label="Status">
+                  <RunStatusTag status={run.status} />
+                </td>
+                <td className="num" data-label="Dauer">
                   {run.status === "running"
                     ? "–"
                     : formatDuration(run.durationMs)}
-                </TableCell>
-                <TableCell className="py-2.5 text-right align-top tabular-nums">
+                </td>
+                <td className="num" data-label="Leistungen">
                   {run.stats ? formatNumber(run.stats.leistungen) : "–"}
-                </TableCell>
-                <TableCell className="min-w-64 py-2.5 align-top whitespace-normal">
-                  {run.message ?? (
-                    <span className="text-muted-foreground">–</span>
-                  )}
-                </TableCell>
-              </TableRow>
+                </td>
+                <td className="table__message" data-label="Meldung">
+                  {run.message ?? <span className="muted">–</span>}
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
       {hidden > 0 || showAll ? (
-        <Button
-          variant="outline"
-          size="sm"
-          aria-expanded={showAll}
-          onClick={() => setShowAll(!showAll)}
-        >
-          {showAll
-            ? "Weniger anzeigen"
-            : `Alle ${formatNumber(runs.length)} Läufe anzeigen`}
-        </Button>
+        <div className="btn-row list-more">
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm"
+            aria-expanded={showAll}
+            onClick={() => setShowAll(!showAll)}
+          >
+            {showAll
+              ? "Weniger anzeigen"
+              : `Alle ${formatNumber(runs.length)} Läufe anzeigen`}
+          </button>
+        </div>
       ) : null}
-    </div>
+    </>
   )
 }

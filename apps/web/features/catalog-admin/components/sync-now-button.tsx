@@ -2,11 +2,9 @@
 
 import type { CatalogAdminOverview, SyncRun } from "@workspace/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { RefreshCwIcon } from "lucide-react"
-import { toast } from "sonner"
+import * as React from "react"
 
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
+import { Status } from "@/components/ui/status"
 import { errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
 
@@ -26,28 +24,33 @@ function keptStateHint(hasSnapshot: boolean) {
     : "Es ist noch kein Stand vorhanden; das Portal meldet «Der Katalog ist vorübergehend nicht verfügbar»."
 }
 
-function announceRun(run: SyncRun, hasSnapshot: boolean) {
+interface Announcement {
+  message: string
+  bad: boolean
+}
+
+/** Ergebnis eines ausgelösten Laufs als ein Satz für die Statuszeile. */
+function announceRun(run: SyncRun, hasSnapshot: boolean): Announcement {
   switch (run.status) {
     case "success":
-      toast.success("Synchronisierung abgeschlossen", {
-        description: run.stats
-          ? `${formatNumber(run.stats.leistungen)} Leistungen im Portal, ${formatNumber(run.stats.issues)} Auffälligkeiten.`
-          : undefined,
-      })
-      break
+      return {
+        message: run.stats
+          ? `Synchronisierung abgeschlossen: ${formatNumber(run.stats.leistungen)} Leistungen im Portal, ${formatNumber(run.stats.issues)} Auffälligkeiten.`
+          : "Synchronisierung abgeschlossen.",
+        bad: false,
+      }
     case "rejected":
-      toast.warning("Neuer Stand nicht übernommen", {
-        description: `${run.message ?? "Die Plausibilisierung hat den neuen Stand abgelehnt."} ${keptStateHint(hasSnapshot)}`,
-      })
-      break
+      return {
+        message: `Neuer Stand nicht übernommen: ${run.message ?? "Die Plausibilisierung hat den neuen Stand abgelehnt."} ${keptStateHint(hasSnapshot)}`,
+        bad: true,
+      }
     case "failed":
-      toast.error("Synchronisierung fehlgeschlagen", {
-        description: `${run.message ?? "Unbekannter Fehler."} ${keptStateHint(hasSnapshot)}`,
-      })
-      break
+      return {
+        message: `Synchronisierung fehlgeschlagen: ${run.message ?? "Unbekannter Fehler."} ${keptStateHint(hasSnapshot)}`,
+        bad: true,
+      }
     case "running":
-      toast.info("Synchronisierung gestartet")
-      break
+      return { message: "Synchronisierung gestartet.", bad: false }
   }
 }
 
@@ -78,12 +81,16 @@ export function SyncNowButton({
   hasSnapshot: boolean
 }) {
   const queryClient = useQueryClient()
+  const [announcement, setAnnouncement] = React.useState<Announcement | null>(
+    null
+  )
   const syncNow = useMutation(
     orpc.catalogAdmin.syncNow.mutationOptions({
-      onSuccess: (run) => announceRun(run, hasSnapshot),
+      onSuccess: (run) => setAnnouncement(announceRun(run, hasSnapshot)),
       onError: (error) =>
-        toast.error("Synchronisierung nicht möglich", {
-          description: errorMessage(error, syncErrors),
+        setAnnouncement({
+          message: `Synchronisierung nicht möglich: ${errorMessage(error, syncErrors)}`,
+          bad: true,
         }),
       onSettled: () =>
         Promise.all([
@@ -100,25 +107,26 @@ export function SyncNowButton({
   const busy = syncNow.isPending || running
 
   return (
-    <div className="flex flex-col items-start gap-3 bg-muted p-4 sm:flex-row sm:items-center sm:gap-6">
-      <Button
-        size="lg"
-        className="shrink-0"
-        onClick={() => syncNow.mutate(undefined)}
-        disabled={busy || unavailable !== null}
-        aria-describedby="sync-hint"
-      >
-        {busy ? (
-          <Spinner aria-hidden="true" />
-        ) : (
-          <RefreshCwIcon aria-hidden="true" />
-        )}
-        {busy ? "Synchronisierung läuft …" : "Jetzt synchronisieren"}
-      </Button>
-      <p id="sync-hint" className="max-w-[70ch] text-sm">
-        {unavailable ??
-          "Liest Leistungen und Kategorien aus LeanIX und übernimmt den neuen Stand, wenn er plausibel ist. Läuft sonst automatisch im eingestellten Intervall."}
-      </p>
+    <div className="sync">
+      <div className="sync__row">
+        <button
+          type="button"
+          className="btn btn--primary"
+          onClick={() => {
+            setAnnouncement(null)
+            syncNow.mutate(undefined)
+          }}
+          disabled={busy || unavailable !== null}
+          aria-describedby="sync-hint"
+        >
+          {busy ? "Synchronisierung läuft …" : "Jetzt synchronisieren"}
+        </button>
+        <p id="sync-hint" className="sync__hint">
+          {unavailable ??
+            "Liest Leistungen und Kategorien aus LeanIX und übernimmt den neuen Stand, wenn er plausibel ist. Läuft sonst automatisch im eingestellten Intervall."}
+        </p>
+      </div>
+      <Status bad={announcement?.bad}>{announcement?.message}</Status>
     </div>
   )
 }

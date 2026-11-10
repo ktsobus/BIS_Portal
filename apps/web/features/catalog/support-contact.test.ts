@@ -75,14 +75,14 @@ describe("Kontaktweg ohne eigenen Bestell- oder Anfrageweg", () => {
     )
   })
 
-  it("Telefon als Standard-Aktion erscheint mit Telefon-Symbol", () => {
+  it("Telefon als Standard-Aktion erscheint als Kontakt-Knopf", () => {
     const contact = contactWith({ requestUrl: "tel:+41 32 000 00 00" })!
     const html = renderToStaticMarkup(
       createElement(SupportContactLinks, { contact })
     )
     expect(html).toContain('href="tel:+41320000000"')
     expect(html).toContain('data-kind="contact"')
-    expect(html).toContain("lucide-phone")
+    expect(html).toContain("btn--secondary")
   })
 
   it("erkennt nutzbare Kontakte", () => {

@@ -1,0 +1,263 @@
+/*
+ * BITS-Portal: eigene Regeln auf dem Kit von tasteskill 2.5.1.
+ *
+ * Geladen nach system.css, cards.css, motion.css und layout.css (app/layout.tsx).
+ * Farben stammen aus dem CD-Manual Kanton Solothurn: Weiss, Grafik-Schwarz
+ * 51/51/51, Grafik-Grau 100/107/118 und Solothurner Rot 204/0/0; die helle
+ * Fläche ist ein Tonwert des Grafik-Graus. Der :root-Block ist die Ausgabe von
+ * `start.mjs brand` und bleibt, wie er gedruckt wurde. Schrift: die ausgeteilte
+ * Paarung «schibsted» (Schibsted Grotesk, OFL), lokal in /fonts.
+ *
+ * Abstände, Radien, Schriftgrössen und Flächen kommen aus den Tokens des Kits.
+ */
+
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url("/fonts/schibsted-grotesk-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url("/fonts/schibsted-grotesk-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url("/fonts/schibsted-grotesk-latin-wght-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --p-bg: #ffffff; --p-surface: #f3f4f5; --p-ink: #333333; --p-muted: #646b76;
+  --p-accent: #cc0000; --p-accent-ink: #ffffff; --p-action: #cc0000; --p-action-ink: #ffffff;
+  --p-inv-bg: #333333; --p-inv-surface: #3f3f3f; --p-inv-ink: #ffffff; --p-inv-muted: #b1b1b1;
+  --p-inv-accent: #ffffff; --p-inv-accent-ink: #333333; --p-inv-action: #ffffff; --p-inv-action-ink: #333333;
+  --font-display: "Schibsted Grotesk", system-ui, sans-serif;
+  --font-text: "Schibsted Grotesk", system-ui, sans-serif;
+  --display-weight: 400;
+  --display-tracking: -0.035em;
+  --display-tracking-xl: -0.042em;
+  --ly-scale: 0.98;
+}
+
+/* ---------------------------------------------------------------- Kopfzeile
+   Das Logo ist die Originaldatei; der Name des Portals steht ausserhalb des
+   Schutzraums (X = 0.092 der Logobreite). */
+.nav__logo { gap: var(--s-5); }
+.nav__logo img { height: 17px; }
+.nav__name { font-size: 18px; padding-left: var(--s-5); border-left: 1px solid var(--line-strong); line-height: 24px; }
+@media (max-width: 479px) { .nav__name { display: none; } }
+/* Telefon: ohne Leiste am Fuss (Suchseite) steht der Knopf nur im Menü; die schlichte Kopfzeile
+   (Anmeldung, Verwaltung, Fehlerseiten) verkleinert das Logo und lässt den Knopf unter 420px weg. */
+@media (max-width: 639px) {
+  header.nav.nav--bare:not(.is-open) .nav__bar > .nav__actions { display: none; }
+  header.nav.nav--bare:not(.is-open) .nav__bar > .nav__toggle { margin-left: auto; }
+  .nav--plain .nav__logo img { height: 14px; }
+  .nav--plain .nav__actions .btn { padding-inline: var(--s-4); }
+}
+@media (max-width: 419px) { .nav--plain .nav__actions { display: none; } }
+.menu-card .panel { background: var(--surface); }
+
+/* ---------------------------------------------------------------- Startseite */
+
+/* Kategorien: die Zeile ist als Ganzes der Link; der Name trägt ihn. */
+.rows--nav > li { position: relative; }
+.rows--nav .rows__name { font-size: var(--t-card); }
+.rows--nav .rows__name::after { content: ""; position: absolute; inset: 0; }
+.rows--nav > li:hover .rows__name, .rows--nav .rows__name:focus-visible { color: var(--action); }
+.rows--nav > li > p { color: var(--muted); }
+@media (max-width: 639px) { .rows--nav .rows__name { display: inline-flex; align-items: center; min-height: 44px; } }
+
+/* Ablauf: drei Ausschnitte der Portal-Oberfläche als lebendes HTML. */
+#ablauf .panel { --p-h: 300px; background: var(--p-surface); display: grid; align-content: center; padding: var(--s-6); }
+/* 1024 bis 1279: die drei Schritte bleiben nebeneinander (die Ausschnitte sind schmal genug), damit der
+   Abschnitt ein Bildschirm bleibt; Tablet: zwei Bildschirme (layout-v4.md, Abschnitt 2). */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  #ablauf .grid > .card.span-4:has(> .panel) { grid-column: auto / span 4; }
+  #ablauf .panel { --p-h: 190px; padding: var(--s-4); }
+  #ablauf .shot { padding: var(--s-4); }
+}
+@media (min-width: 640px) and (max-width: 1023px) { #ablauf { --h: 2; } #ablauf .panel { --p-h: 320px; } }
+@media (max-width: 639px) { #ablauf .panel { --p-h: 148px; padding: var(--s-4); } }
+.shot { --line: color-mix(in oklab, var(--p-ink) 11%, transparent); --line-strong: color-mix(in oklab, var(--p-ink) 20%, transparent); --muted: var(--p-muted);
+  display: grid; gap: var(--s-3); padding: var(--s-5); border-radius: var(--r-md); background: var(--p-bg); color: var(--p-ink); border: 1px solid var(--line); font-size: var(--t-small); }
+.shot__field { display: flex; align-items: center; gap: var(--s-2); height: 40px; padding: 0 var(--s-3); border: 1px solid var(--line-strong); border-radius: var(--r-sm); font-size: var(--t-body); }
+.shot__field svg { width: 16px; height: 16px; flex: none; color: var(--muted); }
+.shot__row { display: flex; justify-content: space-between; gap: var(--s-3); padding-top: var(--s-3); border-top: 1px solid var(--line); }
+.shot__row span:first-child { font-weight: 500; }
+.shot__title { font-size: var(--t-body); font-weight: 500; line-height: 1.3; }
+.shot__lines { display: grid; gap: 6px; }
+.shot__lines i { display: block; height: 6px; border-radius: 3px; background: color-mix(in oklab, var(--p-ink) 12%, transparent); }
+.shot__lines i:last-child { width: 62%; }
+.shot__btn { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 var(--s-4); border-radius: var(--r-btn); background: var(--p-action); color: var(--p-action-ink); font-weight: 500; font-size: var(--t-body); }
+.shot__meta { color: var(--p-muted); }
+@media (max-width: 639px) { .shot__lines, .shot__row + .shot__row { display: none; } }
+
+/* ---------------------------------------------------------------- Unterseiten
+   Katalog-, Anmelde- und Verwaltungsseiten wachsen mit ihrem Inhalt: Ihre
+   Länge kommt aus LeanIX, nicht aus einem Seitenplan. Sie stehen deshalb in
+   main.app und nicht in den bildschirmhohen Abschnitten der Startseite. */
+main.app { min-height: 100svh; padding: calc(var(--nav) + var(--s-7)) 0 var(--s-9); }
+main.app > .wrap + .wrap { margin-top: var(--s-8); }
+@media (max-width: 639px) { main.app { padding-top: calc(var(--nav) + var(--s-6)); padding-bottom: var(--s-8); } main.app > .wrap + .wrap { margin-top: var(--s-7); } }
+
+.page-head { display: grid; gap: var(--s-5); max-width: 860px; }
+.page-head h1 { font-size: clamp(34px, 2.2vw + 24px, 56px); line-height: 1.06; }
+.page-head .t-lead { max-width: 62ch; }
+.page-head .btn-row { margin-top: var(--s-2); }
+
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-1) var(--s-2); font-size: var(--t-small); color: var(--muted); }
+.crumbs a { color: var(--muted); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: color var(--dur) var(--ease), text-decoration-color var(--dur) var(--ease); }
+.crumbs a:hover { color: var(--ink); text-decoration-color: currentColor; }
+.crumbs li + li::before { content: "/"; margin-right: var(--s-2); color: var(--line-strong); }
+.crumbs [aria-current] { color: var(--ink); }
+@media (max-width: 639px) { .crumbs a { display: inline-flex; align-items: center; min-height: 44px; } }
+
+.block-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s-2) var(--s-5); margin-bottom: var(--s-5); }
+.block-head h2 { font-size: var(--t-h3); line-height: 1.2; }
+.block-head p { color: var(--muted); }
+
+/* Einträge einer Liste, jede Zeile ein Link (Services, Leistungen, Treffer). */
+.entries { border-top: 1px solid var(--line-strong); }
+.entry { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-2) var(--s-6); align-items: start; padding-block: var(--s-5); border-bottom: 1px solid var(--line); }
+.entry__name { font: 500 var(--t-card)/1.3 var(--font-text); letter-spacing: -0.01em; }
+.entry__name a::after { content: ""; position: absolute; inset: 0; }
+.entry__name a { transition: color var(--dur) var(--ease); }
+.entry:hover .entry__name a { color: var(--action); }
+.entry__text { grid-column: 1; max-width: 68ch; }
+.entry__meta { grid-column: 1; display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-4); font-size: var(--t-small); color: var(--muted); }
+.entry__side { grid-column: 2; grid-row: 1 / span 3; display: flex; align-items: center; gap: var(--s-4); color: var(--muted); font-size: var(--t-small); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.entry__side .m-arrow { width: 14px; height: 14px; color: var(--ink); transition: transform var(--dur) var(--ease); }
+.entry:hover .entry__side .m-arrow { transform: translateX(3px); color: var(--action); }
+@media (max-width: 639px) { .entry { grid-template-columns: minmax(0, 1fr); } .entry__side { grid-column: 1; grid-row: auto; } }
+
+.tag { display: inline-flex; align-items: center; height: 24px; padding: 0 var(--s-2); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); font-size: var(--t-label); font-weight: 500; white-space: nowrap; }
+.tag--warn { background: color-mix(in oklab, #e18c00 20%, var(--bg)); }
+.tag--bad { background: color-mix(in oklab, var(--accent) 12%, var(--bg)); color: color-mix(in oklab, var(--accent) 80%, var(--ink)); }
+.tag--good { background: color-mix(in oklab, #228b22 16%, var(--bg)); }
+
+/* Angaben neben dem Text (zuständige Stelle, Bezüger, Anwendungen). */
+.facts { display: grid; gap: var(--s-5); margin: 0; }
+.facts > div { display: grid; gap: var(--s-1); padding-bottom: var(--s-5); border-bottom: 1px solid var(--line); }
+.facts > div:last-child { border-bottom: 0; padding-bottom: 0; }
+.facts dt { font-size: var(--t-label); font-weight: 500; color: var(--muted); }
+.facts dd { margin: 0; }
+.facts dd + dd { margin-top: var(--s-2); }
+.facts small { display: block; font-size: var(--t-small); color: var(--muted); }
+.aside-card { padding: var(--s-5); border-radius: var(--r-lg); background: var(--surface); }
+.aside-card + .aside-card { margin-top: var(--s-5); }
+.aside-card h2 { font: 500 var(--t-card)/1.3 var(--font-text); letter-spacing: -0.01em; margin-bottom: var(--s-4); }
+.aside-card .btn { width: 100%; }
+.aside-card .btn + .btn { margin-top: var(--s-3); }
+.aside-card p + .btn, .aside-card .btn + p { margin-top: var(--s-4); }
+
+.linklist { display: grid; gap: var(--s-3); }
+.linklist a { text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; transition: text-decoration-color var(--dur) var(--ease), color var(--dur) var(--ease); }
+.linklist a:hover { color: var(--action); text-decoration-color: currentColor; }
+.linklist small { display: block; color: var(--muted); font-size: var(--t-small); }
+.ext::after { content: "\2197"; display: inline-block; margin-left: 4px; font-size: 0.85em; }
+
+/* Beschreibungen aus LeanIX (Markdown). */
+.prose { max-width: 68ch; font-size: 17px; line-height: 1.65; }
+.prose > * + * { margin-top: var(--s-4); }
+.prose :is(h2, h3, h4) { font: 500 var(--t-card)/1.3 var(--font-text); letter-spacing: -0.01em; margin-top: var(--s-6); }
+.prose strong { font-weight: 500; }
+.prose a { text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.prose a:hover { color: var(--action); text-decoration-color: currentColor; }
+.prose ul, .prose ol { display: grid; gap: var(--s-2); padding-left: var(--s-5); }
+.prose ul > li { position: relative; }
+.prose ul > li::before { content: "\2013"; position: absolute; left: calc(-1 * var(--s-5)); color: var(--muted); }
+.prose ol { list-style: decimal; }
+.prose blockquote { padding-left: var(--s-4); border-left: 2px solid var(--line-strong); color: var(--muted); }
+.prose code { font-family: var(--font-mono); font-size: 0.92em; background: var(--surface); padding: 1px 5px; border-radius: 4px; }
+.prose hr { border: 0; border-top: 1px solid var(--line); margin-block: var(--s-6); }
+
+/* Hinweiszeile: veralteter Katalog, Ausfall, Fehler. */
+.note { display: grid; gap: var(--s-2); padding: var(--s-4) var(--s-5); border-radius: var(--r-md); background: var(--surface); max-width: 860px; }
+.note strong { font-weight: 500; }
+.note--bad { background: color-mix(in oklab, var(--accent) 8%, var(--bg)); }
+.note .btn-row { margin-top: var(--s-2); }
+
+/* ---------------------------------------------------------------- Suche */
+.search { display: grid; gap: var(--s-5); }
+.search__field { position: relative; }
+.search__field input { width: 100%; height: 64px; padding: 0 var(--s-5) 0 56px; border: 1px solid var(--line-strong); border-radius: var(--r-md); background: var(--bg); color: var(--ink); font: 400 20px/1.3 var(--font-text); transition: border-color var(--dur) var(--ease); }
+.search__field input:hover { border-color: var(--ink); }
+.search__field input::placeholder { color: var(--muted); }
+.search__field input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.search__field svg { position: absolute; left: 20px; top: 50%; width: 20px; height: 20px; margin-top: -10px; color: var(--muted); pointer-events: none; }
+.filters { display: grid; gap: var(--s-4); }
+.filters fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+.filters legend { float: left; margin-right: var(--s-3); font-size: var(--t-label); font-weight: 500; color: var(--muted); line-height: 44px; }
+.chip { position: relative; display: inline-flex; }
+.chip input { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; }
+.chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--s-4); border-radius: var(--r-btn); background: color-mix(in oklab, var(--ink) 6%, var(--bg)); font-size: var(--t-small); font-weight: 500; transition: background var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease); }
+.chip:hover span { background: color-mix(in oklab, var(--ink) 12%, var(--bg)); }
+.chip:active span { transform: scale(0.98); }
+.chip input:checked + span { background: var(--ink); color: var(--bg); }
+.chip input:focus-visible + span { outline: 2px solid var(--action); outline-offset: 2px; }
+.search__count { color: var(--muted); font-size: var(--t-small); min-height: 1.5em; }
+mark { background: none; color: inherit; font-weight: 500; text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+/* ---------------------------------------------------------------- Fusszeile der Unterseiten */
+.footer.footer--page { padding-block: var(--s-8) var(--s-6); }
+.footer--page .footer__name { font: var(--display-weight) 32px/1.1 var(--font-display); letter-spacing: var(--display-tracking); }
+.closing__links .footer__name { font: var(--display-weight) clamp(30px, 3.4vw, 48px)/1.05 var(--font-display); letter-spacing: var(--display-tracking); }
+.footer__sender { font-style: italic; }
+.footer ul a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: text-decoration-color var(--dur) var(--ease); }
+.footer ul a:hover { text-decoration-color: currentColor; }
+.footer--dark ul a:hover { color: var(--ink); }
+@media (max-width: 639px) { .footer ul a, .footer__legal a { display: inline-flex; align-items: center; min-height: 44px; } .footer ul { gap: 0; } }
+
+/* ---------------------------------------------------------------- Formulare, Tabellen, Dialoge
+   (Anmeldung und Verwaltung) */
+.form--narrow { grid-template-columns: minmax(0, 1fr); max-width: 440px; }
+.field__hint { font-weight: 400; color: var(--muted); }
+.field :is(input, select, textarea):hover { border-color: var(--ink); }
+.field :is(input, select, textarea):disabled { background: var(--surface); color: var(--muted); }
+.field--check { display: flex; align-items: flex-start; gap: var(--s-3); font-size: var(--t-body); font-weight: 400; }
+.field--check input { width: 20px; height: 20px; margin: 2px 0 0; padding: 0; accent-color: var(--ink); flex: none; }
+.form__status--bad { color: color-mix(in oklab, #d92d20 72%, var(--ink)); font-weight: 500; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+.btn--danger { background: color-mix(in oklab, var(--accent) 10%, var(--bg)); color: color-mix(in oklab, var(--accent) 80%, var(--ink)); border-color: transparent; }
+.btn--danger:hover { background: color-mix(in oklab, var(--accent) 18%, var(--bg)); }
+
+.table-wrap { overflow-x: auto; border-top: 1px solid var(--line-strong); }
+.table { width: 100%; border-collapse: collapse; font-size: var(--t-body); }
+.table th { text-align: left; font-size: var(--t-label); font-weight: 500; color: var(--muted); padding: var(--s-3) var(--s-4) var(--s-3) 0; white-space: nowrap; }
+.table td { padding: var(--s-4) var(--s-4) var(--s-4) 0; border-top: 1px solid var(--line); vertical-align: top; }
+.table :is(th, td):last-child { padding-right: 0; }
+.table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.table small { display: block; color: var(--muted); font-size: var(--t-small); }
+.table__actions { display: flex; flex-wrap: wrap; gap: var(--s-2); justify-content: flex-end; }
+
+.subnav { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-2); }
+.subnav a { display: inline-flex; align-items: center; height: var(--btn-h); padding: 0 var(--s-4); border-radius: var(--r-btn); font-weight: 500; color: var(--muted); transition: background var(--dur) var(--ease), color var(--dur) var(--ease); }
+.subnav a:hover { color: var(--ink); background: color-mix(in oklab, var(--ink) 6%, var(--bg)); }
+.subnav a[aria-current="page"] { color: var(--bg); background: var(--ink); }
+
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--s-5); margin: 0; }
+.stat-row > div { display: grid; gap: var(--s-1); padding-top: var(--s-4); border-top: 1px solid var(--line-strong); }
+.stat-row dt { font-size: var(--t-small); color: var(--muted); order: 2; }
+.stat-row dd { margin: 0; font: var(--display-weight) var(--t-stat)/1 var(--font-display); letter-spacing: var(--display-tracking); font-variant-numeric: tabular-nums; }
+
+dialog.dialog { width: min(560px, calc(100vw - 2 * var(--s-5))); max-height: calc(100svh - 2 * var(--s-5)); padding: var(--s-6); border: 1px solid var(--line-strong); border-radius: var(--r-lg); background: var(--bg); color: var(--ink); overflow-y: auto; }
+dialog.dialog::backdrop { background: color-mix(in oklab, var(--p-ink) 55%, transparent); }
+.dialog h2 { font-size: var(--t-h3); line-height: 1.2; }
+.dialog > * + * { margin-top: var(--s-4); }
+.dialog .form { grid-template-columns: minmax(0, 1fr); }
+.dialog .btn-row { justify-content: flex-end; margin-top: var(--s-2); }
+@media (max-width: 639px) { dialog.dialog { padding: var(--s-5); } }
+
+.code { font-family: var(--font-mono); font-size: var(--t-small); overflow-wrap: anywhere; }
+.copyline { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-2) var(--s-2) var(--s-2) var(--s-3); border: 1px solid var(--line-strong); border-radius: var(--r-sm); }
+.copyline .code { flex: 1 1 auto; min-width: 0; }

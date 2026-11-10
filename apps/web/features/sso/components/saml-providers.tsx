@@ -2,103 +2,97 @@
 
 import type { SamlProvider } from "@workspace/api"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Trash2Icon } from "lucide-react"
-import { toast } from "sonner"
+import * as React from "react"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Dialog } from "@/components/ui/dialog"
+import { LoadError, Notice } from "@/components/ui/notice"
+import { Status } from "@/components/ui/status"
 import { errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
 
 import { CopyField } from "./copy-field"
 
 export function SamlProviders() {
-  const { data, isPending, isError, error, refetch } = useQuery(
+  const { data, isPending, isError, error, refetch, isFetching } = useQuery(
     orpc.sso.list.queryOptions()
   )
+  const [notice, setNotice] = React.useState<string | null>(null)
 
   if (isPending) {
     return (
-      <>
-        <Skeleton className="h-40 w-full" />
-        <span className="sr-only" role="status">
+      <div className="wrap">
+        <p className="muted" role="status">
           SAML-Provider werden geladen …
-        </span>
-      </>
-    )
-  }
-  if (isError) {
-    return (
-      <Alert variant="destructive" className="max-w-3xl p-4">
-        <AlertTitle className="text-base font-bold">
-          Die SAML-Provider konnten nicht geladen werden.
-        </AlertTitle>
-        <AlertDescription className="flex flex-col items-start gap-3 text-foreground!">
-          <p>{errorMessage(error)}</p>
-          <Button variant="outline" size="sm" onClick={() => void refetch()}>
-            Erneut versuchen
-          </Button>
-        </AlertDescription>
-      </Alert>
-    )
-  }
-  if (data.length === 0) {
-    return (
-      <div className="flex max-w-3xl flex-col gap-2 border border-dashed border-border p-6">
-        <p className="font-bold">Noch kein SAML-Provider eingerichtet</p>
-        <p className="max-w-[70ch] text-muted-foreground">
-          Ohne Provider ist nur die Anmeldung mit Passwort möglich. Fügen Sie
-          den Identity Provider des Kantons hinzu (z. B. Entra ID), damit sich
-          Mitarbeitende mit SSO anmelden können.
         </p>
       </div>
     )
   }
+  if (isError) {
+    return (
+      <div className="wrap">
+        <LoadError
+          title="Die SAML-Provider konnten nicht geladen werden."
+          message={errorMessage(error)}
+          onRetry={() => void refetch()}
+          retrying={isFetching}
+        />
+      </div>
+    )
+  }
 
   return (
-    <ul className="flex flex-col gap-6">
-      {data.map((provider) => (
-        <li key={provider.providerId}>
-          <ProviderCard provider={provider} />
-        </li>
-      ))}
-    </ul>
+    <div className="wrap">
+      <Status>{notice}</Status>
+      {data.length === 0 ? (
+        <Notice title="Noch kein SAML-Provider eingerichtet">
+          <p>
+            Ohne Provider ist nur die Anmeldung mit Passwort möglich. Fügen Sie
+            den Identity Provider des Kantons hinzu (z. B. Entra ID), damit sich
+            Mitarbeitende mit SSO anmelden können.
+          </p>
+        </Notice>
+      ) : (
+        <ul className="providers">
+          {data.map((provider) => (
+            <li key={provider.providerId}>
+              <ProviderCard provider={provider} onRemoved={setNotice} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }
 
-function ProviderCard({ provider }: { provider: SamlProvider }) {
+function ProviderCard({
+  provider,
+  onRemoved,
+}: {
+  provider: SamlProvider
+  onRemoved: (message: string) => void
+}) {
   return (
-    <article className="flex flex-col gap-4 border border-border p-4 sm:p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-col gap-1">
-          <h2 className="flex flex-wrap items-center gap-2 text-xl font-bold">
-            {provider.providerId}
+    <article className="provider">
+      <div className="provider__head">
+        <div>
+          <h2>{provider.providerId}</h2>
+          <p className="tag-row">
             {provider.domain.split(",").map((d) => (
-              <Badge key={d} variant="secondary">
+              <span key={d} className="tag">
                 {d.trim()}
-              </Badge>
+              </span>
             ))}
-          </h2>
-          <p className="text-sm break-all text-muted-foreground">
+          </p>
+          <p className="t-small muted provider__issuer">
             IdP: {provider.issuer}
           </p>
         </div>
-        <RemoveProviderButton providerId={provider.providerId} />
+        <RemoveProviderButton
+          providerId={provider.providerId}
+          onRemoved={onRemoved}
+        />
       </div>
-      <div className="grid gap-3">
+      <div className="provider__values">
         <CopyField
           label="ACS-URL (Antwort-URL) – im IdP eintragen"
           value={provider.acsUrl}
@@ -113,53 +107,69 @@ function ProviderCard({ provider }: { provider: SamlProvider }) {
   )
 }
 
-function RemoveProviderButton({ providerId }: { providerId: string }) {
+function RemoveProviderButton({
+  providerId,
+  onRemoved,
+}: {
+  providerId: string
+  onRemoved: (message: string) => void
+}) {
   const queryClient = useQueryClient()
+  const [open, setOpen] = React.useState(false)
   const remove = useMutation(
     orpc.sso.remove.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: orpc.sso.key() })
-        toast.success(`Provider ${providerId} entfernt`)
+        setOpen(false)
+        onRemoved(`Provider ${providerId} entfernt.`)
       },
-      onError: (error) =>
-        toast.error(
-          errorMessage(error, {
-            NOT_FOUND: "Der Provider existiert nicht mehr.",
-          })
-        ),
     })
   )
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={remove.isPending}
-          aria-label={`Provider ${providerId} entfernen`}
-        >
-          <Trash2Icon aria-hidden="true" />
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Provider {providerId} entfernen?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Personen dieses Providers können sich danach nicht mehr mit SSO
-            anmelden. Ihre Konten und Daten bleiben erhalten.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-          <AlertDialogAction
-            variant="destructive"
+    <>
+      <button
+        type="button"
+        className="btn btn--danger btn--sm"
+        aria-label={`Provider ${providerId} entfernen`}
+        onClick={() => {
+          remove.reset()
+          setOpen(true)
+        }}
+      >
+        Entfernen
+      </button>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title={`Provider ${providerId} entfernen?`}
+        description="Personen dieses Providers können sich danach nicht mehr mit SSO anmelden. Ihre Konten und Daten bleiben erhalten."
+      >
+        <div className="btn-row">
+          <button
+            type="button"
+            className="btn btn--secondary"
+            onClick={() => setOpen(false)}
+          >
+            Abbrechen
+          </button>
+          <button
+            type="button"
+            className="btn btn--danger"
+            disabled={remove.isPending}
             onClick={() => remove.mutate({ providerId })}
           >
-            Entfernen
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+            Provider entfernen
+          </button>
+        </div>
+        <Status bad={remove.isError}>
+          {remove.isError
+            ? errorMessage(remove.error, {
+                NOT_FOUND: "Der Provider existiert nicht mehr.",
+              })
+            : null}
+        </Status>
+      </Dialog>
+    </>
   )
 }

@@ -360,8 +360,9 @@ Leere Werte gelten als nicht gesetzt (Schema in `apps/web/lib/env-schema.ts`).
 ## 5. Techstack und Projektstruktur
 
 Vorgabe ist [Laeri/dev-template](https://github.com/Laeri/dev-template) (fix): pnpm + Turborepo,
-Next.js 16 (App Router), Tailwind CSS v4, shadcn/ui, oRPC (contract-first), TanStack Query,
-Zod 4, better-auth, Drizzle + Postgres, Docker.
+Next.js 16 (App Router), oRPC (contract-first), TanStack Query, Zod 4, better-auth,
+Drizzle + Postgres, Docker. Die Oberfläche ersetzt Tailwind CSS und shadcn/ui des Templates durch
+das Kit von [tasteskill 2.5.1](https://github.com/Leonxlnx/taste-skill) (Kapitel 6.2, README «Oberfläche»).
 
 ### 5.1 Was übernommen, angepasst, entfernt wird
 
@@ -371,7 +372,7 @@ Zod 4, better-auth, Drizzle + Postgres, Docker.
 | better-auth (Admin-Login)   | übernehmen; SAML mit kantonalem IdP (offene Frage 7) plus Passwort-Login           |
 | Feature `tasks`, Startseiteninhalt `overview` | entfernen (Beispielcode)                               |
 | E-Mail/2FA                  | E-Mail: entfernt (kein Passwort-Reset, keine Bestätigungsmails), 2FA bleibt |
-| Theme (`app/globals.css`)   | durch CD-Tokens ersetzen (Kapitel 6.2)                                   |
+| Theme, Tailwind, shadcn/ui  | entfernt; Oberfläche auf dem Kit von tasteskill mit den Farben des CD-Manuals (Kapitel 6.2) |
 | Neu: Sync-Scheduler         | `apps/web/instrumentation.ts` (Node-Runtime) + Advisory-Lock             |
 | Neu: Tests                  | Vitest für Mapper und Publikationsregel mit Fixtures aus der Discovery   |
 
@@ -454,29 +455,29 @@ Slugs aus Name + kurzer ID (stabil bei gleichen Namen); bei Umbenennung Weiterle
 
 | Seite        | Inhalt                                                                                   |
 | ------------ | ---------------------------------------------------------------------------------------- |
-| Start        | Suchfeld «Was benötigen Sie?»; fünf Service-Familien als Kacheln mit Anzahl Services      |
+| Start        | Fünf Bildschirme: Hero mit «Leistung suchen», Kategorien als Liste mit Anzahl Leistungen, Ablauf einer Bestellung in drei Schritten, Aussage zum Portal, Abschluss mit Fusszeile |
 | Familie (Ebene 2) | Liste der Services mit Definition (gekürzt)                                         |
-| Service (Ebene 3) | Definition, verantwortliche Stelle, Leistungen als Karten: Kurzbeschreibung, Subtyp, Schaltflächen «Bestellen» / «Anfrage stellen» |
+| Service (Ebene 3) | Definition, verantwortliche Stelle, Leistungen als Liste: Kurzbeschreibung und Subtyp; Bestellen und Anfragen auf der Seite der Leistung |
 | Leistung     | Volle Beschreibung, Verantwortlich, Leistungsbezüger, Anwendungen, nächste Schritte, weitere Informationen, «Stand: …» |
 | Suche        | Volltext über Name, Beschreibung, Service, Anwendungen; Filter Subtyp und Leistungsbezüger; clientseitig (kleine Datenmenge) |
 
-Brotkrumen auf allen Seiten (Start › Familie › Service › Leistung). Leistungen ohne
+Pfad auf allen Katalogseiten (Katalog / Familie / Service / Leistung). Leistungen ohne
 Aktions-Ressource zeigen einen Standard-Kontakt (z. B. Service Desk) – offene Frage 2.
 
 ### 6.2 Corporate Design ([CD-Manual](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn))
 
 | Vorgabe                                  | Umsetzung im Portal                                                          |
 | ---------------------------------------- | ---------------------------------------------------------------------------- |
-| Solothurner Rot `#CC0000`, Schwarz, Weiss | Akzent für Schaltflächen und Titelmarke; Kontrast auf Weiss 5,9:1 (WCAG AA) |
+| Solothurner Rot `#CC0000`, Schwarz, Weiss | Einziger Akzent: Hauptaktion, Fokusring, Hervorhebung; Kontrast auf Weiss 5,9:1 (WCAG AA) |
 | Grafik-Grau `#646B76`, Schwarz `#333333` | Sekundärtext (5,4:1 auf Weiss), Fliesstext                                   |
-| Tonwerte (z. B. DodgerBlue4 8 % `#ECF1F6`) | Flächen für Kacheln und Hinweise                                           |
-| Frutiger LT Std 55/56/75/76              | PoC: freie Schrift Source Sans 3 (humanistisch, ähnlicher Charakter), nur 400/700 + kursiv; Frutiger-Webfont später mit Lizenz |
-| Keine Verläufe, keine Schatten           | Flache Flächen, Haarlinien; shadcn-Schatten im Theme entfernen               |
-| Rotes Quadrat beim Seitentitel           | Titelkomponente mit rotem Quadrat                                            |
-| Linksbündig, max. ~70 Zeichen            | `max-w-[70ch]` für Fliesstext, nichts zentriert                              |
+| Tonwerte                                 | Helle Fläche `#F3F4F5` (Tonwert des Grafik-Graus) für Hinweise und Angaben; dunkles Band in Grafik-Schwarz |
+| Frutiger LT Std 55/56/75/76              | Nicht übernommen: Schibsted Grotesk (SIL OFL, lokal), die vom Skill ausgeteilte Paarung; Gewichte 400 und 500. Abweichung vom CD-Manual, bewusst (Auftrag: nur Farben und Logo als Referenz) |
+| Keine Verläufe, keine Schatten           | Flache Flächen, Haarlinien                                                    |
+| Rotes Quadrat beim Seitentitel           | Nicht übernommen (Gestaltung von Grund auf mit dem Skill)                    |
+| Linksbündig, max. ~70 Zeichen            | Fliesstext höchstens 68 Zeichen breit, nichts zentriert                      |
 | « », –, …                                | UI-Texte entsprechend; Listen mit Halbgeviertstrich                          |
 | Logo nur Originaldatei                   | SVG beim Kompetenzzentrum für Publikationsmedien beziehen; nicht nachbauen   |
-| Absender in Black Italic                 | Fusszeile «Amt für Informatik und Organisation»                               |
+| Absender                                 | Fusszeile «Amt für Informatik und Organisation», kursiv                       |
 
 Barrierefreiheit nach eCH-0059 (WCAG 2.1 AA): Tastaturbedienung, Fokusrahmen, semantische
 Überschriften, Alternativtexte.
@@ -549,7 +550,7 @@ Beteiligte Teams (Auftragstyp «mehrere Teams»):
 | Ressourcentypen | Noch offen, voraussichtlich vor allem Links → vorläufige Zuordnung (Kapitel 2.4), jederzeit änderbar |
 | Hosting | Interner Server (Docker-Image + Postgres) |
 | Zugriff | Katalog ohne Anmeldung; Admin mit SSO (SAML) wenn möglich, für den PoC zusätzlich einfache Anmeldung (Passwort) |
-| Schrift | Gratis-Schrift statt Frutiger: **Source Sans 3** (SIL OFL), lokal eingebunden, ohne Google-Fonts-Abruf |
+| Schrift | Gratis-Schrift statt Frutiger: **Schibsted Grotesk** (SIL OFL), lokal eingebunden, ohne Google-Fonts-Abruf |
 | Logo | Online beschaffen, wenn möglich über eine API (siehe `docs/branding.md`); muss im PoC nicht final sein |
 | Gruppierung | Gemäss Folien: Leistungskategorie Ebene 2 = Familie, Ebene 3 = Service, darunter Leistungen |
 | Freigabe | Kanal reicht; Qualitätssiegel ist kein Kriterium (Kapitel 2.2) |

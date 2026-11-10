@@ -1,26 +1,33 @@
 import type { Metadata } from "next"
 
-import { siteContainer } from "@/components/site/container"
-import { SiteFooter } from "@/components/site/site-footer"
-import { SiteHeader } from "@/components/site/site-header"
-import { NotFoundContent } from "@/features/catalog/components/not-found-content"
-import { cn } from "@/lib/utils"
+import { SiteNav } from "@/components/shell/site-nav"
 
 export const metadata: Metadata = { title: "Seite nicht gefunden" }
 
-/** 404 für unbekannte Adressen (ausserhalb des öffentlichen Layouts). */
 export default function NotFound() {
   return (
-    <div className="flex min-h-svh flex-col">
-      <SiteHeader />
-      <main
-        id="inhalt"
-        tabIndex={-1}
-        className={cn(siteContainer, "flex-1 pt-6 pb-4 outline-none sm:pt-8")}
-      >
-        <NotFoundContent />
+    <>
+      <SiteNav plain />
+      <main id="top" className="app">
+        <div className="wrap">
+          <div className="page-head">
+            <p className="t-label muted">Fehler 404</p>
+            <h1>Diese Seite gibt es nicht</h1>
+            <p className="t-lead">
+              Die Adresse stimmt nicht, oder die Leistung ist nicht mehr im
+              Katalog. Die Suche findet, was heute angeboten wird.
+            </p>
+            <div className="btn-row">
+              <a className="btn btn--primary" href="/suche">
+                Leistung suchen
+              </a>
+              <a className="btn btn--secondary" href="/">
+                Zur Startseite gehen
+              </a>
+            </div>
+          </div>
+        </div>
       </main>
-      <SiteFooter />
-    </div>
+    </>
   )
 }

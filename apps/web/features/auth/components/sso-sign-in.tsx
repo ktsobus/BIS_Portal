@@ -2,20 +2,12 @@
 
 import * as React from "react"
 
-import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldDescription,
-  FieldLabel,
-  fieldDescribedBy,
-} from "@/components/ui/field"
-import { FormAlert } from "@/components/ui/form-alert"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
+import { TextField } from "@/components/ui/field"
+import { Status } from "@/components/ui/status"
 import { authClient } from "@/lib/auth-client"
 import { errorMessage } from "@/lib/messages"
 
-const FORM_ERROR_ID = "sso-error"
+const STATUS_ID = "sso-status"
 
 /** SAML-Anmeldung: Die E-Mail-Domäne bestimmt den Identity Provider. */
 export function SsoSignIn({ callbackUrl }: { callbackUrl: string }) {
@@ -24,9 +16,6 @@ export function SsoSignIn({ callbackUrl }: { callbackUrl: string }) {
   // Bleibt stehen, bis die Person die Adresse ändert oder erneut absendet.
   const [formError, setFormError] = React.useState<string | null>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
-  const { descriptionId, describedBy } = fieldDescribedBy("sso-email", {
-    description: true,
-  })
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
@@ -56,47 +45,37 @@ export function SsoSignIn({ callbackUrl }: { callbackUrl: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="flex w-full flex-col gap-6">
-      {formError ? (
-        <FormAlert id={FORM_ERROR_ID} title="Anmeldung über SSO nicht möglich">
-          {formError}
-        </FormAlert>
-      ) : null}
-      <Field data-invalid={Boolean(formError)}>
-        <FieldLabel htmlFor="sso-email">
-          Geschäftliche E-Mail-Adresse
-        </FieldLabel>
-        <Input
+    <form onSubmit={submit} noValidate>
+      <div className="form form--narrow">
+        <TextField
           ref={inputRef}
           id="sso-email"
+          label="Geschäftliche E-Mail-Adresse"
           type="email"
           autoComplete="email"
+          inputMode="email"
+          hint="Sie werden zur Anmeldung des Kantons weitergeleitet."
           value={email}
           onChange={(e) => {
             setEmail(e.target.value)
             setFormError(null)
           }}
-          aria-invalid={Boolean(formError)}
-          aria-describedby={
-            [describedBy, formError ? FORM_ERROR_ID : null]
-              .filter(Boolean)
-              .join(" ") || undefined
-          }
+          invalid={Boolean(formError)}
+          describedById={formError ? STATUS_ID : undefined}
         />
-        <FieldDescription id={descriptionId}>
-          Sie werden zur Anmeldung des Kantons weitergeleitet.
-        </FieldDescription>
-      </Field>
-      <Button
-        type="submit"
-        size="lg"
-        variant="outline"
-        className="w-full sm:w-auto sm:self-start"
-        disabled={pending || !email}
-      >
-        {pending && <Spinner aria-hidden="true" />}
-        Weiter mit SSO
-      </Button>
+        <div className="btn-row">
+          <button
+            className="btn btn--secondary"
+            type="submit"
+            disabled={pending || !email}
+          >
+            {pending ? "Weiterleitung …" : "Weiter mit SSO"}
+          </button>
+        </div>
+        <Status id={STATUS_ID} bad={Boolean(formError)}>
+          {formError ? `Anmeldung über SSO nicht möglich: ${formError}` : null}
+        </Status>
+      </div>
     </form>
   )
 }

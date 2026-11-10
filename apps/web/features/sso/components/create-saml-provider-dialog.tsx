@@ -3,33 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { CreateSamlProviderInput } from "@workspace/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { PlusIcon } from "lucide-react"
 import * as React from "react"
-import { Controller, useForm } from "react-hook-form"
-import { toast } from "sonner"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
-import { Textarea } from "@/components/ui/textarea"
+import { Dialog } from "@/components/ui/dialog"
+import { TextAreaField, TextField } from "@/components/ui/field"
+import { Status } from "@/components/ui/status"
 import { errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
 
@@ -87,7 +67,7 @@ type FieldName = keyof CreateSamlProviderInput
 const fields: Array<{
   name: FieldName
   label: string
-  description?: string
+  hint?: string
   placeholder?: string
   multiline?: boolean
 }> = [
@@ -95,14 +75,13 @@ const fields: Array<{
     name: "providerId",
     label: "Provider-ID",
     placeholder: "ktso-entra",
-    description: "Teil der ACS-URL. Kleinbuchstaben, Ziffern und Bindestriche.",
+    hint: "Teil der ACS-URL. Kleinbuchstaben, Ziffern und Bindestriche.",
   },
   {
     name: "domain",
     label: "E-Mail-Domänen",
     placeholder: "so.ch",
-    description:
-      "Personen mit diesen E-Mail-Domänen werden an diesen IdP weitergeleitet. Mehrere durch Komma trennen.",
+    hint: "Personen mit diesen E-Mail-Domänen werden an diesen IdP weitergeleitet. Mehrere durch Komma trennen.",
   },
   {
     name: "issuer",
@@ -124,8 +103,7 @@ const fields: Array<{
     name: "idpMetadataXml",
     label: "Metadaten des IdP als XML (optional)",
     multiline: true,
-    description:
-      "Kann das Zertifikat ersetzen, wenn die Metadaten das Signaturzertifikat enthalten.",
+    hint: "Kann das Zertifikat ersetzen, wenn die Metadaten das Signaturzertifikat enthalten.",
   },
   {
     name: "emailAttribute",
@@ -139,8 +117,12 @@ const fields: Array<{
   },
 ]
 
+const STATUS_ID = "create-saml-status"
+
 export function CreateSamlProviderDialog() {
   const [open, setOpen] = React.useState(false)
+  const [created, setCreated] = React.useState<string | null>(null)
+  const [formError, setFormError] = React.useState<string | null>(null)
   const queryClient = useQueryClient()
   const form = useForm<CreateSamlProviderInput>({
     resolver: zodResolver(formSchema),
@@ -151,12 +133,12 @@ export function CreateSamlProviderDialog() {
     orpc.sso.create.mutationOptions({
       onSuccess: async (provider) => {
         await queryClient.invalidateQueries({ queryKey: orpc.sso.key() })
-        toast.success(`Provider ${provider.providerId} hinzugefügt`)
+        setCreated(`Provider ${provider.providerId} hinzugefügt.`)
         form.reset(defaultValues)
         setOpen(false)
       },
       onError: (error) =>
-        toast.error(
+        setFormError(
           errorMessage(error, {
             CONFLICT: "Es gibt bereits einen Provider mit dieser ID.",
             BAD_REQUEST:
@@ -166,84 +148,93 @@ export function CreateSamlProviderDialog() {
     })
   )
 
+  function close() {
+    setOpen(false)
+    setFormError(null)
+    form.reset(defaultValues)
+  }
+
+  const { errors } = form.formState
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="lg">
-          <PlusIcon aria-hidden="true" />
-          Provider hinzufügen
-        </Button>
-      </DialogTrigger>
-      <DialogContent
-        showCloseButton={false}
-        className="max-h-[90svh] overflow-y-auto sm:max-w-lg"
+    <>
+      <button
+        type="button"
+        className="btn btn--primary"
+        onClick={() => {
+          setCreated(null)
+          setOpen(true)
+        }}
       >
-        <DialogHeader>
-          <DialogTitle>SAML-Provider hinzufügen</DialogTitle>
-          <DialogDescription>
-            Die Werte stammen aus der SAML-App im Identity Provider (z. B. Entra
-            ID, Keycloak, Okta).
-          </DialogDescription>
-        </DialogHeader>
+        Provider hinzufügen
+      </button>
+      <p role="status" className="admin-head__status t-small">
+        {created}
+      </p>
+      <Dialog
+        open={open}
+        onClose={close}
+        title="SAML-Provider hinzufügen"
+        description="Die Werte stammen aus der SAML-App im Identity Provider (z. B. Entra ID, Keycloak, Okta)."
+      >
         <form
-          id="create-saml-form"
           noValidate
-          onSubmit={form.handleSubmit((values) => create.mutate(values))}
+          onSubmit={form.handleSubmit((values) => {
+            setFormError(null)
+            create.mutate(values)
+          })}
         >
-          <FieldGroup>
-            {fields.map((f) => (
-              <Controller
-                key={f.name}
-                name={f.name}
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>{f.label}</FieldLabel>
-                    {f.multiline ? (
-                      <Textarea
-                        {...field}
-                        value={field.value ?? ""}
-                        id={field.name}
-                        placeholder={f.placeholder}
-                        className="min-h-24 font-mono text-xs"
-                        aria-invalid={fieldState.invalid}
-                      />
-                    ) : (
-                      <Input
-                        {...field}
-                        value={field.value ?? ""}
-                        id={field.name}
-                        placeholder={f.placeholder}
-                        autoComplete="off"
-                        aria-invalid={fieldState.invalid}
-                      />
-                    )}
-                    {f.description && (
-                      <FieldDescription>{f.description}</FieldDescription>
-                    )}
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-            ))}
-          </FieldGroup>
+          <div className="form">
+            {fields.map((f) =>
+              f.multiline ? (
+                <TextAreaField
+                  key={f.name}
+                  id={`saml-${f.name}`}
+                  label={f.label}
+                  hint={f.hint}
+                  placeholder={f.placeholder}
+                  error={errors[f.name]?.message}
+                  spellCheck={false}
+                  {...form.register(f.name)}
+                />
+              ) : (
+                <TextField
+                  key={f.name}
+                  id={`saml-${f.name}`}
+                  label={f.label}
+                  hint={f.hint}
+                  placeholder={f.placeholder}
+                  autoComplete="off"
+                  spellCheck={false}
+                  error={errors[f.name]?.message}
+                  {...form.register(f.name)}
+                />
+              )
+            )}
+            <div className="btn-row">
+              <button
+                type="button"
+                className="btn btn--secondary"
+                onClick={close}
+              >
+                Abbrechen
+              </button>
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={create.isPending}
+              >
+                {create.isPending
+                  ? "Provider wird hinzugefügt …"
+                  : "Provider hinzufügen"}
+              </button>
+            </div>
+            <Status id={STATUS_ID} bad={Boolean(formError)}>
+              {formError}
+            </Status>
+          </div>
         </form>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Abbrechen</Button>
-          </DialogClose>
-          <Button
-            type="submit"
-            form="create-saml-form"
-            disabled={create.isPending}
-          >
-            {create.isPending && <Spinner aria-hidden="true" />}
-            Provider hinzufügen
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </Dialog>
+    </>
   )
 }

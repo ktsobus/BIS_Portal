@@ -7,8 +7,8 @@ import { requireAdmin } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: {
-    default: "Administration · Business-IT-Serviceportal",
-    template: "%s · Administration · Business-IT-Serviceportal",
+    default: "Administration · BITS-Portal",
+    template: "%s · Administration · BITS-Portal",
   },
   robots: { index: false, follow: false },
 }
@@ -21,27 +21,21 @@ export default async function AdminLayout({
   const { user } = await requireAdmin()
 
   return (
-    <AdminShell
-      toolbar={
-        <>
-          <AdminNav />
-          {/* Benannte Region, damit Benutzername und «Abmelden» per
-              Landmarken-Navigation erreichbar sind. */}
-          <section
-            aria-label="Angemeldetes Konto"
-            className="flex min-h-11 flex-wrap items-center gap-x-3 pb-1 text-sm"
-          >
-            <span className="text-muted-foreground">
-              Angemeldet als{" "}
-              <span className="text-foreground" title={user.email}>
-                {user.name || user.email}
-              </span>
+    <AdminShell>
+      <div className="wrap admin-top">
+        <AdminNav />
+        {/* Benannte Region, damit Konto und «Abmelden» per
+            Landmarken-Navigation erreichbar sind. */}
+        <section aria-label="Angemeldetes Konto" className="admin-account">
+          <p className="t-small muted">
+            Angemeldet als{" "}
+            <span className="admin-account__name" title={user.email}>
+              {user.name || user.email}
             </span>
-            <SignOutButton />
-          </section>
-        </>
-      }
-    >
+          </p>
+          <SignOutButton />
+        </section>
+      </div>
       {children}
     </AdminShell>
   )

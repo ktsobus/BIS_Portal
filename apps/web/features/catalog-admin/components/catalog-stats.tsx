@@ -1,20 +1,17 @@
 import type { CatalogStats as Stats } from "@workspace/api"
 
-import { cn } from "@/lib/utils"
-
 import { formatNumber } from "./format"
 
-interface Tile {
+interface Figure {
   /** Nur Pflicht-Kennzahlen (`actions` fehlt in älteren Ständen). */
   key: Exclude<keyof Stats, "actions">
-
   label: string
   hint: string
-  /** Wert > 0 hervorheben und auf den Qualitätsbericht verweisen. */
+  /** Wert > 0 verweist auf den Qualitätsbericht. */
   attention?: boolean
 }
 
-const tiles: Tile[] = [
+const figures: Figure[] = [
   {
     key: "families",
     label: "Service-Familien",
@@ -45,33 +42,18 @@ const tiles: Tile[] = [
   },
 ]
 
-/** Kennzahlen des aktuellen Katalog-Stands als Kacheln. */
+/** Kennzahlen des aktuellen Katalog-Stands. */
 export function CatalogStats({ stats }: { stats: Stats }) {
   return (
-    <dl className="grid grid-cols-2 gap-px border border-border bg-border sm:grid-cols-3 lg:grid-cols-6">
-      {tiles.map((tile) => {
-        const value = stats[tile.key]
-        const highlight = tile.attention && value > 0
+    <dl className="stat-row">
+      {figures.map((figure) => {
+        const value = stats[figure.key]
+        const linked = figure.attention && value > 0
         return (
-          <div
-            key={tile.key}
-            className="flex flex-col-reverse justify-end gap-1 bg-background p-4"
-          >
-            <dt className="flex flex-col text-sm leading-snug">
-              <span className="font-bold">{tile.label}</span>
-              <span className="text-muted-foreground">{tile.hint}</span>
-            </dt>
-            <dd
-              className={cn(
-                "text-4xl leading-none tabular-nums",
-                highlight && "text-primary"
-              )}
-            >
-              {highlight ? (
-                <a
-                  href="#datenqualitaet"
-                  className="underline decoration-1 underline-offset-4 hover:decoration-2"
-                >
+          <div key={figure.key}>
+            <dd>
+              {linked ? (
+                <a className="stat-row__link" href="#datenqualitaet">
                   {formatNumber(value)}
                   <span className="sr-only"> – zum Datenqualitätsbericht</span>
                 </a>
@@ -79,6 +61,10 @@ export function CatalogStats({ stats }: { stats: Stats }) {
                 formatNumber(value)
               )}
             </dd>
+            <dt>
+              <span className="stat-row__label">{figure.label}</span>
+              <span>{figure.hint}</span>
+            </dt>
           </div>
         )
       })}

@@ -54,6 +54,9 @@ export default function nextConfig(phase: string): NextConfig {
     transpilePackages: ["@workspace/api"],
     // Kein «X-Powered-By: Next.js».
     poweredByHeader: false,
+    // Kein schwebendes Next.js-Abzeichen im Entwicklungsmodus: Die Seite hat
+    // ausser der Kopfzeile nichts Fixiertes (und die Prüfskripte messen das).
+    devIndicators: false,
     async headers() {
       return [
         {

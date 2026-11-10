@@ -1,12 +1,9 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { CircleAlertIcon } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 
-import { PageTitle } from "@/components/site/page-title"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Notice } from "@/components/ui/notice"
 import { errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
 import { safeRedirectPath } from "@/lib/safe-redirect"
@@ -23,73 +20,55 @@ function ssoErrorMessage(code: string) {
   )
 }
 
+/**
+ * Anmeldeseite: links das Passwort-Formular und, wenn ein SAML-Provider
+ * eingerichtet ist, darunter die Anmeldung über SSO; rechts, wer ein Konto
+ * braucht und woher es kommt.
+ */
 export function SignInForm() {
   const searchParams = useSearchParams()
   const callbackUrl = safeRedirectPath(searchParams.get("callbackUrl"))
   const methods = useQuery(orpc.auth.methods.queryOptions())
   const error = searchParams.get("error")
-
-  const tabs = [
-    {
-      value: "password",
-      label: "Passwort",
-      content: <PasswordSignInForm callbackUrl={callbackUrl} />,
-    },
-    ...(methods.data?.sso
-      ? [
-          {
-            value: "sso",
-            label: "SSO (SAML)",
-            content: <SsoSignIn callbackUrl={callbackUrl} />,
-          },
-        ]
-      : []),
-  ]
+  const signedOut = searchParams.get("signedOut") === "1"
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-3">
-        <PageTitle>Anmelden</PageTitle>
-        <p className="text-muted-foreground">
-          Die Anmeldung ist nur für die Administration des Portals nötig. Der
-          Katalog ist ohne Anmeldung zugänglich.
-        </p>
+    <div className="wrap">
+      <div className="grid grid--top auth">
+        <div className="span-5 auth__main">
+          <div className="page-head">
+            <h1>Anmelden</h1>
+            <p className="t-lead">
+              Die Anmeldung ist nur für die Administration des Portals nötig.
+              Der Katalog ist ohne Anmeldung zugänglich.
+            </p>
+          </div>
+
+          {error ? (
+            <Notice title="Anmeldung nicht möglich" bad role="alert">
+              <p>{ssoErrorMessage(error)}</p>
+            </Notice>
+          ) : signedOut ? (
+            <Notice title="Sie sind abgemeldet." role="status" />
+          ) : null}
+
+          <PasswordSignInForm callbackUrl={callbackUrl} />
+
+          {methods.data?.sso ? (
+            <section className="auth__sso" aria-labelledby="sso-h">
+              <div className="block-head">
+                <h2 id="sso-h">Mit SSO anmelden</h2>
+              </div>
+              <SsoSignIn callbackUrl={callbackUrl} />
+            </section>
+          ) : null}
+        </div>
+
+        <aside className="span-4 start-9 aside-card">
+          <h2>Noch kein Konto?</h2>
+          <p>Konten werden von den Admins im Admin-Bereich erfasst.</p>
+        </aside>
       </div>
-
-      {error ? (
-        <Alert variant="destructive" className="p-4">
-          <CircleAlertIcon aria-hidden="true" />
-          <AlertTitle className="text-base font-bold">
-            Anmeldung nicht möglich
-          </AlertTitle>
-          <AlertDescription className="text-foreground!">
-            {ssoErrorMessage(error)}
-          </AlertDescription>
-        </Alert>
-      ) : null}
-
-      {tabs.length === 1 ? (
-        tabs[0]!.content
-      ) : (
-        <Tabs defaultValue="password" className="gap-6">
-          <TabsList className="w-full">
-            {tabs.map((t) => (
-              <TabsTrigger key={t.value} value={t.value}>
-                {t.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          {tabs.map((t) => (
-            <TabsContent key={t.value} value={t.value}>
-              {t.content}
-            </TabsContent>
-          ))}
-        </Tabs>
-      )}
-
-      <p className="border-t border-border pt-4 text-sm text-muted-foreground">
-        Noch kein Konto? Konten werden von den Admins im Admin-Bereich erfasst.
-      </p>
     </div>
   )
 }

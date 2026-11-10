@@ -53,3 +53,69 @@ export const loadStatus = cache(async () => {
     return null
   }
 })
+
+/**
+ * Daten für Kopf- und Fusszeile: Kategorien, zentraler Kontakt und Stand.
+ * Scheitert nie; ohne Katalog bleiben die Listen leer.
+ */
+export const loadShell = cache(async () => {
+  const overview = await loadOverview()
+  if (overview.ok) {
+    const { families, status } = overview.data
+    return {
+      available: true as const,
+      families,
+      status,
+      contact: status.contact,
+      leistungen: families.reduce((sum, f) => sum + f.leistungCount, 0),
+      services: families.reduce((sum, f) => sum + f.serviceCount, 0),
+    }
+  }
+  const status = await loadStatus()
+  return {
+    available: false as const,
+    families: [],
+    status,
+    contact: status?.contact ?? null,
+    leistungen: 0,
+    services: 0,
+  }
+})
+
+/**
+ * Eine echte Leistung für die Ausschnitte im Abschnitt «Ablauf»: die erste
+ * mit Kurzbeschreibung aus dem ersten Service. `null` ohne Katalog.
+ */
+export const loadShowcase = cache(async () => {
+  try {
+    const overview = await loadOverview()
+    if (!overview.ok) return null
+    for (const family of overview.data.families) {
+      const page = await serverClient.catalog.family({ slug: family.slug })
+      for (const summary of page.services) {
+        if (summary.leistungCount === 0) continue
+        const service = await serverClient.catalog.service({
+          slug: summary.slug,
+        })
+        const leistung =
+          service.leistungen.find((entry) => entry.summary) ??
+          service.leistungen[0]
+        if (leistung) {
+          return {
+            leistung: leistung.name,
+            service: service.service.name,
+            family: family.name,
+            action:
+              leistung.actions.find((action) => action.kind === "order")
+                ?.label ??
+              leistung.actions[0]?.label ??
+              null,
+          }
+        }
+      }
+    }
+    return null
+  } catch {
+    return null
+  }
+})

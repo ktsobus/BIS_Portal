@@ -11,8 +11,9 @@ erreichbar; der Admin-Bereich (`/admin`) zeigt Sync-Status und Datenqualität.
 - **[Discovery-Skript](scripts/leanix-discovery.mjs)** – liest das LeanIX-Datenmodell aus (nur lesend)
 
 Techstack: [Laeri/dev-template](https://github.com/Laeri/dev-template) (pnpm, Turborepo,
-Next.js 16, Tailwind v4, shadcn/ui, oRPC, TanStack Query, Zod 4, better-auth, Drizzle + Postgres) ·
-Design: [CD-Manual Kanton Solothurn](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn) ·
+Next.js 16, oRPC, TanStack Query, Zod 4, better-auth, Drizzle + Postgres) ·
+Oberfläche: [tasteskill 2.5.1](https://github.com/Leonxlnx/taste-skill) (Kit in `apps/web/public/assets`),
+Farben und Logo aus dem [CD-Manual Kanton Solothurn](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn) ·
 Regeln für Code und Agenten: [AGENTS.md](AGENTS.md)
 
 ## Entwicklung
@@ -30,7 +31,7 @@ pnpm dev                                 # http://localhost:3000
 ```
 
 Den ersten Admin unter <http://localhost:3000/setup> anlegen (nur möglich, solange es keinen
-Admin gibt). Danach erfolgt die Anmeldung über `/sign-in` (Link «Anmelden» in der Fusszeile).
+Admin gibt). Danach erfolgt die Anmeldung über `/sign-in` (Link «Als Admin anmelden» in der Fusszeile).
 
 ## Demo-Modus und LeanIX-Mock
 
@@ -61,6 +62,31 @@ pnpm dev
 | `MOCK_CHANNEL_LIMIT=n`     | nur die ersten n Leistungen (nach Name) im Kanal (Schrumpf-Schutz) |
 | `MOCK_WORKSPACE`           | Workspace im Access-Token (Standard `eamktsoLive`)                 |
 | `MOCK_PAGE_SIZE`           | höchstens so viele Einträge pro Seite (Paging)                     |
+
+## Oberfläche
+
+Die Oberfläche ist mit [tasteskill 2.5.1](https://github.com/Leonxlnx/taste-skill) von Grund auf
+gebaut (Art «service»). Ohne Tailwind und ohne Komponentenbibliothek:
+
+- `apps/web/public/assets/` – das Kit des Skills, **unverändert** (System, Motion, Layout, der
+  Moment `word-highlight`) und die Fotografien (`img/`). Nicht von Hand ändern: Das Prüfskript des
+  Skills vergleicht die Dateien mit dem Original.
+- `apps/web/public/styles/portal.css` und `admin.css` – eigene Regeln auf den Tokens des Kits.
+  Farben aus dem CD-Manual (Weiss, Grafik-Schwarz `#333333`, Grafik-Grau `#646B76`, Solothurner
+  Rot `#CC0000`), Schrift Schibsted Grotesk (SIL OFL, lokal in `public/fonts/`).
+- Startseite: fünf Abschnitte, jeder genau ein Bildschirm hoch (Hero, Kategorien, Ablauf, Aussage,
+  Abschluss mit Fusszeile). Katalog-, Anmelde- und Verwaltungsseiten wachsen mit ihrem Inhalt.
+- Fotografien: Rathaus und Altstadt Solothurn von Wikimedia Commons (CC BY-SA), Urheber und
+  Lizenzen unter `/bildnachweis`. Für den Betrieb durch eigene Aufnahmen des Kantons ersetzen.
+
+Prüfen wie im Skill beschrieben (Node 22+, Chromium), bei laufendem Server aus `apps/web`:
+
+```bash
+node <skill>/scripts/gate.mjs http://localhost:3000/        # Checker bei 1440 und 390, Texte, Layout
+node <skill>/scripts/perf.mjs http://localhost:3000/        # gegen den Produktions-Build messen
+```
+
+`<skill>` ist der Ordner `skills/taste-skill` aus dem Repository des Skills (Tag `v2.5.1`).
 
 ## Tests und Qualität
 

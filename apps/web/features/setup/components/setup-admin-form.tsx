@@ -2,26 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
 import * as React from "react"
-import { Controller, useForm } from "react-hook-form"
-import { toast } from "sonner"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { PageTitle } from "@/components/site/page-title"
-import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  fieldDescribedBy,
-} from "@/components/ui/field"
-import { FormAlert } from "@/components/ui/form-alert"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
+import { TextField } from "@/components/ui/field"
+import { Status } from "@/components/ui/status"
 import { signIn } from "@/lib/auth-client"
 import { accountFields, errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
@@ -41,7 +27,7 @@ const formSchema = z
 
 type FormValues = z.infer<typeof formSchema>
 
-const FORM_ERROR_ID = "setup-error"
+const STATUS_ID = "setup-status"
 
 const fields = [
   { name: "name", label: "Name", type: "text", autoComplete: "name" },
@@ -56,7 +42,7 @@ const fields = [
     label: "Passwort",
     type: "password",
     autoComplete: "new-password",
-    description: "Mindestens 12 Zeichen.",
+    hint: "Mindestens 12 Zeichen.",
   },
   {
     name: "confirmPassword",
@@ -67,21 +53,16 @@ const fields = [
 ] as const
 
 export function SetupAdminForm() {
-  const router = useRouter()
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   })
-  // Serverfehler bleiben über dem Formular stehen (kein flüchtiger Toast).
+  // Serverfehler bleiben in der Statuszeile stehen.
   const [formError, setFormError] = React.useState<{
     message: string
     setupDone: boolean
   } | null>(null)
-  const alertRef = React.useRef<HTMLDivElement>(null)
-  // Neuer Fehler: Hinweis fokussieren, damit er vorgelesen wird.
-  React.useEffect(() => {
-    if (formError) alertRef.current?.focus()
-  }, [formError])
+  const [leaving, setLeaving] = React.useState(false)
 
   const createAdmin = useMutation(
     orpc.setup.createAdmin.mutationOptions({
@@ -100,105 +81,77 @@ export function SetupAdminForm() {
   async function onSubmit({ name, email, password }: FormValues) {
     setFormError(null)
     await createAdmin.mutateAsync({ name, email, password })
+    setLeaving(true)
     const { error } = await signIn.email({ email, password })
-    if (error) {
-      toast.error(
-        "Das Admin-Konto ist angelegt, die Anmeldung hat aber nicht geklappt. Bitte melden Sie sich an."
-      )
-      router.push("/sign-in")
-      return
-    }
-    toast.success("Admin-Konto angelegt")
+    // Konto angelegt, Anmeldung gescheitert: zur Anmeldeseite.
     // If admin TOTP is required (off by default), requireSession() sends
     // the admin on to /two-factor/setup.
-    router.push("/admin")
-    router.refresh()
+    window.location.assign(error ? "/sign-in" : "/admin")
   }
 
-  const pending = form.formState.isSubmitting
+  const { errors, isSubmitting } = form.formState
+  const pending = isSubmitting || leaving
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-3">
-        <PageTitle>Ersteinrichtung</PageTitle>
-        <p className="text-muted-foreground">
-          Legen Sie das erste Admin-Konto an. Diese Seite ist nur bis zum
-          Abschluss der Ersteinrichtung erreichbar. Weitere Konten erfassen Sie
-          danach im Admin-Bereich.
-        </p>
-      </div>
-      <form
-        noValidate
-        onSubmit={form.handleSubmit((values) =>
-          onSubmit(values).catch(() => {})
-        )}
-        className="flex flex-col gap-6"
-      >
-        {formError ? (
-          <FormAlert
-            ref={alertRef}
-            id={FORM_ERROR_ID}
-            title="Admin-Konto nicht angelegt"
+    <div className="wrap">
+      <div className="grid grid--top auth">
+        <div className="span-5 auth__main">
+          <div className="page-head">
+            <h1>Ersteinrichtung</h1>
+            <p className="t-lead">
+              Legen Sie das erste Admin-Konto an. Diese Seite ist nur bis zum
+              Abschluss der Ersteinrichtung erreichbar.
+            </p>
+          </div>
+          <form
+            noValidate
+            onSubmit={form.handleSubmit((values) =>
+              onSubmit(values).catch(() => {})
+            )}
           >
-            <p>{formError.message}</p>
-            {formError.setupDone ? (
-              <p>
-                <Link href="/sign-in" className="link-cd">
-                  Zur Anmeldung
-                </Link>
-              </p>
-            ) : null}
-          </FormAlert>
-        ) : null}
-        <FieldGroup>
-          {fields.map((f) => (
-            <Controller
-              key={f.name}
-              name={f.name}
-              control={form.control}
-              render={({ field, fieldState }) => {
-                const description =
-                  "description" in f ? f.description : undefined
-                const { descriptionId, errorId, describedBy } =
-                  fieldDescribedBy(field.name, {
-                    description: Boolean(description),
-                    invalid: Boolean(fieldState.error?.message),
-                  })
-                return (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>{f.label}</FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      type={f.type}
-                      autoComplete={f.autoComplete}
-                      aria-invalid={fieldState.invalid}
-                      aria-describedby={describedBy}
-                    />
-                    {description ? (
-                      <FieldDescription id={descriptionId}>
-                        {description}
-                      </FieldDescription>
+            <div className="form form--narrow">
+              {fields.map((f) => (
+                <TextField
+                  key={f.name}
+                  id={f.name}
+                  label={f.label}
+                  type={f.type}
+                  autoComplete={f.autoComplete}
+                  hint={"hint" in f ? f.hint : undefined}
+                  error={errors[f.name]?.message}
+                  describedById={formError ? STATUS_ID : undefined}
+                  {...form.register(f.name)}
+                />
+              ))}
+              <div className="btn-row">
+                <button
+                  className="btn btn--primary"
+                  type="submit"
+                  disabled={pending}
+                >
+                  {pending ? "Konto wird angelegt …" : "Admin-Konto anlegen"}
+                </button>
+              </div>
+              <Status id={STATUS_ID} bad={Boolean(formError)}>
+                {formError ? (
+                  <>
+                    Admin-Konto nicht angelegt: {formError.message}{" "}
+                    {formError.setupDone ? (
+                      <a className="link" href="/sign-in">
+                        Zur Anmeldung
+                      </a>
                     ) : null}
-                    {fieldState.invalid && (
-                      <FieldError id={errorId} errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-          ))}
-        </FieldGroup>
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full sm:w-auto sm:self-start"
-          disabled={pending}
-        >
-          {pending && <Spinner aria-hidden="true" />}
-          Admin-Konto anlegen
-        </Button>
-      </form>
+                  </>
+                ) : null}
+              </Status>
+            </div>
+          </form>
+        </div>
+        <aside className="span-4 start-9 aside-card">
+          <h2>Weitere Konten</h2>
+          <p>Weitere Konten erfassen Sie danach im Admin-Bereich.</p>
+        </aside>
+      </div>
     </div>
   )
 }

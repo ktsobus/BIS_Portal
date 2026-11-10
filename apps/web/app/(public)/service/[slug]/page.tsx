@@ -1,25 +1,20 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { redirect } from "next/navigation"
 
-import { Breadcrumbs } from "@/components/site/breadcrumbs"
-import { PageTitle } from "@/components/site/page-title"
-import { ActionLinks } from "@/features/catalog/components/action-links"
-import { CatalogUnavailable } from "@/features/catalog/components/catalog-unavailable"
-import { DashList } from "@/features/catalog/components/dash-list"
+import { ActionButtons, TextLink } from "@/features/catalog/components/actions"
 import {
-  ExternalLink,
-  safeHref,
-} from "@/features/catalog/components/external-link"
-import { LeistungGrid } from "@/features/catalog/components/leistung-card"
+  LeistungEntries,
+  OrgUnits,
+  Persons,
+} from "@/features/catalog/components/lists"
 import { MarkdownText } from "@/features/catalog/components/markdown"
+import { CatalogFrame, Crumbs } from "@/features/catalog/components/page-frame"
 import {
-  OrgUnitList,
-  PersonList,
-} from "@/features/catalog/components/org-units"
-import { Section } from "@/features/catalog/components/section"
-import { NoRequestPathHint } from "@/features/catalog/components/support-contact"
-import { loadService } from "@/features/catalog/load"
+  CatalogUnavailable,
+  NoRequestPathHint,
+} from "@/features/catalog/components/support-contact"
+import { safeHref } from "@/features/catalog/links"
+import { loadService, loadStatus } from "@/features/catalog/load"
 import { countLabel, plainExcerpt } from "@/features/catalog/text"
 
 export async function generateMetadata({
@@ -28,12 +23,10 @@ export async function generateMetadata({
   const { slug } = await params
   const result = await loadService(slug)
   if (!result.ok) return { title: "Katalog nicht verfügbar" }
-  const { service, family } = result.data
+  const { service } = result.data
   return {
     title: service.name,
-    description:
-      plainExcerpt(service.definition, 160) ??
-      `${service.name} (${family.name})`,
+    description: plainExcerpt(service.definition, 160) ?? undefined,
   }
 }
 
@@ -42,117 +35,96 @@ export default async function ServicePage({
 }: PageProps<"/service/[slug]">) {
   const { slug } = await params
   const result = await loadService(slug)
-  if (!result.ok) return <CatalogUnavailable />
+  if (!result.ok) {
+    return (
+      <CatalogFrame>
+        <CatalogUnavailable contact={(await loadStatus())?.contact} />
+      </CatalogFrame>
+    )
+  }
 
-  const { family, service, leistungen } = result.data
+  const { family, service, leistungen, status } = result.data
   if (service.slug !== slug) redirect(`/service/${service.slug}`)
 
   const infoLinks = service.links.filter((link) => safeHref(link.url))
+  const actions = service.actions.filter((action) => safeHref(action.url))
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="flex flex-col gap-5">
-        <Breadcrumbs
-          items={[
-            { label: "Start", href: "/" },
-            { label: family.name, href: `/kategorie/${family.slug}` },
-            { label: service.name },
-          ]}
-        />
-        <PageTitle eyebrow={family.name}>{service.name}</PageTitle>
+    <CatalogFrame>
+      <div className="wrap">
+        <div className="page-head">
+          <Crumbs
+            items={[
+              { label: "Katalog", href: "/#kategorien" },
+              { label: family.name, href: `/kategorie/${family.slug}` },
+              { label: service.name },
+            ]}
+          />
+          <h1>{service.name}</h1>
+        </div>
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-12">
-        <div className="flex min-w-0 flex-col gap-10">
+      <div className="wrap grid grid--top">
+        <div className="span-7">
           {service.definition ? (
-            <MarkdownText headingLevel={2} className="text-[1.0625rem]">
-              {service.definition}
-            </MarkdownText>
+            <MarkdownText headingLevel={2}>{service.definition}</MarkdownText>
           ) : (
-            <p className="text-so-graphite">
+            <p className="muted">
               Für diesen Service ist noch keine Beschreibung erfasst.
             </p>
           )}
-
-          <Section
-            id="leistungen"
-            title={
-              leistungen.length > 0
-                ? `Leistungen (${leistungen.length})`
-                : "Leistungen"
-            }
-          >
-            {leistungen.length > 0 ? (
-              <LeistungGrid leistungen={leistungen} />
-            ) : (
-              <div className="flex max-w-[70ch] flex-col gap-3 border-l-4 border-primary bg-so-surface p-5">
-                <NoRequestPathHint
-                  emphasize
-                  message="Für diesen Service sind im Portal noch keine Leistungen erfasst."
-                  responsible={service.responsible}
-                  contact={result.data.status.contact}
-                />
-              </div>
-            )}
-          </Section>
         </div>
-
-        <aside
-          aria-label="Angaben zum Service"
-          className="flex flex-col gap-8 lg:border-l lg:border-border lg:pl-8"
-        >
-          <div className="flex flex-col gap-3">
-            <h2 className="text-xl leading-tight font-normal">
-              Verantwortlich
-            </h2>
-            {service.responsible.length > 0 ? (
-              <OrgUnitList units={service.responsible} />
-            ) : (
-              <p className="text-so-graphite">Keine Angabe</p>
-            )}
-            <PersonList persons={service.persons} />
-          </div>
-
-          {service.actions.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              <h2 className="text-xl leading-tight font-normal">
-                Nächste Schritte
-              </h2>
-              <ActionLinks actions={service.actions} layout="stacked" />
-            </div>
-          ) : null}
-
-          {infoLinks.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              <h2 className="text-xl leading-tight font-normal">
-                Weitere Informationen
-              </h2>
-              <DashList
-                items={infoLinks.map((link) => ({
-                  key: link.id,
-                  content: (
-                    <ExternalLink href={link.url}>{link.label}</ExternalLink>
-                  ),
-                }))}
-              />
-            </div>
-          ) : null}
-
-          <p className="text-sm text-so-graphite">
-            Service-Familie:{" "}
-            <Link href={`/kategorie/${family.slug}`} className="link-cd">
-              {family.name}
-            </Link>
-            {leistungen.length > 0 ? (
-              <>
-                <br />
-                {countLabel(leistungen.length, "Leistung", "Leistungen")} im
-                Portal
-              </>
+        <aside className="span-4 start-9" aria-label="Angaben zum Service">
+          <div className="aside-card">
+            <dl className="facts">
+              <div>
+                <dt>Verantwortlich</dt>
+                <OrgUnits units={service.responsible} />
+                <Persons persons={service.persons} />
+              </div>
+              {infoLinks.length > 0 ? (
+                <div>
+                  <dt>Weitere Informationen</dt>
+                  {infoLinks.map((link) => (
+                    <dd key={link.id} className="linklist">
+                      <TextLink href={link.url}>{link.label}</TextLink>
+                      {link.description ? (
+                        <small>{link.description}</small>
+                      ) : null}
+                    </dd>
+                  ))}
+                </div>
+              ) : null}
+            </dl>
+            {actions.length > 0 ? (
+              <div style={{ marginTop: "var(--s-5)" }}>
+                <ActionButtons actions={actions} />
+              </div>
             ) : null}
-          </p>
+          </div>
         </aside>
       </div>
-    </div>
+
+      <div className="wrap" id="leistungen">
+        <div className="block-head">
+          <h2>Leistungen</h2>
+          {leistungen.length > 0 ? (
+            <p>{countLabel(leistungen.length, "Leistung", "Leistungen")}</p>
+          ) : null}
+        </div>
+        {leistungen.length > 0 ? (
+          <LeistungEntries leistungen={leistungen} />
+        ) : (
+          <div className="note">
+            <NoRequestPathHint
+              emphasize
+              message="Für diesen Service sind im Portal noch keine Leistungen erfasst."
+              responsible={service.responsible}
+              contact={status.contact}
+            />
+          </div>
+        )}
+      </div>
+    </CatalogFrame>
   )
 }

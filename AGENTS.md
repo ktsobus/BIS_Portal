@@ -11,12 +11,21 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Repo conventions
 
 - Package manager: pnpm 11 workspace. `minimumReleaseAge` (7 days) is enforced in `pnpm-workspace.yaml`; don't remove it. If an install is blocked, loosen the version range instead.
-- TanStack Table is **v9** (`useTable`, `tableFeatures`, `create*RowModel`), not v8. See `node_modules/@tanstack/react-table/skills/`.
-- shadcn forms use `Field` + react-hook-form `Controller` (there is no `Form` component).
+- Forms use react-hook-form with the primitives in `apps/web/components/ui/field.tsx` (`TextField`, `TextAreaField`, `CheckField`); there is no component library.
 - API changes start in `packages/api` (contract), then the feature's `server/router.ts` (registered in `apps/web/server/router.ts`).
 - `packages/api` is the only shared package. It holds the wire contract (zod + `@orpc/contract` only) and must stay free of server code; the client imports it.
-- Everything else lives in `apps/web`: shadcn components in `components/ui`, Drizzle in `db/`. The portal sends no email (no password reset, no email verification). Env vars are in `apps/web/.env`.
+- Everything else lives in `apps/web`: UI primitives in `components/ui`, the page shell (nav, footers) in `components/shell`, Drizzle in `db/`. The portal sends no email (no password reset, no email verification). Env vars are in `apps/web/.env`.
 - Feature folders: feature code lives in `apps/web/features/<feature>/` (`components/`, `server/router.ts`, feature helpers). Pages in `app/` stay thin and compose feature components. Features don't import each other's internals; code several features need goes to `components/ui`, `lib/` or `db/`. Contracts/schemas stay in `packages/api` (one file per feature), Drizzle tables in `db/schema/`.
+
+## Frontend (tasteskill 2.5.1)
+
+- The UI is built with [tasteskill 2.5.1](https://github.com/Leonxlnx/taste-skill) (kind `service`, site-kind `other`): no Tailwind, no shadcn, no icon or toast library. Read the skill's `SKILL.md` and its `references/` before changing a page's design, and run its gate afterwards (README, «Oberfläche»).
+- `apps/web/public/assets/` is the skill's kit, copied **unchanged** (`system.css/js`, `motion/`, `layout/`, `ui/`, `moments/word-highlight`), plus the photographs in `img/`. Never edit kit files: the skill's gate compares them with the original (`kit-edited`). Prettier and ESLint ignore the folder.
+- Own CSS is plain files loaded after the kit, in this order, as `<link>`s in `app/layout.tsx`: `public/styles/portal.css` (tokens, shell, catalogue pages), `public/styles/admin.css` (sign-in, setup, admin). Use the kit's classes and tokens (`--s-1..10`, `--r-*`, `--ink`, `--muted`, `--line`, `--action`, `--t-*`); don't add a second spacing, colour or type scale. The `:root` block in `portal.css` is the output of the skill's `start.mjs brand` with the CD manual's colours: keep it as printed.
+- Navigate with plain `<a href>` and `window.location.assign()`, not `next/link` or the router: the kit's scripts (`components/kit-scripts.tsx`) initialise once per page load.
+- The start page (`features/catalog/components/home.tsx`) follows the skill's layout: every `main > section` and `footer.closing` is exactly one screen tall (two on a phone or tablet where marked), the hero alone on the first. Every other page puts its content in `<main id="top" className="app">` with `<div className="wrap">` blocks and never a `<section>` as a direct child of `<main>` (the kit would size it to a full screen).
+- Don't put `class="form"` on a `<form>`: the kit's `system.js` takes over every `form.form` with its own validation. Use `<form noValidate><div className="form …">`.
+- `nav.actionbar` (`ActionBar`) must stay a direct child of `<body>`.
 
 ## Data access
 

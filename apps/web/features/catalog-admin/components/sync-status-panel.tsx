@@ -1,9 +1,4 @@
 import type { CatalogAdminOverview } from "@workspace/api"
-import {
-  CircleCheckIcon,
-  ExternalLinkIcon,
-  TriangleAlertIcon,
-} from "lucide-react"
 
 import { formatRelative } from "@/lib/format"
 
@@ -35,13 +30,11 @@ function Item({
   hint?: React.ReactNode
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-0.5 border-b border-border py-3 sm:grid sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-6">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="min-w-0">
+    <div>
+      <dt>{label}</dt>
+      <dd>
         <div>{children}</div>
-        {hint ? (
-          <p className="max-w-[70ch] text-sm text-muted-foreground">{hint}</p>
-        ) : null}
+        {hint ? <small>{hint}</small> : null}
       </dd>
     </div>
   )
@@ -54,7 +47,7 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
   const sourceIsDemo = config.source === "demo"
 
   return (
-    <dl className="border-t border-border">
+    <dl className="kv">
       <Item
         label="Datenquelle"
         hint={
@@ -65,7 +58,7 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
       >
         {sourceIsDemo ? "Demo-Daten" : "SAP LeanIX"}
         {status.source && status.source !== config.source ? (
-          <span className="text-muted-foreground">
+          <span className="muted">
             {" "}
             (angezeigt wird noch ein Stand aus{" "}
             {status.source === "demo" ? "den Demo-Daten" : "LeanIX"})
@@ -88,9 +81,7 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
             <time dateTime={status.generatedAt}>
               {formatDateTimeLong(status.generatedAt)}
             </time>
-            {relative ? (
-              <span className="text-muted-foreground"> ({relative})</span>
-            ) : null}
+            {relative ? <span className="muted"> ({relative})</span> : null}
           </>
         ) : (
           "Kein Stand vorhanden"
@@ -102,15 +93,9 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
         hint={`Als veraltet gilt der Katalog nach ${formatHours(config.staleAfterHours)} ohne erfolgreiche Synchronisierung.`}
       >
         {status.stale ? (
-          <span className="inline-flex items-center gap-1.5 font-bold">
-            <TriangleAlertIcon aria-hidden="true" className="size-4" />
-            Veraltet
-          </span>
+          <span className="tag tag--warn">Veraltet</span>
         ) : (
-          <span className="inline-flex items-center gap-1.5">
-            <CircleCheckIcon aria-hidden="true" className="size-4" />
-            Aktuell
-          </span>
+          <span className="tag tag--good">Aktuell</span>
         )}
       </Item>
 
@@ -149,11 +134,10 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
         label="Wurzel-Kategorie"
         hint="LeanIX-ID der Leistungskategorie «Business IT-Servicekatalog» (Ebene 1)."
       >
-        <span className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <code className="font-mono text-sm break-all">
-            {config.rootCategoryId}
-          </code>
+        <span className="kv__inline">
+          <code className="code">{config.rootCategoryId}</code>
           <a
+            className="ext admin-link"
             href={leanixFactSheetUrl(
               config,
               "Leistungskategorie",
@@ -161,11 +145,9 @@ export function SyncStatusPanel({ data }: { data: CatalogAdminOverview }) {
             )}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-sm underline decoration-1 underline-offset-4 hover:text-primary hover:decoration-2"
           >
             In LeanIX öffnen
-            <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
-            <span className="sr-only">(öffnet in neuem Tab)</span>
+            <span className="sr-only"> (öffnet in neuem Tab)</span>
           </a>
         </span>
       </Item>

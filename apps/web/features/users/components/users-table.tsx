@@ -2,47 +2,11 @@
 
 import type { AdminUser, UserRole } from "@workspace/api"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import {
-  columnFilteringFeature,
-  createColumnHelper,
-  createFilteredRowModel,
-  createSortedRowModel,
-  filterFn_includesString,
-  globalFilteringFeature,
-  rowSortingFeature,
-  sortFn_alphanumeric,
-  sortFn_datetime,
-  tableFeatures,
-  useTable,
-} from "@tanstack/react-table"
-import { ShieldCheckIcon, ShieldOffIcon, Trash2Icon } from "lucide-react"
 import * as React from "react"
-import { toast } from "sonner"
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Dialog } from "@/components/ui/dialog"
+import { LoadError } from "@/components/ui/notice"
+import { Status } from "@/components/ui/status"
 import { authClient } from "@/lib/auth-client"
 import { formatDateShort } from "@/lib/format"
 import { errorMessage } from "@/lib/messages"
@@ -50,197 +14,200 @@ import { orpc } from "@/lib/orpc"
 
 import { roleLabels, signInMethodLabel } from "./labels"
 
-const features = tableFeatures({
-  rowSortingFeature,
-  columnFilteringFeature,
-  globalFilteringFeature,
-  sortedRowModel: createSortedRowModel(),
-  filteredRowModel: createFilteredRowModel(),
-  sortFns: { alphanumeric: sortFn_alphanumeric, datetime: sortFn_datetime },
-  filterFns: { includesString: filterFn_includesString },
-})
+type SortKey = "name" | "role" | "twoFactorEnabled" | "createdAt"
+type Sort = { key: SortKey; descending: boolean }
 
-const helper = createColumnHelper<typeof features, AdminUser>()
+const collator = new Intl.Collator("de-CH", { numeric: true })
 
-const emptyUsers: AdminUser[] = []
-
-function buildColumns(currentUserId: string) {
-  return helper.columns([
-    helper.accessor("name", {
-      header: "Name",
-      sortFn: "alphanumeric",
-      cell: (info) => (
-        <div className="flex flex-col">
-          <span className="font-bold">
-            {info.getValue()}
-            {info.row.original.id === currentUserId ? (
-              <span className="font-normal text-muted-foreground"> (Sie)</span>
-            ) : null}
-          </span>
-          <span className="text-sm text-muted-foreground">
-            {info.row.original.email}
-          </span>
-        </div>
-      ),
-    }),
-    helper.accessor("role", {
-      header: "Rolle",
-      sortFn: "alphanumeric",
-      cell: (info) => (
-        // Admin schwarz wie die Kennzeichnung «Administration» im Kopf;
-        // Rot bleibt Fehlern und Aktionen vorbehalten.
-        <Badge
-          variant="outline"
-          className={
-            info.getValue() === "admin"
-              ? "border-foreground bg-foreground text-background"
-              : undefined
-          }
-        >
-          {roleLabels[info.getValue()]}
-        </Badge>
-      ),
-    }),
-    helper.accessor("signInMethods", {
-      header: "Anmeldung",
-      enableSorting: false,
-      enableGlobalFilter: false,
-      cell: (info) => (
-        <div className="flex flex-wrap gap-1">
-          {info.getValue().map((m) => (
-            <Badge key={m} variant="secondary">
-              {signInMethodLabel(m)}
-            </Badge>
-          ))}
-        </div>
-      ),
-    }),
-    helper.accessor("twoFactorEnabled", {
-      header: "Zwei-Faktor",
-      enableGlobalFilter: false,
-      cell: (info) => (info.getValue() ? "Ein" : "Aus"),
-    }),
-    helper.accessor("createdAt", {
-      header: "Erfasst",
-      sortFn: "datetime",
-      enableGlobalFilter: false,
-      cell: (info) => formatDateShort(info.getValue()) ?? "–",
-    }),
-    helper.display({
-      id: "actions",
-      header: () => <span className="sr-only">Aktionen</span>,
-      cell: ({ row }) =>
-        row.original.id === currentUserId ? null : (
-          <div className="flex items-center justify-end gap-1">
-            <ChangeRoleButton user={row.original} />
-            <RemoveUserButton user={row.original} />
-          </div>
-        ),
-    }),
-  ])
+function compare(a: AdminUser, b: AdminUser, key: SortKey): number {
+  switch (key) {
+    case "name":
+      return collator.compare(a.name, b.name)
+    case "role":
+      return collator.compare(a.role, b.role)
+    case "twoFactorEnabled":
+      return Number(a.twoFactorEnabled) - Number(b.twoFactorEnabled)
+    case "createdAt":
+      return a.createdAt.getTime() - b.createdAt.getTime()
+  }
 }
 
+/** Suche über Name und E-Mail-Adresse, ohne Gross-/Kleinschreibung. */
+function matches(user: AdminUser, query: string) {
+  if (!query) return true
+  const needle = query.toLocaleLowerCase("de-CH")
+  return `${user.name} ${user.email} ${roleLabels[user.role]}`
+    .toLocaleLowerCase("de-CH")
+    .includes(needle)
+}
+
+const columns: Array<{ key: SortKey | "signInMethods"; label: string }> = [
+  { key: "name", label: "Name" },
+  { key: "role", label: "Rolle" },
+  { key: "signInMethods", label: "Anmeldung" },
+  { key: "twoFactorEnabled", label: "Zwei-Faktor" },
+  { key: "createdAt", label: "Erfasst" },
+]
+
 export function UsersTable({ currentUserId }: { currentUserId: string }) {
-  const { data, isPending, isError, error, refetch } = useQuery(
+  const { data, isPending, isError, error, refetch, isFetching } = useQuery(
     orpc.user.list.queryOptions()
   )
   const searchId = React.useId()
+  const [query, setQuery] = React.useState("")
+  const [sort, setSort] = React.useState<Sort | null>(null)
+  // Ergebnis der letzten Aktion (Rolle geändert, Konto gelöscht).
+  const [notice, setNotice] = React.useState<string | null>(null)
 
-  // Columns must be stable across renders; only the actions cell depends on props.
-  const columns = React.useMemo(
-    () => buildColumns(currentUserId),
-    [currentUserId]
-  )
-
-  const table = useTable({
-    features,
-    columns,
-    data: data ?? emptyUsers,
-    globalFilterFn: "includesString",
-  })
+  const rows = React.useMemo(() => {
+    const filtered = (data ?? []).filter((user) => matches(user, query.trim()))
+    if (!sort) return filtered
+    const sorted = [...filtered].sort((a, b) => compare(a, b, sort.key))
+    return sort.descending ? sorted.reverse() : sorted
+  }, [data, query, sort])
 
   if (isError) {
     return (
-      <Alert variant="destructive" className="max-w-3xl p-4">
-        <AlertTitle className="text-base font-bold">
-          Die Benutzer konnten nicht geladen werden.
-        </AlertTitle>
-        <AlertDescription className="flex flex-col items-start gap-3 text-foreground!">
-          <p>{errorMessage(error)}</p>
-          <Button variant="outline" size="sm" onClick={() => void refetch()}>
-            Erneut versuchen
-          </Button>
-        </AlertDescription>
-      </Alert>
+      <div className="wrap">
+        <LoadError
+          title="Die Benutzer konnten nicht geladen werden."
+          message={errorMessage(error)}
+          onRetry={() => void refetch()}
+          retrying={isFetching}
+        />
+      </div>
     )
   }
 
-  const rows = table.getRowModel().rows
+  function toggleSort(key: SortKey) {
+    setSort((current) =>
+      current?.key !== key
+        ? { key, descending: false }
+        : current.descending
+          ? null
+          : { key, descending: true }
+    )
+  }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex w-full max-w-sm flex-col gap-1.5">
-        <label htmlFor={searchId} className="text-sm font-bold">
-          Suche
-        </label>
-        <Input
-          id={searchId}
-          type="search"
-          placeholder="Name oder E-Mail-Adresse"
-          value={String(table.state.globalFilter ?? "")}
-          onChange={(e) => table.setGlobalFilter(e.target.value)}
-          autoComplete="off"
-          className="h-10"
-        />
+    <div className="wrap">
+      <div className="list-tools">
+        <div className="field list-tools__search">
+          <label htmlFor={searchId}>Suche</label>
+          <input
+            id={searchId}
+            type="search"
+            placeholder="Name oder E-Mail-Adresse"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoComplete="off"
+          />
+        </div>
+        <Status>{notice}</Status>
       </div>
-      <div className="border border-border">
-        <Table>
+      <div className="table-wrap">
+        <table className="table table--stack">
           <caption className="sr-only">Benutzer</caption>
-          <TableHeader className="bg-muted">
-            {table.getHeaderGroups().map((group) => (
-              <TableRow key={group.id} className="hover:bg-transparent">
-                {group.headers.map((header) => (
-                  <TableHead key={header.id} scope="col">
-                    {header.isPlaceholder ? null : (
-                      <table.FlexRender header={header} />
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
+          <thead>
+            <tr>
+              {columns.map((column) => {
+                if (column.key === "signInMethods") {
+                  return (
+                    <th key={column.key} scope="col">
+                      {column.label}
+                    </th>
+                  )
+                }
+                const key = column.key
+                const active = sort?.key === key
+                return (
+                  <th
+                    key={key}
+                    scope="col"
+                    aria-sort={
+                      active
+                        ? sort.descending
+                          ? "descending"
+                          : "ascending"
+                        : undefined
+                    }
+                  >
+                    <button
+                      type="button"
+                      className="table__sort"
+                      onClick={() => toggleSort(key)}
+                    >
+                      {column.label}
+                      <span aria-hidden="true">
+                        {active ? (sort.descending ? "↓" : "↑") : ""}
+                      </span>
+                    </button>
+                  </th>
+                )
+              })}
+              <th scope="col">
+                <span className="sr-only">Aktionen</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
             {isPending ? (
-              <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <Skeleton className="h-6 w-full" />
-                  <span className="sr-only" role="status">
-                    Benutzer werden geladen …
-                  </span>
-                </TableCell>
-              </TableRow>
+              <tr>
+                <td colSpan={columns.length + 1} className="muted">
+                  <span role="status">Benutzer werden geladen …</span>
+                </td>
+              </tr>
             ) : rows.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="py-6 text-muted-foreground"
-                >
+              <tr>
+                <td colSpan={columns.length + 1} className="muted">
                   Keine Benutzer gefunden.
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ) : (
-              rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getAllCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-2.5">
-                      <table.FlexRender cell={cell} />
-                    </TableCell>
-                  ))}
-                </TableRow>
+              rows.map((user) => (
+                <tr key={user.id}>
+                  <td data-label="Name">
+                    <span className="table__name">{user.name}</span>
+                    {user.id === currentUserId ? (
+                      <span className="muted"> (Sie)</span>
+                    ) : null}
+                    <small>{user.email}</small>
+                  </td>
+                  <td data-label="Rolle">
+                    <span
+                      className={user.role === "admin" ? "tag tag--ink" : "tag"}
+                    >
+                      {roleLabels[user.role]}
+                    </span>
+                  </td>
+                  <td data-label="Anmeldung">
+                    <span className="tag-row">
+                      {user.signInMethods.map((method) => (
+                        <span key={method} className="tag">
+                          {signInMethodLabel(method)}
+                        </span>
+                      ))}
+                    </span>
+                  </td>
+                  <td data-label="Zwei-Faktor">
+                    {user.twoFactorEnabled ? "Ein" : "Aus"}
+                  </td>
+                  <td className="table__date" data-label="Erfasst">
+                    {formatDateShort(user.createdAt) ?? "–"}
+                  </td>
+                  <td className="table__cell-actions">
+                    {user.id === currentUserId ? null : (
+                      <div className="table__actions">
+                        <ChangeRoleButton user={user} onDone={setNotice} />
+                        <RemoveUserButton user={user} onDone={setNotice} />
+                      </div>
+                    )}
+                  </td>
+                </tr>
               ))
             )}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
     </div>
   )
@@ -259,8 +226,15 @@ function toError(error: { code?: string; message?: string; status: number }) {
  * ersten Anmeldung die Rolle «Benutzer» erhalten. Läuft über das
  * better-auth-Admin-Plugin; die eigene Rolle lässt sich nicht ändern.
  */
-function ChangeRoleButton({ user }: { user: AdminUser }) {
+function ChangeRoleButton({
+  user,
+  onDone,
+}: {
+  user: AdminUser
+  onDone: (message: string) => void
+}) {
   const queryClient = useQueryClient()
+  const [open, setOpen] = React.useState(false)
   const nextRole: UserRole = user.role === "admin" ? "user" : "admin"
   const promote = nextRole === "admin"
 
@@ -274,108 +248,139 @@ function ChangeRoleButton({ user }: { user: AdminUser }) {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: orpc.user.key() })
-      toast.success(
+      setOpen(false)
+      onDone(
         promote
           ? `${user.name} ist jetzt Admin.`
           : `${user.name} hat keine Adminrechte mehr.`
       )
     },
-    onError: (error) =>
-      toast.error(
-        errorMessage(error, {}, "Die Rolle konnte nicht geändert werden.")
-      ),
   })
 
   const label = promote ? "Zum Admin machen" : "Adminrechte entziehen"
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          disabled={setRole.isPending}
-          aria-label={`${label}: ${user.name}`}
-        >
-          {promote ? (
-            <ShieldCheckIcon aria-hidden="true" />
-          ) : (
-            <ShieldOffIcon aria-hidden="true" />
-          )}
-          <span className="hidden lg:inline">{label}</span>
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            {promote
-              ? `${user.name} zum Admin machen?`
-              : `${user.name} die Adminrechte entziehen?`}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            {promote
-              ? "Admins sehen den Katalog-Status, lösen Synchronisierungen aus und verwalten Benutzer, Sicherheit und SAML."
-              : "Die Person kann sich weiterhin anmelden, hat aber keinen Zugriff mehr auf den Admin-Bereich."}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-          <AlertDialogAction onClick={() => setRole.mutate()}>
+    <>
+      <button
+        type="button"
+        className="btn btn--secondary btn--sm"
+        aria-label={`${label}: ${user.name}`}
+        onClick={() => {
+          setRole.reset()
+          setOpen(true)
+        }}
+      >
+        {label}
+      </button>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title={
+          promote
+            ? `${user.name} zum Admin machen?`
+            : `${user.name} die Adminrechte entziehen?`
+        }
+        description={
+          promote
+            ? "Admins sehen den Katalog-Status, lösen Synchronisierungen aus und verwalten Benutzer, Sicherheit und SAML."
+            : "Die Person kann sich weiterhin anmelden, hat aber keinen Zugriff mehr auf den Admin-Bereich."
+        }
+      >
+        <div className="btn-row">
+          <button
+            type="button"
+            className="btn btn--secondary"
+            onClick={() => setOpen(false)}
+          >
+            Abbrechen
+          </button>
+          <button
+            type="button"
+            className="btn btn--primary"
+            disabled={setRole.isPending}
+            onClick={() => setRole.mutate()}
+          >
             {label}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </button>
+        </div>
+        <Status bad={setRole.isError}>
+          {setRole.isError
+            ? errorMessage(
+                setRole.error,
+                {},
+                "Die Rolle konnte nicht geändert werden."
+              )
+            : null}
+        </Status>
+      </Dialog>
+    </>
   )
 }
 
-function RemoveUserButton({ user }: { user: AdminUser }) {
+function RemoveUserButton({
+  user,
+  onDone,
+}: {
+  user: AdminUser
+  onDone: (message: string) => void
+}) {
   const queryClient = useQueryClient()
+  const [open, setOpen] = React.useState(false)
   const removeUser = useMutation(
     orpc.user.remove.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: orpc.user.key() })
-        toast.success(`${user.email} wurde gelöscht.`)
+        setOpen(false)
+        onDone(`${user.email} wurde gelöscht.`)
       },
-      onError: (error) =>
-        toast.error(
-          errorMessage(error, {
-            BAD_REQUEST: "Sie können Ihr eigenes Konto nicht löschen.",
-            NOT_FOUND: "Der Benutzer existiert nicht mehr.",
-          })
-        ),
     })
   )
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={removeUser.isPending}
-          aria-label={`${user.name} löschen`}
-        >
-          <Trash2Icon aria-hidden="true" />
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{user.name} löschen?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Das Konto {user.email} wird mit allen Daten gelöscht. Das lässt sich
-            nicht rückgängig machen.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-          <AlertDialogAction
-            variant="destructive"
+    <>
+      <button
+        type="button"
+        className="btn btn--danger btn--sm"
+        aria-label={`${user.name} löschen`}
+        onClick={() => {
+          removeUser.reset()
+          setOpen(true)
+        }}
+      >
+        Löschen
+      </button>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title={`${user.name} löschen?`}
+        description={`Das Konto ${user.email} wird mit allen Daten gelöscht. Das lässt sich nicht rückgängig machen.`}
+      >
+        <div className="btn-row">
+          <button
+            type="button"
+            className="btn btn--secondary"
+            onClick={() => setOpen(false)}
+          >
+            Abbrechen
+          </button>
+          <button
+            type="button"
+            className="btn btn--danger"
+            disabled={removeUser.isPending}
             onClick={() => removeUser.mutate({ id: user.id })}
           >
-            Löschen
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+            Konto löschen
+          </button>
+        </div>
+        <Status bad={removeUser.isError}>
+          {removeUser.isError
+            ? errorMessage(removeUser.error, {
+                BAD_REQUEST: "Sie können Ihr eigenes Konto nicht löschen.",
+                NOT_FOUND: "Der Benutzer existiert nicht mehr.",
+              })
+            : null}
+        </Status>
+      </Dialog>
+    </>
   )
 }

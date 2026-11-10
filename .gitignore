@@ -56,3 +56,8 @@ next-env.d.ts
 
 # BITS-Portal
 leanix-discovery/
+
+# tasteskill: build state and check shots (the waivers stay in the repo)
+**/.taste-skill/*
+!**/.taste-skill/waivers.json
+shots/

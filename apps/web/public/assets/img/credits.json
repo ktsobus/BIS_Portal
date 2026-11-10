@@ -1,0 +1,51 @@
+{
+ "note": "Credits for the photographs in this folder: photos.mjs credits prints the footer block for the ones the pages use.",
+ "photos": [
+  {
+   "file": "photo-f175982218-1280.jpg",
+   "files": [
+    "photo-f175982218-500.jpg",
+    "photo-f175982218-960.jpg",
+    "photo-f175982218-1280.jpg",
+    "photo-f175982218-780x975.jpg"
+   ],
+   "id": "f175982218",
+   "alt": "Barfüssergasse 24, Rathaus Solothurn 20240331 0173",
+   "by": "Tilman2007",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Barf%C3%BCssergasse_24,_Rathaus_Solothurn_20240331_0173.jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-f175982159-960.jpg",
+   "files": [
+    "photo-f175982159-500.jpg",
+    "photo-f175982159-960.jpg"
+   ],
+   "id": "f175982159",
+   "alt": "Barfüssergasse 24, Rathaus, Ansicht Rathausgasse Solothurn 20240331 0165",
+   "by": "Tilman2007",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Barf%C3%BCssergasse_24,_Rathaus,_Ansicht_Rathausgasse_Solothurn_20240331_0165.jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-f25000754-1920.jpg",
+   "files": [
+    "photo-f25000754-500.jpg",
+    "photo-f25000754-960.jpg",
+    "photo-f25000754.jpg",
+    "photo-f25000754-1920.jpg"
+   ],
+   "id": "f25000754",
+   "alt": "Solothurn Altstadt Panorama",
+   "by": "Fotograf: Wladyslaw , Stichting von: David W.",
+   "licence": "CC BY-SA 3.0",
+   "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Solothurn_Altstadt_Panorama.jpg",
+   "source": "Wikimedia Commons"
+  }
+ ]
+}

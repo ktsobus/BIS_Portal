@@ -1,21 +1,10 @@
 "use client"
 
-import { CopyIcon, DownloadIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
 import * as React from "react"
 import QRCode from "react-qr-code"
-import { toast } from "sonner"
 
-import { PageTitle } from "@/components/site/page-title"
-import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
+import { TextField } from "@/components/ui/field"
+import { Status } from "@/components/ui/status"
 import { authClient } from "@/lib/auth-client"
 import { errorMessage } from "@/lib/messages"
 
@@ -27,21 +16,25 @@ export function TwoFactorSetup() {
   const [enrollment, setEnrollment] = React.useState<Enrollment | null>(null)
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-3">
-        <PageTitle>Zwei-Faktor-Authentisierung einrichten</PageTitle>
-        <p className="text-muted-foreground">
-          {enrollment
-            ? "Scannen Sie den QR-Code mit Ihrer Authenticator-App, bewahren Sie die Backup-Codes sicher auf und bestätigen Sie mit einem Code."
-            : "Schützen Sie Ihr Konto mit einer Authenticator-App (z. B. Microsoft Authenticator). Bestätigen Sie dazu zuerst Ihr Passwort."}
-        </p>
+    <>
+      <div className="wrap">
+        <div className="page-head">
+          <h1>Zwei-Faktor-Authentisierung einrichten</h1>
+          <p className="t-lead">
+            {enrollment
+              ? "Scannen Sie den QR-Code mit Ihrer Authenticator-App, bewahren Sie die Backup-Codes sicher auf und bestätigen Sie mit einem Code."
+              : "Schützen Sie Ihr Konto mit einer Authenticator-App (z. B. Microsoft Authenticator). Bestätigen Sie dazu zuerst Ihr Passwort."}
+          </p>
+        </div>
       </div>
-      {enrollment ? (
-        <ConfirmStep enrollment={enrollment} />
-      ) : (
-        <PasswordStep onEnabled={setEnrollment} />
-      )}
-    </div>
+      <div className="wrap">
+        {enrollment ? (
+          <ConfirmStep enrollment={enrollment} />
+        ) : (
+          <PasswordStep onEnabled={setEnrollment} />
+        )}
+      </div>
+    </>
   )
 }
 
@@ -53,17 +46,19 @@ function PasswordStep({
 }) {
   const [password, setPassword] = React.useState("")
   const [pending, setPending] = React.useState(false)
+  const [formError, setFormError] = React.useState<string | null>(null)
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setPending(true)
+    setFormError(null)
     const { data, error } = await authClient.twoFactor.enable({
       password,
       method: "totp",
     })
     setPending(false)
     if (error || !data || data.method !== "totp") {
-      toast.error(
+      setFormError(
         errorMessage(
           error,
           {},
@@ -76,45 +71,55 @@ function PasswordStep({
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-6">
-      <Field>
-        <FieldLabel htmlFor="password">Passwort</FieldLabel>
-        <Input
+    <form onSubmit={submit} noValidate>
+      <div className="form form--narrow">
+        <TextField
           id="password"
+          label="Passwort"
           type="password"
           autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           autoFocus
+          value={password}
+          invalid={Boolean(formError)}
+          describedById={formError ? "two-factor-password-status" : undefined}
+          onChange={(e) => {
+            setPassword(e.target.value)
+            setFormError(null)
+          }}
         />
-      </Field>
-      <Button
-        type="submit"
-        size="lg"
-        className="w-full sm:w-auto sm:self-start"
-        disabled={pending || !password}
-      >
-        {pending && <Spinner aria-hidden="true" />}
-        Weiter
-      </Button>
+        <div className="btn-row">
+          <button
+            className="btn btn--primary"
+            type="submit"
+            disabled={pending || !password}
+          >
+            {pending ? "Passwort wird geprüft …" : "Weiter"}
+          </button>
+        </div>
+        <Status id="two-factor-password-status" bad={Boolean(formError)}>
+          {formError}
+        </Status>
+      </div>
     </form>
   )
 }
 
 /** Schritte 2 und 3: QR-Code scannen, Backup-Codes sichern, Code bestätigen. */
 function ConfirmStep({ enrollment }: { enrollment: Enrollment }) {
-  const router = useRouter()
   const [code, setCode] = React.useState("")
   const [pending, setPending] = React.useState(false)
+  const [formError, setFormError] = React.useState<string | null>(null)
+  const [copyNote, setCopyNote] = React.useState<string | null>(null)
   const secret = new URL(enrollment.totpURI).searchParams.get("secret") ?? ""
   const backupCodesText = enrollment.backupCodes.join("\n")
 
   async function verify(value: string) {
     setPending(true)
+    setFormError(null)
     const { error } = await authClient.twoFactor.verifyTotp({ code: value })
-    setPending(false)
     if (error) {
-      toast.error(
+      setPending(false)
+      setFormError(
         errorMessage(
           error,
           {},
@@ -124,9 +129,8 @@ function ConfirmStep({ enrollment }: { enrollment: Enrollment }) {
       setCode("")
       return
     }
-    toast.success("Zwei-Faktor-Authentisierung eingerichtet")
-    router.push("/admin")
-    router.refresh()
+    // Ganze Seite laden: Die Sitzung trägt jetzt den zweiten Faktor.
+    window.location.assign("/admin")
   }
 
   function downloadBackupCodes() {
@@ -140,83 +144,104 @@ function ConfirmStep({ enrollment }: { enrollment: Enrollment }) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <FieldGroup>
-        <div className="self-start border border-border bg-white p-4">
+    <div className="grid grid--top totp">
+      <section className="span-5 totp__step" aria-labelledby="totp-scan-h">
+        <div className="block-head">
+          <h2 id="totp-scan-h">Authenticator-App verbinden</h2>
+        </div>
+        <div className="totp__qr">
           <QRCode
             value={enrollment.totpURI}
             size={176}
             title="QR-Code für die Authenticator-App"
           />
         </div>
-        <Field>
-          <FieldLabel htmlFor="secret">
+        <div className="totp__secret">
+          <p className="t-label muted" id="secret-label">
             Oder diesen Schlüssel von Hand eingeben
-          </FieldLabel>
-          <Input
-            id="secret"
-            readOnly
-            value={secret}
-            className="font-mono text-xs"
-          />
-        </Field>
-        <Field>
-          <FieldLabel>Backup-Codes</FieldLabel>
-          <pre className="grid grid-cols-2 gap-1 border border-border bg-muted p-3 font-mono text-xs">
-            {enrollment.backupCodes.map((c) => (
-              <span key={c}>{c}</span>
-            ))}
-          </pre>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                navigator.clipboard
-                  .writeText(backupCodesText)
-                  .then(() => toast.success("Backup-Codes kopiert"))
-                  .catch(() => toast.error("Kopieren nicht möglich"))
-              }
-            >
-              <CopyIcon aria-hidden="true" />
-              Kopieren
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={downloadBackupCodes}
-            >
-              <DownloadIcon aria-hidden="true" />
-              Herunterladen
-            </Button>
+          </p>
+          <p className="code" id="secret" aria-labelledby="secret-label">
+            {secret}
+          </p>
+        </div>
+        <form
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (!pending && code.length === 6) void verify(code)
+          }}
+        >
+          <div className="form form--narrow">
+            <TotpCodeInput
+              id="code"
+              label="Bestätigungscode"
+              value={code}
+              onChange={(value) => {
+                setCode(value)
+                if (value) setFormError(null)
+              }}
+              onComplete={(value) => void verify(value)}
+              disabled={pending}
+              invalid={Boolean(formError)}
+              describedById={formError ? "totp-status" : undefined}
+            />
+            <div className="btn-row">
+              <button
+                className="btn btn--primary"
+                type="submit"
+                disabled={pending || code.length !== 6}
+              >
+                {pending
+                  ? "Code wird geprüft …"
+                  : "Zwei-Faktor-Authentisierung aktivieren"}
+              </button>
+            </div>
+            <Status id="totp-status" bad={Boolean(formError)}>
+              {formError}
+            </Status>
           </div>
-          <FieldDescription>
-            Jeder Code funktioniert einmal, falls Sie keinen Zugriff mehr auf
-            Ihre Authenticator-App haben.
-          </FieldDescription>
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="code">Bestätigungscode</FieldLabel>
-          <TotpCodeInput
-            id="code"
-            value={code}
-            onChange={setCode}
-            onComplete={(value) => void verify(value)}
-            disabled={pending}
-          />
-        </Field>
-      </FieldGroup>
-      <Button
-        size="lg"
-        className="w-full sm:w-auto sm:self-start"
-        disabled={pending || code.length !== 6}
-        onClick={() => void verify(code)}
+        </form>
+      </section>
+
+      <section
+        className="span-5 start-8 aside-card"
+        aria-labelledby="totp-backup-h"
       >
-        {pending && <Spinner aria-hidden="true" />}
-        Zwei-Faktor-Authentisierung aktivieren
-      </Button>
+        <h2 id="totp-backup-h">Backup-Codes</h2>
+        <p>
+          Jeder Code funktioniert einmal, falls Sie keinen Zugriff mehr auf Ihre
+          Authenticator-App haben.
+        </p>
+        <ul className="totp__codes code" aria-label="Backup-Codes">
+          {enrollment.backupCodes.map((c) => (
+            <li key={c}>{c}</li>
+          ))}
+        </ul>
+        <div className="btn-row totp__actions">
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm"
+            onClick={() =>
+              navigator.clipboard
+                .writeText(backupCodesText)
+                .then(() => setCopyNote("Backup-Codes kopiert."))
+                .catch(() => setCopyNote("Kopieren nicht möglich."))
+            }
+          >
+            Codes kopieren
+          </button>
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm"
+            onClick={downloadBackupCodes}
+          >
+            Codes herunterladen
+          </button>
+        </div>
+        <p role="status" className="t-small">
+          {copyNote}
+        </p>
+      </section>
     </div>
   )
 }
