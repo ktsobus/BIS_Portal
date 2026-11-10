@@ -40,9 +40,15 @@ export function ServiceUseBox({
   )
 }
 
+/** Gibt es eine Zuständigkeit anzuzeigen (Stelle oder Ansprechperson)? */
+export function hasResponsible(units: OrgUnit[], persons: Person[] = []) {
+  return units.length > 0 || persons.length > 0
+}
+
 /**
  * Zuständigkeit: blassgrüne Box (24 px) mit der verantwortlichen Stelle in
- * 24 px Black, darunter der Pfad aus LeanIX und ggf. Ansprechpersonen.
+ * 24 px Black, darunter der Pfad aus LeanIX und ggf. Ansprechpersonen. Ohne
+ * Angabe entfällt die Box (die Lücke meldet der Datenqualitätsbericht).
  */
 export function ResponsibleBox({
   id = "verantwortlich",
@@ -56,6 +62,7 @@ export function ResponsibleBox({
   /** Zusatz, z. B. «Verantwortliche Stelle des Services». */
   note?: React.ReactNode
 }) {
+  if (!hasResponsible(units, persons)) return null
   const headingId = `${id}-titel`
   return (
     <section
@@ -66,7 +73,7 @@ export function ResponsibleBox({
       <h2 id={headingId} className="type-body-sm font-normal">
         Zuständigkeit
       </h2>
-      {units.length > 0 ? <OrgUnitList units={units} /> : <p>Keine Angabe</p>}
+      <OrgUnitList units={units} />
       {note ? <p className="type-body-sm">{note}</p> : null}
       <PersonList persons={persons} />
     </section>

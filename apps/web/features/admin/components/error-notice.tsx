@@ -36,10 +36,7 @@ export function ErrorNotice({
 
   return (
     <div className="flex max-w-reading flex-col gap-8">
-      <PageTitle
-        eyebrow="Fehler"
-        lead="Die Seite konnte nicht geladen werden. Bitte versuchen Sie es in einem Moment erneut."
-      >
+      <PageTitle lead="Die Seite konnte nicht geladen werden. Bitte versuchen Sie es in einem Moment erneut.">
         Es ist ein Fehler aufgetreten
       </PageTitle>
       <div className="flex max-w-[70ch] flex-col items-start gap-6">

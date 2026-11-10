@@ -28,7 +28,7 @@ export default function RootError({
 
   return (
     <AdminShell variant={isAdminArea ? "admin" : "public"}>
-      <title>Fehler · Business-IT-Serviceportal · Kanton Solothurn</title>
+      <title>Fehler – Business-IT-Serviceportal</title>
       <ErrorNotice error={error} retry={retry} />
     </AdminShell>
   )

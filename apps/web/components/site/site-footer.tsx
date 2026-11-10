@@ -19,8 +19,8 @@ async function loadFamilies() {
 
 /**
  * Fusszeile des Portals: Absender (CD: Black Italic), Kontakt zum Service
- * Desk (falls konfiguriert), Stand der Katalogdaten und Direktlinks auf die
- * Service-Familien.
+ * Desk (falls konfiguriert) und Direktlinks auf die Service-Familien; der
+ * Stand der Katalogdaten steht in der Meta-Zeile.
  */
 export async function SiteFooter() {
   // Scheitert nie: `loadStatus` liefert bei Fehlern `null`.
@@ -30,48 +30,41 @@ export async function SiteFooter() {
     status?.available && status.generatedAt
       ? formatDateTime(status.generatedAt)
       : null
+  // Zusatz zum Stand: Testdaten bzw. länger nicht aktualisiert.
+  const remark =
+    status?.source === "demo"
+      ? "Demo-Daten"
+      : status?.stale
+        ? "seit längerer Zeit nicht aktualisiert"
+        : null
 
   return (
     <SiteFooterFrame
-      cta={{ href: "/suche", label: "Alle Leistungen" }}
       info={
-        <>
-          {hasSupportContact(contact) ? (
-            <section
-              aria-labelledby="fuss-kontakt"
-              className="flex flex-col gap-2 type-body-md"
-            >
-              <h2 id="fuss-kontakt" className="type-nav-meta">
-                Kontakt Service Desk
-              </h2>
-              <SupportContactLinks contact={contact} variant="links" />
-            </section>
-          ) : null}
-          <div className="flex flex-col gap-2 type-body-md">
-            {generatedAt ? (
-              <p>
-                Stand der Daten:{" "}
-                <time dateTime={status?.generatedAt ?? undefined}>
-                  {generatedAt}
-                </time>
-              </p>
-            ) : (
-              <p>Der Katalog ist derzeit nicht verfügbar.</p>
-            )}
-            {status?.source === "demo" ? (
-              <p>
-                <strong>Demo-Daten:</strong> Die Inhalte stammen aus einem
-                Testdatensatz, nicht direkt aus LeanIX.
-              </p>
-            ) : null}
-            {status?.stale ? (
-              <p>
-                <strong>Hinweis:</strong> Die Daten konnten seit längerer Zeit
-                nicht aus LeanIX aktualisiert werden.
-              </p>
-            ) : null}
-          </div>
-        </>
+        hasSupportContact(contact) ? (
+          <section
+            aria-labelledby="fuss-kontakt"
+            className="flex flex-col gap-2 type-body-md"
+          >
+            <h2 id="fuss-kontakt" className="type-nav-meta">
+              Service Desk
+            </h2>
+            <SupportContactLinks contact={contact} variant="links" />
+          </section>
+        ) : null
+      }
+      status={
+        generatedAt ? (
+          <>
+            Stand der Daten:{" "}
+            <time dateTime={status?.generatedAt ?? undefined}>
+              {generatedAt}
+            </time>
+            {remark ? ` (${remark})` : null}
+          </>
+        ) : (
+          "Der Katalog ist derzeit nicht verfügbar."
+        )
       }
       directLinks={
         <FooterDirectLinks

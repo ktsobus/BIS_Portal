@@ -10,16 +10,16 @@ import "./globals.css"
 
 import { Providers } from "@/components/providers"
 
-const siteName = "Business-IT-Serviceportal · Kanton Solothurn"
+const siteName = "Business-IT-Serviceportal"
 
 export const metadata: Metadata = {
   title: {
-    default: siteName,
-    template: `%s · ${siteName}`,
+    default: `${siteName} – Kanton Solothurn`,
+    template: `%s – ${siteName}`,
   },
   description:
     "Business-IT-Services des Amts für Informatik und Organisation (AIO): Leistungen, Verantwortliche und nächste Schritte.",
-  applicationName: "Business-IT-Serviceportal",
+  applicationName: siteName,
 }
 
 export default function RootLayout({
@@ -28,7 +28,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="de-CH" suppressHydrationWarning className="antialiased">
+    <html
+      lang="de-CH"
+      suppressHydrationWarning
+      // Seitenwechsel springen sofort; nur Sprungmarken gleiten (globals.css).
+      data-scroll-behavior="smooth"
+      className="antialiased"
+    >
       <body>
         <a
           href="#inhalt"

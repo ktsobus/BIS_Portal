@@ -274,7 +274,7 @@ function leistungContext(
   if (placements.length > 0) {
     return placements
       .map(({ family, service }) => `${family.name} › ${service.name}`)
-      .join(" · ")
+      .join("; ")
   }
   const parent = leistung.parentId
     ? index.leistungById.get(leistung.parentId)

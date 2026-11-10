@@ -21,10 +21,7 @@ export default function PublicError({
 
   return (
     <ContentPage>
-      <PageTitle
-        eyebrow="Fehler"
-        lead="Die Seite konnte nicht vollständig geladen werden. Bitte versuchen Sie es erneut."
-      >
+      <PageTitle lead="Die Seite konnte nicht vollständig geladen werden. Bitte versuchen Sie es erneut.">
         Es ist ein Fehler aufgetreten
       </PageTitle>
       <div className="flex max-w-[70ch] flex-col items-start gap-6">

@@ -33,13 +33,12 @@ export default async function HomePage() {
   )
 
   return (
-    <div className="container-page flex flex-col gap-16 pt-10 lg:gap-24 lg:pt-16">
+    <div className="container-page flex flex-col gap-16 pt-10 lg:gap-20 lg:pt-16">
       {/* Einstieg: Titel und Suche als eine Aufgabe (so.ch: Suche zuerst). */}
-      <div className="flex max-w-reading flex-col gap-10 lg:gap-12">
+      <div className="flex max-w-reading flex-col gap-8 lg:gap-10">
         <PageTitle
           size="large"
-          eyebrow="Amt für Informatik und Organisation"
-          lead="Hier finden Sie die IT-Leistungen, die das AIO für die kantonale Verwaltung erbringt: was Sie beziehen können, wer dafür verantwortlich ist und wie Sie eine Leistung bestellen oder eine Anfrage stellen."
+          lead="Das Amt für Informatik und Organisation erbringt diese IT-Leistungen für die kantonale Verwaltung. Suchen Sie eine Leistung oder wählen Sie eine Service-Familie."
         >
           Business-IT-Services
         </PageTitle>

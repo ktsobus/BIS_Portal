@@ -2,19 +2,17 @@ import { cn } from "@/lib/utils"
 
 /**
  * Seitentitel nach so.ch: schlichte H1 in Schiefer (36 px Black, auf der
- * Startseite 48 px), mit Silbentrennung. Optional eine Zeile darüber (z. B.
- * die Service-Familie) und ein Lead-Absatz darunter.
+ * Startseite 48 px), mit Silbentrennung, optional mit einem Lead-Absatz
+ * darunter. Wo die Seite im Katalog steht, sagen Brotkrumen und
+ * Seitennavigation; eine Zeile über dem Titel gibt es deshalb nicht.
  */
 export function PageTitle({
   children,
-  eyebrow,
   lead,
   size = "default",
   className,
 }: {
   children: React.ReactNode
-  /** Kleine Zeile über dem Titel, z. B. «Service-Familie». */
-  eyebrow?: React.ReactNode
   /** Einleitender Absatz (24 px). */
   lead?: React.ReactNode
   /** `large` für Einstiegsseiten (Startseite). */
@@ -25,17 +23,13 @@ export function PageTitle({
     <div className={cn("flex max-w-reading flex-col gap-4", className)}>
       <h1
         className={cn(
-          "text-pretty",
+          "text-balance",
           size === "large" ? "type-display" : "type-headline-lg"
         )}
       >
         {children}
       </h1>
-      {eyebrow ? (
-        // Visuell über dem Titel, im Lesefluss danach.
-        <p className="order-first type-label-lg">{eyebrow}</p>
-      ) : null}
-      {lead ? <div className="type-lead">{lead}</div> : null}
+      {lead ? <div className="type-lead text-pretty">{lead}</div> : null}
     </div>
   )
 }

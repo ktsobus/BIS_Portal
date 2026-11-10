@@ -91,7 +91,10 @@ export function CatalogSearch({
   const subtypes = data?.facets.subtypes ?? []
   const audiences = data?.facets.audiences ?? []
   const query = state.query.trim()
-  const hasFilter = Boolean(query || state.subtype || state.audience)
+  // Ein Filter mit nur einem Wert grenzt nichts ein; er bleibt aber sichtbar,
+  // wenn er (z. B. über einen Link) schon gesetzt ist, damit man ihn löst.
+  const showSubtypes = subtypes.length > 1 || Boolean(state.subtype)
+  const showAudiences = audiences.length > 1 || Boolean(state.audience)
 
   return (
     <div className="flex flex-col gap-12">
@@ -105,24 +108,18 @@ export function CatalogSearch({
         }}
         className="flex flex-col gap-8"
       >
-        <div className="flex max-w-reading flex-col gap-3">
-          <SearchFieldLarge
-            id="suche-begriff"
-            label="Suchbegriff"
-            value={state.query}
-            onChange={(event) => update({ query: event.target.value })}
-            placeholder="Suche nach Services und Leistungen"
-            aria-describedby="suche-hinweis"
-          />
-          <p id="suche-hinweis" className="type-body-sm">
-            Mehrere Wörter grenzen die Suche ein. Gross-/Kleinschreibung und
-            Umlaute (ä oder ae) spielen keine Rolle.
-          </p>
-        </div>
+        <SearchFieldLarge
+          id="suche-begriff"
+          label="Suchbegriff"
+          value={state.query}
+          onChange={(event) => update({ query: event.target.value })}
+          placeholder="Suche nach Leistungen"
+          className="max-w-reading"
+        />
 
-        {subtypes.length > 0 || audiences.length > 0 ? (
+        {showSubtypes || showAudiences ? (
           <div className="flex flex-col gap-6">
-            {subtypes.length > 0 ? (
+            {showSubtypes ? (
               <ChipFilter
                 legend="Art der Leistung"
                 options={subtypes}
@@ -130,7 +127,7 @@ export function CatalogSearch({
                 onChange={(subtype) => update({ subtype })}
               />
             ) : null}
-            {audiences.length > 0 ? (
+            {showAudiences ? (
               <ChipFilter
                 legend="Leistungsbezüger"
                 options={audiences}
@@ -157,7 +154,7 @@ export function CatalogSearch({
               ? "Suchindex wird geladen …"
               : error
                 ? "Suche nicht verfügbar"
-                : resultHeading(results.length, query, hasFilter)}
+                : resultHeading(results.length, query)}
           </h2>
         </div>
 
@@ -174,8 +171,9 @@ export function CatalogSearch({
         {!isPending && !error && results.length === 0 ? (
           <div className="flex max-w-[70ch] flex-col items-start gap-6">
             <p>
-              Versuchen Sie einen anderen oder kürzeren Begriff, oder setzen Sie
-              die Filter auf «Alle».
+              {state.subtype || state.audience
+                ? "Versuchen Sie einen anderen oder kürzeren Begriff, oder setzen Sie die Filter auf «Alle»."
+                : "Versuchen Sie einen anderen oder kürzeren Begriff."}
             </p>
             <Link href="/" className={buttonVariants({ variant: "outline" })}>
               Alle Service-Familien
@@ -202,9 +200,8 @@ function isCatalogUnavailable(error: unknown): boolean {
   return error instanceof ORPCError && error.code === "CATALOG_UNAVAILABLE"
 }
 
-function resultHeading(count: number, query: string, hasFilter: boolean) {
+function resultHeading(count: number, query: string) {
   const hits = count === 1 ? "1 Resultat" : `${count} Resultate`
-  if (!hasFilter) return `Alle Einträge: ${hits}`
   return query ? `${hits} für «${query}»` : hits
 }
 
@@ -251,11 +248,18 @@ function SearchResult({ entry }: { entry: SearchEntry }) {
       id={`treffer-${entry.kind}-${entry.id}`}
       href={href}
       title={entry.name}
-      eyebrow={
-        entry.subtypeLabel ??
-        (entry.kind === "leistung" ? "Leistung" : "Service")
+      meta={
+        <>
+          {entry.subtypeLabel ??
+            (entry.kind === "leistung" ? "Leistung" : "Service")}
+          {entry.context ? (
+            <>
+              <br />
+              {entry.context}
+            </>
+          ) : null}
+        </>
       }
-      meta={entry.context || undefined}
     >
       {entry.summary ? <p className="line-clamp-3">{entry.summary}</p> : null}
     </ServiceCard>
@@ -270,7 +274,7 @@ function ResultsSkeleton() {
     >
       {[0, 1, 2].map((index) => (
         <li key={index}>
-          <Skeleton className="h-[17.8125rem] rounded-tile bg-tile-service" />
+          <Skeleton className="h-60 rounded-tile bg-tile-service" />
         </li>
       ))}
     </ul>

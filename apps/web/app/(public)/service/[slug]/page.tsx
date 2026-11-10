@@ -8,6 +8,7 @@ import { CatalogUnavailable } from "@/features/catalog/components/catalog-unavai
 import { ServiceTreeSideNav } from "@/features/catalog/components/catalog-side-nav"
 import {
   ContactBox,
+  hasResponsible,
   ResponsibleBox,
   ServiceUseBox,
 } from "@/features/catalog/components/info-boxes"
@@ -21,7 +22,7 @@ import { Section } from "@/features/catalog/components/section"
 import { NoRequestPathHint } from "@/features/catalog/components/support-contact"
 import { TableOfContents } from "@/features/catalog/components/table-of-contents"
 import { loadFamily, loadService } from "@/features/catalog/load"
-import { countLabel, plainExcerpt } from "@/features/catalog/text"
+import { plainExcerpt } from "@/features/catalog/text"
 
 export async function generateMetadata({
   params,
@@ -56,7 +57,9 @@ export default async function ServicePage({
 
   const toc = [
     { id: "leistungen", label: "Leistungen" },
-    { id: "verantwortlich", label: "Zuständigkeit" },
+    ...(hasResponsible(service.responsible, service.persons)
+      ? [{ id: "verantwortlich", label: "Zuständigkeit" }]
+      : []),
     ...(hasInfoLinks
       ? [{ id: "weitere-informationen", label: "Weitere Informationen" }]
       : []),
@@ -79,7 +82,7 @@ export default async function ServicePage({
       }
     >
       <div className="flex flex-col gap-6">
-        <PageTitle eyebrow="Service">{service.name}</PageTitle>
+        <PageTitle>{service.name}</PageTitle>
         {service.definition ? (
           <MarkdownText headingLevel={2}>{service.definition}</MarkdownText>
         ) : (
@@ -95,10 +98,7 @@ export default async function ServicePage({
 
       <Section id="leistungen" title="Leistungen">
         {leistungen.length > 0 ? (
-          <>
-            <p>{countLabel(leistungen.length, "Leistung", "Leistungen")}</p>
-            <LeistungGrid leistungen={leistungen} />
-          </>
+          <LeistungGrid leistungen={leistungen} />
         ) : (
           <ContactBox
             id="keine-leistungen"

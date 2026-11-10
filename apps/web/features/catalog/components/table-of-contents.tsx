@@ -5,17 +5,21 @@ import { cn } from "@/lib/utils"
 
 /**
  * Inhaltsverzeichnis: Beschriftung (14 px) über einer Reihe weisser Pillen
- * mit rotem ↓, die zu den Abschnitten der Seite springen. Erst ab zwei
- * Einträgen sinnvoll.
+ * mit rotem ↓, die zu den Abschnitten der Seite springen. Erst ab drei
+ * Abschnitten: Kürzere Seiten überblickt man ohne Verzeichnis.
  */
 export function TableOfContents({
   items,
 }: {
   items: { id: string; label: string }[]
 }) {
-  if (items.length < 2) return null
+  if (items.length < 3) return null
   return (
-    <nav aria-labelledby="inhaltsverzeichnis" className="flex flex-col gap-3">
+    <nav
+      aria-labelledby="inhaltsverzeichnis"
+      data-print="hide"
+      className="flex flex-col gap-3"
+    >
       <h2 id="inhaltsverzeichnis" className="type-body-sm font-normal">
         Inhaltsverzeichnis
       </h2>

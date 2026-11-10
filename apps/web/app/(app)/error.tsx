@@ -17,7 +17,7 @@ export default function AppError({
 }) {
   return (
     <AdminShell>
-      <title>Fehler · Administration · Business-IT-Serviceportal</title>
+      <title>Fehler – Administration – Business-IT-Serviceportal</title>
       <ErrorNotice error={error} retry={retry} />
     </AdminShell>
   )

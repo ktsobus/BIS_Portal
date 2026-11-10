@@ -9,6 +9,11 @@ import { phoneHref, safeHref } from "../links"
  */
 export const FALLBACK_ACTION_ID = "fallback"
 
+/** Ist der Link die Standard-Aktion aus der Konfiguration (nicht aus LeanIX)? */
+export function isFallbackAction(link: Pick<CatalogLink, "id">): boolean {
+  return link.id === FALLBACK_ACTION_ID
+}
+
 /**
  * Aktion aus der Konfiguration; `null`, wenn keine (gültige) URL gesetzt ist.
  * Erlaubt sind https/http, mailto und tel (wie bei Ressourcen-Links). Eine

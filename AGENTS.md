@@ -22,7 +22,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - The UI follows the so.ch design system in `docs/design.md`; where it is silent, the CD-Manual applies (decisions in `docs/konzept.md` 6.2). Tokens, `type-*` typography utilities, `container-page`, `link-text` and `list-dash` live in `apps/web/app/globals.css`.
 - Text is slate (`text-foreground`), red (`primary`) only for actions and state, never on the slate footer (`.on-dark`). Containers are 10 px tiles (`rounded-tile`, `bg-tile-*`), controls are pills/circles (`buttonVariants`), inputs are underline-only (`field-underline`). Only weights 400 and 800. Dates via `apps/web/lib/format.ts` (numeric, `09.11.2026`).
-- Page chrome is in `apps/web/components/site/` (`SiteHeader`, `SiteFooter`/`SiteFooterFrame`, `ContentPage`, `SideNav`, `Breadcrumbs`, `PageTitle`). `AdminShell` and `SiteFooterFrame` make no server calls so client error pages can use them.
+- Page chrome is in `apps/web/components/site/` (`SiteHeader`, `SiteFooter`/`SiteFooterFrame`, `ContentPage`, `SideNav`, `Breadcrumbs`, `PageTitle`). `AdminShell` and `SiteFooterFrame` make no server calls so client error pages can use them. Header, content and footer all use `container-page` so they share one left edge.
+- Public pages stay plain: no label line above titles (breadcrumbs and side navigation say where a page is), no pill badges for metadata (use a 14 px text line), no helper text under a field unless it prevents an error, no «·» separators (comma or «–»). Show a block only when it has content (table of contents from three sections, filters from two values, «Zuständigkeit» only with a unit or person). Linked cards use `ServiceCard`, or `cardTileClass` with a stretched `card-link` when the card holds its own buttons (`LeistungCard`).
 
 ## Data access
 

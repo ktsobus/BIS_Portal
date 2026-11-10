@@ -20,7 +20,7 @@ export default function GlobalError({
   return (
     <html lang="de-CH" className="antialiased">
       <body>
-        <title>Fehler · Business-IT-Serviceportal · Kanton Solothurn</title>
+        <title>Fehler – Business-IT-Serviceportal</title>
         <AdminShell variant="public">
           <ErrorNotice error={error} retry={retry} />
         </AdminShell>

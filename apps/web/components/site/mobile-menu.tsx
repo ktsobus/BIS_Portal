@@ -65,7 +65,7 @@ export function MobileMenu({
         }}
         onSubmit={() => setOpen(false)}
         className={cn(
-          "border-t border-hairline pt-5 pb-6 lg:hidden",
+          "border-t border-hairline pt-4 pb-4 lg:hidden",
           panelClassName
         )}
       >
