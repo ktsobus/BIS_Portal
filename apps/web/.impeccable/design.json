@@ -1,0 +1,657 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T08:56:49.867Z",
+  "title": "Design System: BITS-Portal",
+  "extensions": {
+    "colorMeta": {
+      "red": {
+        "role": "primary",
+        "displayName": "Solothurner Rot",
+        "canonical": "#cc0000",
+        "tonalRamp": [
+          "#1e0000",
+          "#4e0302",
+          "#a70000",
+          "#cc0000",
+          "#e45041",
+          "#f98a7a",
+          "#f0b3b3",
+          "#fbeded"
+        ]
+      },
+      "red-strong": {
+        "role": "primary",
+        "displayName": "Solothurner Rot, shade",
+        "canonical": "#a70000",
+        "tonalRamp": [
+          "#1e0000",
+          "#4e0302",
+          "#a70000",
+          "#cc0000",
+          "#e45041",
+          "#f98a7a",
+          "#f0b3b3",
+          "#fbeded"
+        ]
+      },
+      "red-tint": {
+        "role": "primary",
+        "displayName": "Solothurner Rot, tint",
+        "canonical": "#fbeded",
+        "tonalRamp": [
+          "#1e0000",
+          "#4e0302",
+          "#a70000",
+          "#cc0000",
+          "#e45041",
+          "#f98a7a",
+          "#f0b3b3",
+          "#fbeded"
+        ]
+      },
+      "red-line": {
+        "role": "primary",
+        "displayName": "Solothurner Rot, line tint",
+        "canonical": "#f0b3b3",
+        "tonalRamp": [
+          "#1e0000",
+          "#4e0302",
+          "#a70000",
+          "#cc0000",
+          "#e45041",
+          "#f98a7a",
+          "#f0b3b3",
+          "#fbeded"
+        ]
+      },
+      "blue": {
+        "role": "secondary",
+        "displayName": "DodgerBlue4",
+        "canonical": "#104e8b",
+        "tonalRamp": [
+          "#030c18",
+          "#0c3b68",
+          "#104e8b",
+          "#3368a3",
+          "#5b8cc4",
+          "#b7cadc",
+          "#d9e3ec",
+          "#ecf1f6"
+        ]
+      },
+      "blue-strong": {
+        "role": "secondary",
+        "displayName": "DodgerBlue4, shade",
+        "canonical": "#0c3b68",
+        "tonalRamp": [
+          "#030c18",
+          "#0c3b68",
+          "#104e8b",
+          "#3368a3",
+          "#5b8cc4",
+          "#b7cadc",
+          "#d9e3ec",
+          "#ecf1f6"
+        ]
+      },
+      "blue-tint": {
+        "role": "secondary",
+        "displayName": "DodgerBlue4 8 %",
+        "canonical": "#ecf1f6",
+        "tonalRamp": [
+          "#030c18",
+          "#0c3b68",
+          "#104e8b",
+          "#3368a3",
+          "#5b8cc4",
+          "#b7cadc",
+          "#d9e3ec",
+          "#ecf1f6"
+        ]
+      },
+      "blue-tint-strong": {
+        "role": "secondary",
+        "displayName": "DodgerBlue4, stronger tint",
+        "canonical": "#d9e3ec",
+        "tonalRamp": [
+          "#030c18",
+          "#0c3b68",
+          "#104e8b",
+          "#3368a3",
+          "#5b8cc4",
+          "#b7cadc",
+          "#d9e3ec",
+          "#ecf1f6"
+        ]
+      },
+      "blue-line": {
+        "role": "secondary",
+        "displayName": "DodgerBlue4, line tint",
+        "canonical": "#b7cadc",
+        "tonalRamp": [
+          "#030c18",
+          "#0c3b68",
+          "#104e8b",
+          "#3368a3",
+          "#5b8cc4",
+          "#b7cadc",
+          "#d9e3ec",
+          "#ecf1f6"
+        ]
+      },
+      "green": {
+        "role": "tertiary",
+        "displayName": "ForestGreen",
+        "canonical": "#228b22",
+        "tonalRamp": [
+          "#011001",
+          "#053005",
+          "#1b6f1b",
+          "#228b22",
+          "#4e9f4a",
+          "#85c081",
+          "#b2d6b2",
+          "#e9f3e9"
+        ]
+      },
+      "green-strong": {
+        "role": "tertiary",
+        "displayName": "ForestGreen, shade",
+        "canonical": "#1b6f1b",
+        "tonalRamp": [
+          "#011001",
+          "#053005",
+          "#1b6f1b",
+          "#228b22",
+          "#4e9f4a",
+          "#85c081",
+          "#b2d6b2",
+          "#e9f3e9"
+        ]
+      },
+      "green-tint": {
+        "role": "tertiary",
+        "displayName": "ForestGreen, tint",
+        "canonical": "#e9f3e9",
+        "tonalRamp": [
+          "#011001",
+          "#053005",
+          "#1b6f1b",
+          "#228b22",
+          "#4e9f4a",
+          "#85c081",
+          "#b2d6b2",
+          "#e9f3e9"
+        ]
+      },
+      "green-line": {
+        "role": "tertiary",
+        "displayName": "ForestGreen, line tint",
+        "canonical": "#b2d6b2",
+        "tonalRamp": [
+          "#011001",
+          "#053005",
+          "#1b6f1b",
+          "#228b22",
+          "#4e9f4a",
+          "#85c081",
+          "#b2d6b2",
+          "#e9f3e9"
+        ]
+      },
+      "orange": {
+        "role": "tertiary",
+        "displayName": "DarkOrange1",
+        "canonical": "#ff8c00",
+        "tonalRamp": [
+          "#170600",
+          "#3c1d01",
+          "#683603",
+          "#945100",
+          "#c6701b",
+          "#ff8c00",
+          "#ffcb8c",
+          "#fff1e0"
+        ]
+      },
+      "orange-strong": {
+        "role": "tertiary",
+        "displayName": "DarkOrange1, shade",
+        "canonical": "#945100",
+        "tonalRamp": [
+          "#170600",
+          "#3c1d01",
+          "#683603",
+          "#945100",
+          "#c6701b",
+          "#ff8c00",
+          "#ffcb8c",
+          "#fff1e0"
+        ]
+      },
+      "orange-tint": {
+        "role": "tertiary",
+        "displayName": "DarkOrange1, tint",
+        "canonical": "#fff1e0",
+        "tonalRamp": [
+          "#170600",
+          "#3c1d01",
+          "#683603",
+          "#945100",
+          "#c6701b",
+          "#ff8c00",
+          "#ffcb8c",
+          "#fff1e0"
+        ]
+      },
+      "orange-line": {
+        "role": "tertiary",
+        "displayName": "DarkOrange1, line tint",
+        "canonical": "#ffcb8c",
+        "tonalRamp": [
+          "#170600",
+          "#3c1d01",
+          "#683603",
+          "#945100",
+          "#c6701b",
+          "#ff8c00",
+          "#ffcb8c",
+          "#fff1e0"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Black",
+        "canonical": "#000000",
+        "tonalRamp": [
+          "#000000",
+          "#333333",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#aeaeae",
+          "#d1d1d1",
+          "#ffffff"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Grafik-Schwarz",
+        "canonical": "#333333",
+        "tonalRamp": [
+          "#000000",
+          "#333333",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#aeaeae",
+          "#d1d1d1",
+          "#ffffff"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Grafik-Grau",
+        "canonical": "#646b76",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#24272b",
+          "#41454d",
+          "#646b76",
+          "#868c94",
+          "#d7d9db",
+          "#e9eaec",
+          "#f4f5f5"
+        ]
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Grafik-Grau, strong line",
+        "canonical": "#868c94",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#24272b",
+          "#41454d",
+          "#646b76",
+          "#868c94",
+          "#d7d9db",
+          "#e9eaec",
+          "#f4f5f5"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Grafik-Grau, hairline",
+        "canonical": "#d7d9db",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#24272b",
+          "#41454d",
+          "#646b76",
+          "#868c94",
+          "#d7d9db",
+          "#e9eaec",
+          "#f4f5f5"
+        ]
+      },
+      "ground-strong": {
+        "role": "neutral",
+        "displayName": "Grafik-Grau, strong ground",
+        "canonical": "#e9eaec",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#24272b",
+          "#41454d",
+          "#646b76",
+          "#868c94",
+          "#d7d9db",
+          "#e9eaec",
+          "#f4f5f5"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Grafik-Grau, ground",
+        "canonical": "#f4f5f5",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#24272b",
+          "#41454d",
+          "#646b76",
+          "#868c94",
+          "#d7d9db",
+          "#e9eaec",
+          "#f4f5f5"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#000000",
+          "#333333",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#aeaeae",
+          "#d1d1d1",
+          "#ffffff"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page title on public pages from md."
+      },
+      "display-sm": {
+        "displayName": "Display small",
+        "purpose": "Admin page title from md; public page title on phones."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings on a page and the figures in the admin status card."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, help panel title, dialog titles, result count."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "Name of a Leistung or search result in a list; headings inside admin cards and prose."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Introduction under a page title, capped at 40rem."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text, input text, public navigation; prose capped at 70ch."
+      },
+      "body-sm": {
+        "displayName": "Body small",
+        "purpose": "Supporting text in cards, table cells, hints, footer."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, button text, status wording, small headings in side columns and footer."
+      },
+      "label-sm": {
+        "displayName": "Label small",
+        "purpose": "Badges and table headers."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Organisational path under a unit name, definition-list labels, keyboard hints."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "LeanIX ids, issue codes, SAML URLs, recovery codes. System monospace stack."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The one easing curve, for every state transition and entrance."
+      },
+      {
+        "name": "duration-state",
+        "value": "150ms",
+        "purpose": "Colour, border and fill transitions on hover, press and toggle."
+      },
+      {
+        "name": "animate-fade-in",
+        "value": "fade-in 160ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Dialog and scrim appear (opacity from 0)."
+      },
+      {
+        "name": "animate-rise-in",
+        "value": "rise-in 180ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Toast appears (opacity from 0, 6px upward)."
+      },
+      {
+        "name": "animate-pulse-soft",
+        "value": "pulse-soft 1.4s ease-in-out infinite",
+        "purpose": "Skeleton placeholders while data loads (opacity to 0.45 and back)."
+      },
+      {
+        "name": "animate-spin",
+        "value": "spin 0.9s linear infinite",
+        "purpose": "Spinner in buttons and status lines."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "Under prefers-reduced-motion every animation and transition collapses to this duration and runs once."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "40rem"
+      },
+      {
+        "name": "md",
+        "value": "48rem"
+      },
+      {
+        "name": "lg",
+        "value": "64rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one red button of a group: the first order or request path of a Leistung, a form submit, the page's main action.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Gerät bestellen <svg class=\"ds-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 7h10v10\"/><path d=\"M7 17 17 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border: 1px solid; border-radius: var(--radius-md, 6px); font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); font-size: 0.875rem; font-weight: 700; line-height: 1.5; white-space: nowrap; cursor: pointer; transition: color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-blue, #104e8b); outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; pointer-events: none; } .ds-btn-primary { background: var(--color-red, #cc0000); border-color: var(--color-red, #cc0000); color: var(--color-white, #ffffff); } .ds-btn-primary:hover, .ds-btn-primary:active { background: var(--color-red-strong, #a70000); border-color: var(--color-red-strong, #a70000); } .ds-btn-primary .ds-icon { width: 1.125em; height: 1.125em; flex-shrink: 0; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Default variant. Every further action in a group, and the service-desk fallback action wherever it repeats.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">Anfrage an den Service Desk <svg class=\"ds-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 7h10v10\"/><path d=\"M7 17 17 7\"/></svg></button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border: 1px solid; border-radius: var(--radius-md, 6px); font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); font-size: 0.875rem; font-weight: 700; line-height: 1.5; white-space: nowrap; cursor: pointer; transition: color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-blue, #104e8b); outline-offset: 2px; } .ds-btn-secondary:disabled { opacity: 0.5; pointer-events: none; } .ds-btn-secondary { background: var(--color-white, #ffffff); border-color: var(--color-line-strong, #868c94); color: var(--color-ink, #000000); } .ds-btn-secondary:hover { background: var(--color-ground, #f4f5f5); border-color: var(--color-ink, #000000); } .ds-btn-secondary:active { background: var(--color-ground-strong, #e9eaec); } .ds-btn-secondary .ds-icon { width: 1.125em; height: 1.125em; flex-shrink: 0; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Low-weight action without border or fill, such as resetting the search.",
+      "html": "<button class=\"ds-btn-quiet\" type=\"button\">Suche zurücksetzen</button>",
+      "css": ".ds-btn-quiet { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border: 1px solid; border-radius: var(--radius-md, 6px); font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); font-size: 0.875rem; font-weight: 700; line-height: 1.5; white-space: nowrap; cursor: pointer; transition: color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-btn-quiet:focus-visible { outline: 2px solid var(--color-blue, #104e8b); outline-offset: 2px; } .ds-btn-quiet:disabled { opacity: 0.5; pointer-events: none; } .ds-btn-quiet { height: 32px; padding: 0 12px; background: transparent; border-color: transparent; color: var(--color-blue, #104e8b); } .ds-btn-quiet:hover { background: var(--color-blue-tint, #ecf1f6); } .ds-btn-quiet:active { background: var(--color-blue-tint-strong, #d9e3ec); }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Opens a destructive step (delete an account, remove a provider). The confirming button in the dialog is the primary button.",
+      "html": "<button class=\"ds-btn-danger\" type=\"button\">Löschen</button>",
+      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border: 1px solid; border-radius: var(--radius-md, 6px); font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); font-size: 0.875rem; font-weight: 700; line-height: 1.5; white-space: nowrap; cursor: pointer; transition: color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-btn-danger:focus-visible { outline: 2px solid var(--color-blue, #104e8b); outline-offset: 2px; } .ds-btn-danger:disabled { opacity: 0.5; pointer-events: none; } .ds-btn-danger { height: 32px; padding: 0 12px; background: var(--color-white, #ffffff); border-color: var(--color-red-line, #f0b3b3); color: var(--color-red, #cc0000); } .ds-btn-danger:hover { background: var(--color-red-tint, #fbeded); border-color: var(--color-red, #cc0000); } .ds-btn-danger:active { background: var(--color-red-tint, #fbeded); }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Bold label above, 40px control, hint below. An invalid field gets a red border and a bold red message in place of the hint.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-field-email\">E-Mail-Adresse</label><input class=\"ds-field-input\" id=\"ds-field-email\" type=\"email\" placeholder=\"vorname.name@so.ch\" aria-describedby=\"ds-field-hint\"><p class=\"ds-field-hint\" id=\"ds-field-hint\">Sie werden zur Anmeldung Ihrer Organisation weitergeleitet.</p></div>",
+      "css": ".ds-field { display: grid; gap: 6px; max-width: 28rem; font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); } .ds-field-label { font-size: 0.875rem; font-weight: 700; line-height: 1.5; color: var(--color-ink, #000000); } .ds-field-input { width: 100%; height: 40px; padding: 0 12px; background: var(--color-white, #ffffff); border: 1px solid var(--color-line-strong, #868c94); border-radius: var(--radius-md, 6px); font: inherit; font-size: 1rem; color: var(--color-ink, #000000); transition: border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-field-input::placeholder { color: var(--color-muted, #646b76); opacity: 1; } .ds-field-input:hover { border-color: var(--color-ink, #000000); } .ds-field-input:focus-visible { outline: 2px solid var(--color-blue, #104e8b); outline-offset: 2px; } .ds-field-input[aria-invalid=\"true\"] { border-color: var(--color-red, #cc0000); } .ds-field-input:disabled { background: var(--color-ground, #f4f5f5); color: var(--color-muted, #646b76); cursor: not-allowed; } .ds-field-hint { margin: 0; font-size: 0.875rem; line-height: 1.5; color: var(--color-muted, #646b76); }"
+    },
+    {
+      "name": "Catalogue Search",
+      "kind": "custom",
+      "refersTo": "search-input",
+      "description": "Signature component of the start page: 52px search field with suggestions while typing and a red «Suchen» button of the same height.",
+      "html": "<form class=\"ds-search\" role=\"search\" onsubmit=\"return false\"><div class=\"ds-search-field\"><svg class=\"ds-search-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.34-4.34\"/></svg><input class=\"ds-search-input\" type=\"text\" placeholder=\"Was benötigen Sie?\" aria-label=\"Suchbegriff\"><kbd class=\"ds-search-kbd\" aria-hidden=\"true\">/</kbd></div><button class=\"ds-search-submit\" type=\"submit\">Suchen</button></form>",
+      "css": ".ds-search { display: flex; gap: 12px; max-width: 45rem; font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); } .ds-search-field { position: relative; flex: 1; min-width: 0; } .ds-search-icon { position: absolute; top: 50%; left: 16px; width: 20px; height: 20px; transform: translateY(-50%); color: var(--color-muted, #646b76); pointer-events: none; } .ds-search-input { width: 100%; height: 52px; padding: 0 16px 0 48px; background: var(--color-white, #ffffff); border: 1px solid var(--color-line-strong, #868c94); border-radius: var(--radius-md, 6px); font: inherit; font-size: 1rem; color: var(--color-ink, #000000); transition: border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-search-input::placeholder { color: var(--color-muted, #646b76); opacity: 1; } .ds-search-input:hover { border-color: var(--color-ink, #000000); } .ds-search-input:focus-visible { outline: 2px solid var(--color-blue, #104e8b); outline-offset: 2px; } .ds-search-kbd { position: absolute; top: 50%; right: 14px; display: grid; place-items: center; min-width: 24px; height: 24px; padding: 0 6px; transform: translateY(-50%); background: var(--color-ground, #f4f5f5); border: 1px solid var(--color-line, #d7d9db); border-radius: var(--radius-sm, 4px); font: inherit; font-size: 0.8125rem; color: var(--color-muted, #646b76); pointer-events: none; } .ds-search-submit { height: 52px; padding: 0 24px; background: var(--color-red, #cc0000); border: 1px solid var(--color-red, #cc0000); border-radius: var(--radius-md, 6px); font: inherit; font-size: 1rem; font-weight: 700; color: var(--color-white, #ffffff); cursor: pointer; transition: background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-search-submit:hover, .ds-search-submit:active { background: var(--color-red-strong, #a70000); border-color: var(--color-red-strong, #a70000); } .ds-search-submit:focus-visible { outline: 2px solid var(--color-blue, #104e8b); outline-offset: 2px; }"
+    },
+    {
+      "name": "Public Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Two text links at the right of the white header. The current one is bold black with a 2px red bar beneath it.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Hauptnavigation\"><a class=\"ds-nav-link ds-nav-link-current\" href=\"#\" aria-current=\"page\">Katalog<span class=\"ds-nav-mark\" aria-hidden=\"true\"></span></a><a class=\"ds-nav-link\" href=\"#\">Suche</a></nav>",
+      "css": ".ds-nav { display: flex; padding: 12px; background: var(--color-white, #ffffff); border-bottom: 1px solid var(--color-line, #d7d9db); font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); } .ds-nav-link { position: relative; display: flex; align-items: center; height: 44px; padding: 0 12px; border-radius: var(--radius-md, 6px); font-size: 1rem; color: var(--color-text, #333333); text-decoration: none; transition: background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-nav-link:hover { background: var(--color-ground, #f4f5f5); } .ds-nav-link:focus-visible { outline: 2px solid var(--color-blue, #104e8b); outline-offset: 2px; } .ds-nav-link-current { font-weight: 700; color: var(--color-ink, #000000); } .ds-nav-mark { position: absolute; left: 12px; right: 12px; bottom: 4px; height: 2px; background: var(--color-red, #cc0000); }"
+    },
+    {
+      "name": "Badge and Status",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Badge: a label without state (the subtype of a Leistung). Status: a 10px square in the state colour plus bold black wording.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-badge\">Verwaltungsleistung</span><span class=\"ds-status\"><span class=\"ds-status-mark ds-status-ok\" aria-hidden=\"true\"></span>Aktuell</span><span class=\"ds-status\"><span class=\"ds-status-mark ds-status-warning\" aria-hidden=\"true\"></span>Nicht aktuell</span><span class=\"ds-status\"><span class=\"ds-status-mark ds-status-error\" aria-hidden=\"true\"></span>Nicht verfügbar</span><span class=\"ds-status\"><span class=\"ds-status-mark ds-status-info\" aria-hidden=\"true\"></span>Demo-Modus</span><span class=\"ds-status\"><span class=\"ds-status-mark\" aria-hidden=\"true\"></span>Nicht eingerichtet</span></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); } .ds-badge { display: inline-flex; align-items: center; padding: 2px 8px; background: var(--color-ground, #f4f5f5); border: 1px solid var(--color-line, #d7d9db); border-radius: var(--radius-sm, 4px); font-size: 0.8125rem; font-weight: 700; line-height: 1.45; color: var(--color-text, #333333); white-space: nowrap; } .ds-status { display: inline-flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 700; line-height: 1.5; color: var(--color-ink, #000000); white-space: nowrap; } .ds-status-mark { width: 10px; height: 10px; background: var(--color-muted, #646b76); } .ds-status-ok { background: var(--color-green, #228b22); } .ds-status-warning { background: var(--color-orange, #ff8c00); } .ds-status-error { background: var(--color-red, #cc0000); } .ds-status-info { background: var(--color-blue, #104e8b); }"
+    },
+    {
+      "name": "Family Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "White card with a hairline on the grey ground: family name, counts, its services as blue links with their count, and the red «Alle anzeigen» link.",
+      "html": "<div class=\"ds-card-ground\"><article class=\"ds-card\"><h3 class=\"ds-card-title\"><a href=\"#\">Unterstützungs-Services</a></h3><p class=\"ds-card-meta\">2 Services · 6 Leistungen</p><ul class=\"ds-card-list\"><li><a class=\"ds-card-row\" href=\"#\"><span>Digitales Mitwirkungsverfahren</span><span class=\"ds-card-count\">2</span></a></li><li><a class=\"ds-card-row\" href=\"#\"><span>Service eLearning</span><span class=\"ds-card-count\">4</span></a></li></ul><p class=\"ds-card-foot\"><a class=\"ds-card-all\" href=\"#\">Alle anzeigen <svg class=\"ds-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></a></p></article></div>",
+      "css": ".ds-card-ground { padding: 24px; background: var(--color-ground, #f4f5f5); font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); } .ds-card { display: flex; flex-direction: column; max-width: 22.5rem; padding: 24px; background: var(--color-white, #ffffff); border: 1px solid var(--color-line, #d7d9db); border-radius: var(--radius-lg, 8px); } .ds-card-title { margin: 0; font-size: 1.3125rem; font-weight: 700; line-height: 1.35; color: var(--color-ink, #000000); } .ds-card-title a { color: inherit; text-decoration: none; border-radius: 4px; } .ds-card-title a:hover { text-decoration: underline; text-underline-offset: 0.18em; } .ds-card-meta { margin: 4px 0 0; font-size: 0.875rem; line-height: 1.5; color: var(--color-muted, #646b76); } .ds-card-list { margin: 16px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--color-line, #d7d9db); } .ds-card-list li { border-bottom: 1px solid var(--color-line, #d7d9db); } .ds-card-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 -8px; padding: 10px 8px; border-radius: 4px; font-size: 1rem; line-height: 1.55; color: var(--color-blue, #104e8b); text-decoration: none; transition: background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-card-row:hover { background: var(--color-blue-tint, #ecf1f6); color: var(--color-blue-strong, #0c3b68); } .ds-card-count { font-size: 0.875rem; color: var(--color-muted, #646b76); font-variant-numeric: tabular-nums; } .ds-card-foot { margin: 0; padding-top: 16px; } .ds-card-all { display: inline-flex; align-items: center; gap: 6px; border-radius: 4px; font-size: 0.875rem; font-weight: 700; color: var(--color-red, #cc0000); text-decoration: none; } .ds-card-all:hover { color: var(--color-red-strong, #a70000); text-decoration: underline; text-underline-offset: 0.2em; } .ds-card-all .ds-icon { width: 16px; height: 16px; transition: transform 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-card-all:hover .ds-icon { transform: translateX(2px); } .ds-card a:focus-visible { outline: 2px solid var(--color-blue, #104e8b); outline-offset: 2px; }"
+    },
+    {
+      "name": "Page Title",
+      "kind": "custom",
+      "refersTo": "title-square",
+      "description": "Every page title carries the red square of the CD manual. It hangs in the left margin from md and sits above the title on phones.",
+      "html": "<div class=\"ds-pagehead\"><h1 class=\"ds-pagetitle\"><span class=\"ds-pagetitle-square\" aria-hidden=\"true\"></span><span>Business IT-Servicekatalog</span></h1><p class=\"ds-pagehead-lead\">Die IT-Services des Amts für Informatik und Organisation: finden, bestellen, anfragen.</p></div>",
+      "css": ".ds-pagehead { padding: 40px 40px 40px 56px; background: var(--color-white, #ffffff); border-bottom: 1px solid var(--color-line, #d7d9db); font-family: var(--font-sans, \"Open Sans\", Arial, \"Helvetica Neue\", Helvetica, sans-serif); } .ds-pagetitle { position: relative; margin: 0; font-size: 2.5rem; font-weight: 700; line-height: 1.12; color: var(--color-ink, #000000); text-wrap: balance; } .ds-pagetitle-square { position: absolute; top: 0.42em; left: -0.72em; width: 0.4em; height: 0.4em; background: var(--color-red, #cc0000); } .ds-pagehead-lead { margin: 12px 0 0; max-width: 40rem; font-size: 1.125rem; line-height: 1.5; color: var(--color-text, #333333); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Canton's Letterhead, on Screen",
+    "overview": "BITS-Portal is the conventional service portal, played straight: a search-led start page, service families as cards, a next-step button on every Leistung, and a standard admin shell with a sidebar. There is no concept, metaphor or ornament on top of that. What makes it the canton's portal is the corporate design manual of the Kanton Solothurn, which is the only visual reference. The manual was written for print; its rules are carried to the screen by analogy, and nothing is used that the manual does not provide for.\n\nThe result is flat and quiet. A white header and a white page head sit on a light grey ground. Content lives in white cards with a hairline border and small radii. Solothurner Rot is spent on a few things only: the primary action, the mark on the current navigation item, the square beside each page title, and errors. Blue carries links, focus and help. Text is left-aligned, with hierarchy from size and two weights.\n\nThe theme is light only. Dark mode is deliberately absent: the colour logo may only sit on white, and no negative logo is on hand. `html` declares `color-scheme: light` and there are no dark variants anywhere. Do not add one until the original negative logo file exists (see `docs/branding.md`).\n\nMotion is limited to state changes: colour transitions of 150ms, a 160ms fade for dialogs, a 180ms rise of 6px for toasts, all on one ease-out curve. Nothing animates on page load. `prefers-reduced-motion` collapses every animation and transition.\n\nAll tokens live in the `@theme` block of `app/globals.css`. That block is the single source for colour, the type scale, radii and motion; components use the generated utilities and never write raw values.",
+    "keyCharacteristics": [
+      "Conventional service portal: search first, family cards, a next step on every Leistung, sidebar admin.",
+      "Every colour comes from the CD manual or is a tint or shade of one of its colours.",
+      "Flat: no shadows, no gradients; white surfaces on a grey ground, separated by hairlines.",
+      "One typeface, two weights (400 and 700), a fixed rem scale.",
+      "A red square beside every page title; small squares, not dots, as status markers.",
+      "Left-aligned text, prose measure of 70 characters, «Guillemets» and en dash lists.",
+      "Light theme only."
+    ],
+    "rules": [
+      {
+        "name": "The Manual-Only Rule",
+        "body": "Every colour is a CD-manual colour or a tint or shade of one. A new colour is a new token in `@theme`, derived from a manual colour and commented with its source. No hex values, no arbitrary colour utilities and no gradients in components.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Red Button Rule",
+        "body": "A group of actions (a form, a button row, a page header, a dialog footer, the actions of one Leistung) has at most one red button. Everything else in the group is secondary or quiet.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never-Colour-Alone Rule",
+        "body": "State is never carried by colour alone. A status is a coloured square plus a word; a notice is an icon plus a title or sentence; an invalid field has a red border plus a bold red message below it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Strong-Shade Rule",
+        "body": "ForestGreen and DarkOrange1 at full strength fill the 10px status square and nothing else. Icons on a light fill use `green-strong` and `orange-strong`. Status wording is always set in `ink`, never in the state colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Weights Rule",
+        "body": "Regular (400) and bold (700), nothing between and nothing heavier. Hierarchy comes from size. Italic appears in one place: the sender in the footer, with the office name in bold italic and the two lines below it in regular italic.",
+        "section": "typography"
+      },
+      {
+        "name": "The Left Edge Rule",
+        "body": "Text is left-aligned and ragged right. Nothing is centred, nothing is justified. Running text stops at about 70 characters.",
+        "section": "typography"
+      },
+      {
+        "name": "The Manual Punctuation Rule",
+        "body": "UI text uses «Guillemets», the en dash as list marker in prose, and the real ellipsis (…). German in Swiss orthography: ss, never ß. No uppercase labels and no letter-spaced text; the only tracked text is the six-digit code field.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline Rule",
+        "body": "Separation is a 1px line or a change from white to grey. Never a shadow, never a gradient, never a blur.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat Hover Rule",
+        "body": "Hover and pressed states change fill or border colour. Nothing lifts, scales or gains a shadow. The one movement on hover is the arrow of a «Details» or «Alle anzeigen» link, which shifts 2px to the right.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do take every colour from the tokens in `app/globals.css`. If a role is missing, add a token derived from a CD-manual colour and note its source in the comment.",
+      "Do give each group of actions one red button at most, and make it the step the visitor most likely came for.",
+      "Do keep the service-desk fallback action secondary in lists and the help panel and a text link in the footer; make it red only in the «Nächster Schritt» card of a Leistung page.",
+      "Do put the red square beside every page title through `PageTitle` (or `PageHead` / `AdminPageHeader`, which use it).",
+      "Do show state as a square plus a word (`Status`) or an icon plus text (`Notice`).",
+      "Do build containers with `Card`: white, 1px hairline, 8px radius, 24px padding.",
+      "Do give every table cell a `label` so the table stacks into labelled blocks below `md`.",
+      "Do left-align everything and cap running text at 70ch (lead text at 40rem).",
+      "Do write UI text with «Guillemets», the en dash for prose lists, the real ellipsis and Swiss orthography (ss).",
+      "Do keep the logo on white, at 16 to 20px height, with one logo height of clear space.",
+      "Do limit motion to state changes of 150 to 180ms on the `--ease-out` curve.",
+      "Do rely on the global focus outline (2px blue, 2px offset)."
+    ],
+    "donts": [
+      "Don't use a colour outside the CD manual, a gradient or a shadow. The default palette and all shadow tokens are removed on purpose.",
+      "Don't add a dark theme while no negative logo is on hand.",
+      "Don't use red for decoration, for ordinary text links or for more than one button in a group.",
+      "Don't nest a card in a card, and don't lift cards on hover.",
+      "Don't signal state by colour alone, and don't set text in ForestGreen or DarkOrange1.",
+      "Don't use dots or pills as status markers; the marker is a square.",
+      "Don't centre text, justify text or set labels in uppercase.",
+      "Don't add a third weight or a second typeface. Mono is for identifiers and codes only.",
+      "Don't let a table scroll sideways on a phone.",
+      "Don't open a dialog for something that can happen in the page. Dialogs are for creating an account, adding a SAML provider and confirming a step that cannot be undone or that changes access.",
+      "Don't redraw, recolour, crop or inline the logo, and don't place it on the grey ground or a tint.",
+      "Don't animate on page load or add entrance choreography.",
+      "Don't invent content to fill a gap in the LeanIX data: no placeholder contacts, no stock imagery, no illustrative numbers."
+    ]
+  }
+}

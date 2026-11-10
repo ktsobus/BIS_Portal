@@ -1,4 +1,5 @@
 import { PageHead } from "@/components/site/page-head"
+import { Card } from "@/components/ui/card"
 import { CatalogUnavailable } from "@/features/catalog/components/catalog-unavailable"
 import { FamilyCard } from "@/features/catalog/components/family-card"
 import { HelpPanel } from "@/features/catalog/components/help-panel"
@@ -45,7 +46,7 @@ export default async function StartPage() {
           </div>
         ) : (
           <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <div className="rounded-lg border border-line bg-white p-6">
+            <Card className="p-6">
               <h3 className="text-lg font-bold">
                 Im Katalog ist noch keine Leistung veröffentlicht
               </h3>
@@ -53,7 +54,7 @@ export default async function StartPage() {
                 Leistungen erscheinen hier, sobald sie in LeanIX für den Kanal
                 «Business IT-Servicekatalog» freigegeben sind.
               </p>
-            </div>
+            </Card>
             <HelpPanel contact={status.contact} />
           </div>
         )}
