@@ -51,6 +51,8 @@
   --font-weight-black: 800;
 
   --ease-standard: ease;
+  /* Eine Kurve für alle Zustandswechsel: zügig los, weich ankommen. */
+  --ease-ui: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @theme inline {
@@ -123,6 +125,9 @@
 
 :root {
   color-scheme: light;
+  /* Auch native Bedienelemente (Kontrollkästchen, Schreibmarke) im CD. */
+  accent-color: var(--so-red);
+  caret-color: var(--so-red);
 
   /* Marke und Aktion (Solothurner Rot, CD-Manual RGB 204 | 0 | 0). */
   --so-red: #cc0000;
@@ -215,6 +220,16 @@
   b,
   strong {
     font-weight: 800;
+  }
+  /* Lauftext ohne einzelne Wörter auf der letzten Zeile. */
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
+  /* Daten und Zeiten in gleich breiten Ziffern. */
+  time {
+    font-variant-numeric: tabular-nums;
   }
   ::placeholder {
     color: var(--so-placeholder);
@@ -435,13 +450,41 @@
 }
 
 /* Verlinkte Karten: Outline innen, damit sie nicht im Raster überlappt. */
-.focus-inset:focus-visible,
-:where(.focus-inset-within):has(:focus-visible) {
+.focus-inset:focus-visible {
   outline: 2px solid var(--so-red);
   outline-offset: -2px;
 }
-:where(.focus-inset-within) :focus-visible {
-  outline: none;
+
+/*
+ * Pfeile antworten auf den Zeiger (nur Maus/Trackpad): → rückt 3 px in
+ * Laufrichtung, ↗ diagonal, ↓ nach unten. Gilt überall, wo ein Pfeil in einem
+ * Link, einer Schaltfläche oder einer verlinkten Karte (`group`) steht.
+ */
+:where(a, button, .group)
+  :where(svg.lucide-arrow-right, svg.lucide-arrow-up-right, svg.lucide-arrow-down) {
+  transition: translate 150ms var(--ease-ui);
+}
+@media (hover: hover) and (pointer: fine) {
+  :where(a, button, .group):hover svg.lucide-arrow-right {
+    translate: 3px 0;
+  }
+  :where(a, button):hover svg.lucide-arrow-up-right {
+    translate: 2px -2px;
+  }
+  :where(a, button):hover svg.lucide-arrow-down {
+    translate: 0 3px;
+  }
+}
+
+/* Mobiles Menü: klappt mit kurzem Einblenden 6 px nach unten auf. */
+@keyframes menu-drop {
+  from {
+    opacity: 0;
+    translate: 0 -6px;
+  }
+}
+.menu-drop {
+  animation: menu-drop 200ms var(--ease-ui);
 }
 
 /*

@@ -29,7 +29,10 @@ export function PageTitle({
       >
         {children}
       </h1>
-      {lead ? <div className="type-lead text-pretty">{lead}</div> : null}
+      {/* Lead höchstens ~60 Zeichen breit, damit die Zeilen lesbar bleiben. */}
+      {lead ? (
+        <div className="max-w-[60ch] type-lead text-pretty">{lead}</div>
+      ) : null}
     </div>
   )
 }

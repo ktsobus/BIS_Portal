@@ -20,8 +20,12 @@ export function hasSupportContact(
   )
 }
 
+/** Textlink auf Schiefer; auf Touch-Geräten 44 px hoch antippbar. */
 const onDarkLink =
-  "underline decoration-1 underline-offset-[0.2em] hover:decoration-2"
+  "underline decoration-1 underline-offset-[0.2em] hover:decoration-2 pointer-coarse:py-2.5"
+/** Zeile der Kontaktliste; auf Touch-Geräten 44 px hoch. */
+const onDarkRow =
+  "pointer-coarse:flex pointer-coarse:min-h-11 pointer-coarse:flex-wrap pointer-coarse:items-center pointer-coarse:gap-x-1"
 
 /**
  * Zentraler Kontakt (Service Desk) aus der Konfiguration:
@@ -48,9 +52,9 @@ export function SupportContactLinks({
     const requestHref = request ? safeHref(request.url)! : null
     const external = requestHref ? isExternalUrl(requestHref) : false
     return (
-      <ul className={cn("flex flex-col gap-1", className)}>
+      <ul className={cn("flex flex-col gap-1 pointer-coarse:gap-0", className)}>
         {request && requestHref ? (
-          <li>
+          <li className={onDarkRow}>
             <a
               href={requestHref}
               className={cn(onDarkLink, "inline-flex items-center gap-1")}
@@ -76,7 +80,7 @@ export function SupportContactLinks({
           </li>
         ) : null}
         {contact.email ? (
-          <li>
+          <li className={onDarkRow}>
             E-Mail:{" "}
             <a href={`mailto:${contact.email}`} className={onDarkLink}>
               {contact.email}
@@ -84,7 +88,7 @@ export function SupportContactLinks({
           </li>
         ) : null}
         {contact.phone ? (
-          <li>
+          <li className={onDarkRow}>
             Telefon:{" "}
             <a href={phoneHref(contact.phone)} className={onDarkLink}>
               {contact.phone}

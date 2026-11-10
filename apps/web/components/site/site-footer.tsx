@@ -68,7 +68,7 @@ export async function SiteFooter() {
       }
       directLinks={
         <FooterDirectLinks
-          title="Service-Familien"
+          title="Direktlinks"
           links={families.map((family) => ({
             key: family.id,
             href: `/kategorie/${family.slug}`,

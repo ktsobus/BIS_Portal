@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 
 // Source Sans 3 (frei, selbst gehostet) als Ersatz für Frutiger: genutzt
 // werden nur 400 (≙ 55 Roman) und 800 (≙ 75 Black), kursiv nur für den
@@ -20,7 +20,13 @@ export const metadata: Metadata = {
   description:
     "Business-IT-Services des Amts für Informatik und Organisation (AIO): Leistungen, Verantwortliche und nächste Schritte.",
   applicationName: siteName,
+  // Vorschau beim Teilen eines Links (z. B. in Teams): Titel und Text der
+  // jeweiligen Seite, kein Bild (keine lizenzierten Fotos).
+  openGraph: { type: "website", siteName, locale: "de_CH" },
 }
+
+/** Browser-Oberfläche (Adressleiste auf Mobilgeräten) weiss wie der Kopf. */
+export const viewport: Viewport = { themeColor: "#ffffff" }
 
 export default function RootLayout({
   children,

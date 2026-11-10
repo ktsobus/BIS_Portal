@@ -54,7 +54,7 @@ export default async function HomePage() {
             href="/suche"
             className={buttonVariants({ variant: "secondary" })}
           >
-            Alle Leistungen
+            Alle Leistungen anzeigen
             <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
           </Link>
         }

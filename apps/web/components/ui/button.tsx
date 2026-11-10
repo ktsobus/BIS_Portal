@@ -6,11 +6,11 @@ import { Slot } from "radix-ui"
 /**
  * Schaltflächen nach docs/design.md: immer Pillen (Text) oder Kreise
  * (Symbol), 16-px-Beschriftung im Normalschnitt, Symbol 22 px mit
- * 0,35 em Abstand. Beim Überfahren und Drücken sinken sie ein (Innenschatten),
- * sie heben sich nie.
+ * 0,35 em Abstand. Beim Überfahren und Drücken sinken sie ein (Innenschatten,
+ * gedrückt zusätzlich minimal kleiner), sie heben sich nie.
  */
 const buttonCva = cva(
-  "group/button inline-flex shrink-0 items-center justify-center gap-[0.35em] rounded-full border border-transparent bg-clip-padding text-base leading-5 font-normal whitespace-nowrap transition-[background-color,color,border-color,box-shadow] duration-150 ease-in-out select-none disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[1.375rem]",
+  "group/button inline-flex shrink-0 items-center justify-center gap-[0.35em] rounded-full border border-transparent bg-clip-padding text-base leading-5 font-normal whitespace-nowrap transition-[background-color,color,border-color,box-shadow,scale] duration-150 ease-in-out select-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[1.375rem]",
   {
     variants: {
       variant: {

@@ -113,7 +113,6 @@ export function CatalogSearch({
           label="Suchbegriff"
           value={state.query}
           onChange={(event) => update({ query: event.target.value })}
-          placeholder="Suche nach Leistungen"
           className="max-w-reading"
         />
 

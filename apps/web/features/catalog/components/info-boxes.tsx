@@ -46,8 +46,8 @@ export function hasResponsible(units: OrgUnit[], persons: Person[] = []) {
 }
 
 /**
- * Zuständigkeit: blassgrüne Box (24 px) mit der verantwortlichen Stelle in
- * 24 px Black, darunter der Pfad aus LeanIX und ggf. Ansprechpersonen. Ohne
+ * Zuständigkeit: blassgrüne Box (24 px) mit Überschrift, der verantwortlichen
+ * Stelle in 18 px Black, ihrem Pfad aus LeanIX und ggf. Ansprechpersonen. Ohne
  * Angabe entfällt die Box (die Lücke meldet der Datenqualitätsbericht).
  */
 export function ResponsibleBox({
@@ -70,7 +70,7 @@ export function ResponsibleBox({
       aria-labelledby={headingId}
       className="flex scroll-mt-6 flex-col gap-4 rounded-tile bg-tile-service p-6"
     >
-      <h2 id={headingId} className="type-body-sm font-normal">
+      <h2 id={headingId} className="type-headline-md">
         Zuständigkeit
       </h2>
       <OrgUnitList units={units} />

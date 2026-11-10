@@ -2,9 +2,9 @@ import type { ServiceSummary } from "@workspace/api"
 
 import { countLabel, plainExcerpt } from "../text"
 import { orgUnitNames } from "./org-units"
-import { CardGrid, ServiceCard } from "./service-card"
+import { CardList, ServiceCard } from "./service-card"
 
-/** Services einer Familie als Servicekarten (Familienseite). */
+/** Services einer Familie als Zeilenkarten (Familienseite). */
 export function ServiceList({
   services,
   headingLevel = 3,
@@ -17,7 +17,7 @@ export function ServiceList({
   }
 
   return (
-    <CardGrid columns={2}>
+    <CardList>
       {services.map((service) => {
         const excerpt = plainExcerpt(service.definition, 160)
         const responsible = orgUnitNames(service.responsible)
@@ -27,6 +27,7 @@ export function ServiceList({
               id={`service-${service.id}`}
               href={`/service/${service.slug}`}
               title={service.name}
+              layout="row"
               headingLevel={headingLevel}
               meta={
                 <>
@@ -46,11 +47,11 @@ export function ServiceList({
                 </>
               }
             >
-              {excerpt ? <p className="line-clamp-3">{excerpt}</p> : null}
+              {excerpt ? <p className="line-clamp-2">{excerpt}</p> : null}
             </ServiceCard>
           </li>
         )
       })}
-    </CardGrid>
+    </CardList>
   )
 }

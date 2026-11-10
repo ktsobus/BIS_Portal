@@ -454,9 +454,9 @@ Slugs aus Name + kurzer ID (stabil bei gleichen Namen); bei Umbenennung Weiterle
 
 | Seite        | Inhalt                                                                                   |
 | ------------ | ---------------------------------------------------------------------------------------- |
-| Start        | Titel mit Lead, grosses Suchfeld; Service-Familien als Servicekarten mit Anzahl Services und Vorschau |
-| Familie (Ebene 2) | Seitennavigation (alle Familien); Services als Servicekarten mit Stelle und Definition (gekürzt) |
-| Service (Ebene 3) | Seitennavigation (Services der Familie, aktueller Service mit seinen Leistungen); Definition, Leistungen als Servicekarten (Subtyp, Kurzbeschreibung; eigene Bestell-/Anfragewege aus LeanIX als Pillen, die Standard-Aktion nur auf der Detailseite), ohne Leistungen eine Kontaktbox mit dem zentralen Kontakt, Zuständigkeit |
+| Start        | Titel mit Lead, grosses Suchfeld mit sichtbarer Beschriftung (die Schnellsuche im Kopf entfällt hier); Service-Familien als Kacheln mit Anzahl Services und Vorschau |
+| Familie (Ebene 2) | Seitennavigation (alle Familien); Services als Zeilenkarten über die Inhaltsbreite mit Stelle und Definition (gekürzt) |
+| Service (Ebene 3) | Seitennavigation (Services der Familie, aktueller Service mit seinen Leistungen); Definition, Leistungen als Zeilenkarten (Subtyp, Kurzbeschreibung; eigene Bestell-/Anfragewege aus LeanIX als Pillen, die Standard-Aktion nur auf der Detailseite), ohne Leistungen eine Kontaktbox mit dem zentralen Kontakt, Zuständigkeit |
 | Leistung     | Box «Service nutzen» mit den Aktionen (Hauptaufgabe; ohne Aktion Hinweis mit verantwortlicher Stelle und zentralem Kontakt), Beschreibung, Eckdaten (Art der Leistung, Leistungsbezüger, Anwendungen), Zuständigkeit, weitere Informationen, «Stand: …» |
 | Suche        | Volltext über Name, Beschreibung, Service, Anwendungen; Filter Subtyp und Leistungsbezüger als Chips (nur bei mehr als einem Wert); Treffer als Servicekarten; clientseitig (kleine Datenmenge) |
 
@@ -492,6 +492,7 @@ Seitenrahmen in `components/site`.
 | Absender: Amtsbezeichnung Black Italic   | CD-Manual | Fusszeile «*Amt für Informatik und Organisation*» |
 | Logo nur Originaldatei, Schutzraum, weisser Grund | CD-Manual | Original-SVG 16 px hoch auf weissem Kopf, mind. eine Logohöhe Freiraum; Logofarben nie in der Oberfläche |
 | Rotes Quadrat (Kanton-Element)           | CD-Manual | Entfällt am Bildschirm: es ist ein Druckelement (Umschläge), und design.md reserviert Rot für Interaktion |
+| Bewegung nur als Rückmeldung             | design.md | Verlinkte Karten heben sich 2 px, Pfeile rücken 3 px in Laufrichtung, Schaltflächen sinken ein (0,15–0,2 s, nur mit Maus/Trackpad); das mobile Menü klappt auf. Keine Einblend-Animationen beim Laden oder Scrollen; `prefers-reduced-motion` wird beachtet |
 | Fotos des Kantons, Titel über Bild       | design.md | Entfällt vorerst: keine lizenzierten Bilder (CD-Manual «Bildsprache»); Start- und Inhaltsseiten mit schlichtem Titel |
 
 Barrierefreiheit nach eCH-0059 (WCAG 2.1 AA): Tastaturbedienung, Fokusrahmen, semantische

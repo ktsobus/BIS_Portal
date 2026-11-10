@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils"
 
 /**
  * Schnellsuche im Kopf: ohne Rahmen, nur schwarzer Unterstrich (beim Fokus
- * rot), rote Lupe am Ende. Sendet an `/suche?q=…`. Auf der Suchseite
- * ausgeblendet: Dort steht das grosse Suchfeld, zwei gleichartige
- * Such-Landmarken wären doppelt.
+ * rot), rote Lupe am Ende. Sendet an `/suche?q=…`. Auf der Startseite und
+ * der Suchseite ausgeblendet: Dort steht das grosse Suchfeld, dieselbe
+ * Aufgabe zweimal auf einem Bildschirm wäre doppelt.
  */
 export function HeaderSearch({
   id,
@@ -21,7 +21,7 @@ export function HeaderSearch({
   className?: string
 }) {
   const pathname = usePathname()
-  if (pathname === "/suche") return null
+  if (pathname === "/" || pathname === "/suche") return null
 
   return (
     <Form

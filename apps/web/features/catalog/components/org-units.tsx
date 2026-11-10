@@ -1,13 +1,13 @@
 import type { OrgUnit, Person } from "@workspace/api"
 
-/** Verantwortliche Stellen: Name in 24 px Black, voller Pfad aus LeanIX. */
+/** Verantwortliche Stellen: Name in 18 px Black, voller Pfad aus LeanIX. */
 export function OrgUnitList({ units }: { units: OrgUnit[] }) {
   if (units.length === 0) return null
   return (
     <ul className="flex flex-col gap-4">
       {units.map((unit) => (
         <li key={unit.id} className="flex flex-col gap-1">
-          <span className="type-headline-md">{unit.name}</span>
+          <span className="type-title-sm">{unit.name}</span>
           {unit.path && unit.path !== unit.name ? (
             <span className="type-body-sm">{unit.path}</span>
           ) : null}

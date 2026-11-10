@@ -9,8 +9,7 @@ export function StartSearch() {
       <SearchFieldLarge
         id="start-suche"
         name="q"
-        label="Suchbegriff"
-        placeholder="Suche nach Leistungen"
+        label="Suche nach Leistungen"
       />
     </Form>
   )
