@@ -463,6 +463,46 @@
   border-bottom-color: var(--so-red);
 }
 
+/*
+ * Meldungen (sonner) im Designsystem: weisse Kachel (10 px) mit Haarlinie,
+ * Schiefer-Text, keine Schatten, Hausschrift. sonner fügt sein CSS
+ * ungeschichtet am Ende von <head> ein; Tailwind-Klassen (Layer) verlieren
+ * dagegen. Daher ungeschichtet und mit höherer Spezifität als die
+ * sonner-Regeln. Der Typ ist an Symbol und linker Kante erkennbar: Rot nur
+ * für Fehler (Zustand), sonst Schiefer.
+ */
+:root [data-sonner-toaster] {
+  font-family: inherit;
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
+  border: 1px solid var(--so-hairline);
+  border-left: 4px solid var(--so-slate);
+  border-radius: var(--radius);
+  background: #ffffff;
+  color: var(--so-slate);
+  box-shadow: none;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-title] {
+  font-weight: 800;
+}
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"]
+  [data-description] {
+  color: var(--so-slate);
+  font-size: 1rem;
+}
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"][data-type="error"] {
+  border-left-color: var(--so-red);
+}
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"][data-type="error"]
+  [data-icon] {
+  color: var(--so-red);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -224,7 +224,26 @@ function FieldError({
   )
 }
 
+/**
+ * IDs für Hinweis (`FieldDescription`) und Fehler (`FieldError`) eines Felds
+ * und der passende `aria-describedby`-Wert für das Eingabeelement (WCAG
+ * 1.3.1/3.3.2). Verweist nur auf tatsächlich angezeigte Elemente.
+ */
+function fieldDescribedBy(
+  name: string,
+  { description, invalid }: { description?: boolean; invalid?: boolean }
+) {
+  const descriptionId = `${name}-description`
+  const errorId = `${name}-error`
+  const describedBy =
+    [description ? descriptionId : null, invalid ? errorId : null]
+      .filter(Boolean)
+      .join(" ") || undefined
+  return { descriptionId, errorId, describedBy }
+}
+
 export {
+  fieldDescribedBy,
   Field,
   FieldLabel,
   FieldDescription,

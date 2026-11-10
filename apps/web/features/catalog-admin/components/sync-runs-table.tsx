@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table"
 
 import {
-  formatDateTime,
+  formatDateTimeCompact,
   formatDuration,
   formatNumber,
   runStatusLabels,
@@ -103,7 +103,7 @@ export function SyncRunsTable({ runs }: { runs: SyncRun[] }) {
               <TableRow key={run.id} className="align-top">
                 <TableCell className="py-2.5 align-top tabular-nums">
                   <time dateTime={run.startedAt}>
-                    {formatDateTime(run.startedAt)}
+                    {formatDateTimeCompact(run.startedAt)}
                   </time>
                 </TableCell>
                 <TableCell className="py-2.5 align-top">

@@ -1,13 +1,12 @@
 {
-  "name": "nextjs-template",
+  "name": "bits-portal",
   "dockerComposeFile": ["../docker-compose.yml", "docker-compose.yml"],
   "service": "app",
-  "runServices": ["app", "postgres", "mailpit"],
+  "runServices": ["app", "postgres"],
   "workspaceFolder": "/workspace",
   "remoteUser": "node",
   "portsAttributes": {
-    "3000": { "label": "web" },
-    "3001": { "label": "email previews" }
+    "3000": { "label": "web" }
   },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "postStartCommand": "bash .devcontainer/post-start.sh",

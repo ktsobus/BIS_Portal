@@ -1,11 +1,16 @@
+"use client"
+
 import Form from "next/form"
+import { usePathname } from "next/navigation"
 import { SearchIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 /**
- * Suchfeld im Kopf: ohne Rahmen, nur schwarzer Unterstrich (beim Fokus rot),
- * rote Lupe am Ende. Sendet an `/suche?q=…`.
+ * Schnellsuche im Kopf: ohne Rahmen, nur schwarzer Unterstrich (beim Fokus
+ * rot), rote Lupe am Ende. Sendet an `/suche?q=…`. Auf der Suchseite
+ * ausgeblendet: Dort steht das grosse Suchfeld, zwei gleichartige
+ * Such-Landmarken wären doppelt.
  */
 export function HeaderSearch({
   id,
@@ -15,11 +20,14 @@ export function HeaderSearch({
   id: string
   className?: string
 }) {
+  const pathname = usePathname()
+  if (pathname === "/suche") return null
+
   return (
     <Form
       action="/suche"
       role="search"
-      aria-label="Katalog durchsuchen"
+      aria-label="Schnellsuche"
       className={cn("relative flex w-full items-stretch", className)}
     >
       <label htmlFor={id} className="sr-only">
@@ -29,7 +37,7 @@ export function HeaderSearch({
         id={id}
         name="q"
         type="search"
-        placeholder="Suche"
+        placeholder="Services und Leistungen suchen …"
         autoComplete="off"
         className="field-underline h-[3.1875rem] w-full min-w-0 rounded-none border-0 border-b border-ink bg-transparent pr-12 pl-0 text-base text-ink transition-[border-color,box-shadow] duration-200 placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
       />

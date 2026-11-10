@@ -5,7 +5,9 @@ import { cn } from "@/lib/utils"
 import { formatNumber } from "./format"
 
 interface Tile {
-  key: keyof Stats
+  /** Nur Pflicht-Kennzahlen (`actions` fehlt in älteren Ständen). */
+  key: Exclude<keyof Stats, "actions">
+
   label: string
   hint: string
   /** Wert > 0 hervorheben und auf den Qualitätsbericht verweisen. */

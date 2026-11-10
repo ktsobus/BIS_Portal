@@ -13,58 +13,9 @@
       "name": "Arbeitsplatz-Services",
       "description": null,
       "serviceIds": [
-        "9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9",
-        "08781d02-a117-4468-b53d-7bb9cdfca3a9",
-        "0edf9a68-8389-46af-9023-1f7f93f6c40e",
-        "52f0e9c4-841c-4412-8e1e-f88b557f0ecf",
-        "21017880-4361-4e28-8550-c62cfea12d01"
+        "08781d02-a117-4468-b53d-7bb9cdfca3a9"
       ],
       "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/bc3ce89d-44c5-4607-b10e-35a525366d98"
-    },
-    {
-      "id": "92937716-ec73-4504-8582-d79ced154a92",
-      "slug": "backend-services-929377",
-      "name": "Backend-Services",
-      "description": null,
-      "serviceIds": [
-        "e0992c2e-e8d4-405c-b1b3-524c06f200dd",
-        "1e9f592b-7d37-4bb0-be51-0cce3e98e2d3",
-        "5549b615-df89-46a4-a7c9-f32e06072beb",
-        "9fdce7b6-0d18-48c3-b3a2-bdedab75be9a",
-        "20297f7c-2f8d-4d68-89d6-d3b343aec9e4",
-        "d67b92d8-96d6-4b5c-b6c1-2c6376f0e4df"
-      ],
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/92937716-ec73-4504-8582-d79ced154a92"
-    },
-    {
-      "id": "9c34ecc4-7c33-4125-b42c-42cfacc29e31",
-      "slug": "kommunikations-services-9c34ec",
-      "name": "Kommunikations-Services",
-      "description": null,
-      "serviceIds": [
-        "8e50bcc5-82b1-4081-b488-a282c50aeae1",
-        "35da4c55-1a59-4213-9c03-1ba524e26a82",
-        "883c95df-e168-4b53-bfaf-76fbe35f5d90",
-        "aa84a92c-9ec0-4e0c-bb34-ae6a2777cee1",
-        "0c5a87c8-fb4c-4318-b86d-b3ef8a30e016"
-      ],
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9c34ecc4-7c33-4125-b42c-42cfacc29e31"
-    },
-    {
-      "id": "4e223cee-6a0c-4bf7-9216-0ad7cf784c83",
-      "slug": "managed-application-services-4e223c",
-      "name": "Managed Application-Services",
-      "description": null,
-      "serviceIds": [
-        "b50b8915-ecba-4727-83d7-a0de59cf6817",
-        "ba3a4d31-50fd-4cf9-b2f0-5e7b8de5cb2e",
-        "4c4a0bbc-be72-4bb4-9095-68f8f5ad651d",
-        "7aeeaa7e-c97a-4bf0-b5a5-094f3949e028",
-        "ea460f26-cf29-4997-8995-da743c355e44",
-        "e7291ff1-b46b-4cd9-9cd6-132fe1d3b54e",
-        "b8a07967-1ac0-4f72-ae6b-f5a18dcd95b1"
-      ],
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/4e223cee-6a0c-4bf7-9216-0ad7cf784c83"
     },
     {
       "id": "e5a71732-bc39-4e04-8ad9-c0623e63a887",
@@ -73,30 +24,12 @@
       "description": null,
       "serviceIds": [
         "9fbe0c6a-523f-4c6b-bd31-0fe20cb458fb",
-        "34be0167-938b-43a2-89f9-dc56cf9ab759",
-        "a4ea3781-4fda-45dd-9c7c-d4af79e11d83",
-        "9abccc07-99a0-42f1-8184-170e2f53a6c3",
-        "cb408284-7bda-414a-bcf9-c051cee08838",
-        "a3ecfc12-f8fa-4376-9ddf-d12e3032fcd2"
+        "34be0167-938b-43a2-89f9-dc56cf9ab759"
       ],
       "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/e5a71732-bc39-4e04-8ad9-c0623e63a887"
     }
   ],
   "services": [
-    {
-      "id": "9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9",
-      "slug": "service-it-arbeitsplatzinfrastruktur-9e77ad",
-      "name": "Service IT-Arbeitsplatzinfrastruktur",
-      "definition": "Im Rahmen dieses IT-Services werden alle Leistungen erbracht, die für den gesamten Lebenszyklus eines IT-Arbeitsplatzes für den Innen- und Aussendienst, d.h. Bereitstellung, Betrieb, Betreuung und Entsorgung, notwendig sind. Der Service ist eine Grundvoraussetzung für den Zugang zu den Fachanwendungen.",
-      "familyId": "bc3ce89d-44c5-4607-b10e-35a525366d98",
-      "responsible": [],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T12:27:14.302208Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9"
-    },
     {
       "id": "08781d02-a117-4468-b53d-7bb9cdfca3a9",
       "slug": "service-kollaboration-08781d",
@@ -112,408 +45,6 @@
       ],
       "updatedAt": "2026-11-06T15:01:01.953902Z",
       "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/08781d02-a117-4468-b53d-7bb9cdfca3a9"
-    },
-    {
-      "id": "0edf9a68-8389-46af-9023-1f7f93f6c40e",
-      "slug": "service-multifunktionsgeraet-mfg-drucker-0edf9a",
-      "name": "Service Multifunktionsgerät (MFG)/Drucker",
-      "definition": "Beschaffung, Betrieb und Support Druckerfunktionalität von Multifunktionsgeräten und Druckern",
-      "familyId": "bc3ce89d-44c5-4607-b10e-35a525366d98",
-      "responsible": [
-        {
-          "id": "a1460f6d-7ac3-4880-b059-b8d6bb9cbcd9",
-          "name": "Zentrale Dienste",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Zentrale Dienste"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:05.263237Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/0edf9a68-8389-46af-9023-1f7f93f6c40e"
-    },
-    {
-      "id": "52f0e9c4-841c-4412-8e1e-f88b557f0ecf",
-      "slug": "service-so-workplace-52f0e9",
-      "name": "Service SO!Workplace",
-      "definition": "Im Rahmen dieses IT-Services werden alle Leistungen erbracht, die für den gesamten Lebenszyklus eines IT-Arbeitsplatzes für den Innen- und Aussendienst, d.h. Bereitstellung, Betrieb, Betreuung und Entsorgung, notwendig sind. Der Service ist eine Grundvoraussetzung für den Zugang zu den Fachanwendungen.",
-      "familyId": "bc3ce89d-44c5-4607-b10e-35a525366d98",
-      "responsible": [
-        {
-          "id": "6c618db7-840d-4735-95d7-3917b0bf5b28",
-          "name": "Service-Management",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Service-Management"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T12:52:14.465950Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/52f0e9c4-841c-4412-8e1e-f88b557f0ecf"
-    },
-    {
-      "id": "21017880-4361-4e28-8550-c62cfea12d01",
-      "slug": "service-telefonie-210178",
-      "name": "Service Telefonie",
-      "definition": "Bereitstellung der Infrastruktur und Sicherstellung des Betriebs der Telefonieinfrastruktur.\n• Bereitstellung Telefonanschluss Telefoniedienst am Arbeitsplatz und mobil analog oder digital TVA\n• Telefonapparat, Voice-Mail, Web basierende Telefonieunterstützung, Mobile Integration One Number,\nCall Center Funktionen\n• Betrieb und Unterhalt der TVA nach Standard SLA\n• Erstellen und Pflege des Telefonverzeichnisses inkl. Publikation im Intranet\n• Mutationen der Teilnehmerverwaltung im Rahmen der natürlichen Fluktuation, Reorganisationen und\nUmzügen\n• Schulungen (nur auf Anfrage)",
-      "familyId": "bc3ce89d-44c5-4607-b10e-35a525366d98",
-      "responsible": [
-        {
-          "id": "0381e8d3-264f-4352-ac74-5c71aa5fe92a",
-          "name": "Telematik",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Technische Services / Telematik"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:04.969447Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/21017880-4361-4e28-8550-c62cfea12d01"
-    },
-    {
-      "id": "e0992c2e-e8d4-405c-b1b3-524c06f200dd",
-      "slug": "service-domain-e0992c",
-      "name": "Service Domain",
-      "definition": "Bewirtschaftung aller Domains der kantonalen Verwaltung.\nTop-Level-Domains werden aus Kostengründen keine mehr erstellt oder bestehende umbenennt (xxx.so.ch)!\n\nDie Verwaltung der Domains erfolgt über my.metanet und SwissSign.",
-      "familyId": "92937716-ec73-4504-8582-d79ced154a92",
-      "responsible": [
-        {
-          "id": "4d7da475-f54a-40b5-beb3-035e55e87670",
-          "name": "Business IT-Services",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:03:49.549056Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/e0992c2e-e8d4-405c-b1b3-524c06f200dd"
-    },
-    {
-      "id": "1e9f592b-7d37-4bb0-be51-0cce3e98e2d3",
-      "slug": "service-fernzugriffe-1e9f59",
-      "name": "Service Fernzugriffe",
-      "definition": "Bietet die Möglichkeit via VPN über einen verschlüsselten Kanal auf Systeme in der Verwaltung zuzugreifen.",
-      "familyId": "92937716-ec73-4504-8582-d79ced154a92",
-      "responsible": [
-        {
-          "id": "c1aa4c21-c448-4b42-8dfd-9c2905579f51",
-          "name": "Plattform",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Technische Services / Plattform"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:04.451407Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/1e9f592b-7d37-4bb0-be51-0cce3e98e2d3"
-    },
-    {
-      "id": "5549b615-df89-46a4-a7c9-f32e06072beb",
-      "slug": "service-identity-and-access-management-iam-5549b6",
-      "name": "Service Identity and Access Management (IAM)",
-      "definition": "Bereitstellung der Infrastruktur für das IAM (Identity und Access Management) zu allen verfügbaren Systemen und Prüfung der Identität der Zugriffsberechtigten.",
-      "familyId": "92937716-ec73-4504-8582-d79ced154a92",
-      "responsible": [],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T12:27:14.493437Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/5549b615-df89-46a4-a7c9-f32e06072beb"
-    },
-    {
-      "id": "9fdce7b6-0d18-48c3-b3a2-bdedab75be9a",
-      "slug": "service-it-infrastruktur-und-virtualisierung-9fdce7",
-      "name": "Service IT-Infrastruktur und Virtualisierung",
-      "definition": "Bereitstellung von Hardware und Software für den gesamten Betrieb inkl. Virtuellen Umgebungen.",
-      "familyId": "92937716-ec73-4504-8582-d79ced154a92",
-      "responsible": [
-        {
-          "id": "c1aa4c21-c448-4b42-8dfd-9c2905579f51",
-          "name": "Plattform",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Technische Services / Plattform"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:04.449461Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9fdce7b6-0d18-48c3-b3a2-bdedab75be9a"
-    },
-    {
-      "id": "20297f7c-2f8d-4d68-89d6-d3b343aec9e4",
-      "slug": "service-netzwerkinfrastruktur-20297f",
-      "name": "Service Netzwerkinfrastruktur",
-      "definition": "Bereitstellung und Unterhalt sämtlicher Netzwerke und Netzwerkinfrastrukturen.",
-      "familyId": "92937716-ec73-4504-8582-d79ced154a92",
-      "responsible": [
-        {
-          "id": "0381e8d3-264f-4352-ac74-5c71aa5fe92a",
-          "name": "Telematik",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Technische Services / Telematik"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:04.968380Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/20297f7c-2f8d-4d68-89d6-d3b343aec9e4"
-    },
-    {
-      "id": "d67b92d8-96d6-4b5c-b6c1-2c6376f0e4df",
-      "slug": "service-public-key-infrastructure-und-zertifikate-d67b92",
-      "name": "Service Public Key Infrastructure und Zertifikate",
-      "definition": "Bereitstellen einer PKI (Public Key Infrastructure) Keys und Zertifikaten.",
-      "familyId": "92937716-ec73-4504-8582-d79ced154a92",
-      "responsible": [
-        {
-          "id": "6c618db7-840d-4735-95d7-3917b0bf5b28",
-          "name": "Service-Management",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Service-Management"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:03.625972Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/d67b92d8-96d6-4b5c-b6c1-2c6376f0e4df"
-    },
-    {
-      "id": "8e50bcc5-82b1-4081-b488-a282c50aeae1",
-      "slug": "service-datentransfer-8e50bc",
-      "name": "Service Datentransfer",
-      "definition": "Sicherer Transfer von Daten bereitstellen.",
-      "familyId": "9c34ecc4-7c33-4125-b42c-42cfacc29e31",
-      "responsible": [
-        {
-          "id": "6c618db7-840d-4735-95d7-3917b0bf5b28",
-          "name": "Service-Management",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Service-Management"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:03.623495Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/8e50bcc5-82b1-4081-b488-a282c50aeae1"
-    },
-    {
-      "id": "35da4c55-1a59-4213-9c03-1ba524e26a82",
-      "slug": "service-kollaboration-35da4c",
-      "name": "Service Kollaboration",
-      "definition": "Der Service bietet MS Teams als globales Kollaboration Werkzeug an.",
-      "familyId": "9c34ecc4-7c33-4125-b42c-42cfacc29e31",
-      "responsible": [
-        {
-          "id": "c1aa4c21-c448-4b42-8dfd-9c2905579f51",
-          "name": "Plattform",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Technische Services / Plattform"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:04.452431Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/35da4c55-1a59-4213-9c03-1ba524e26a82"
-    },
-    {
-      "id": "883c95df-e168-4b53-bfaf-76fbe35f5d90",
-      "slug": "service-messaging-883c95",
-      "name": "Service Messaging",
-      "definition": "Betrieb und Unterhalt von MS-Exchange als strategische Kommunikationsplattform «E-Mail».",
-      "familyId": "9c34ecc4-7c33-4125-b42c-42cfacc29e31",
-      "responsible": [
-        {
-          "id": "c1aa4c21-c448-4b42-8dfd-9c2905579f51",
-          "name": "Plattform",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Technische Services / Plattform"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:04.448332Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/883c95df-e168-4b53-bfaf-76fbe35f5d90"
-    },
-    {
-      "id": "aa84a92c-9ec0-4e0c-bb34-ae6a2777cee1",
-      "slug": "service-mobile-aa84a9",
-      "name": "Service Mobile",
-      "definition": "Bereitstellen der Infrastruktur für mobile Geräte. Im Wesentlichen durch die Provider Swisscom & Sunrise.",
-      "familyId": "9c34ecc4-7c33-4125-b42c-42cfacc29e31",
-      "responsible": [
-        {
-          "id": "0381e8d3-264f-4352-ac74-5c71aa5fe92a",
-          "name": "Telematik",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Technische Services / Telematik"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:04.966307Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/aa84a92c-9ec0-4e0c-bb34-ae6a2777cee1"
-    },
-    {
-      "id": "0c5a87c8-fb4c-4318-b86d-b3ef8a30e016",
-      "slug": "service-sms-0c5a87",
-      "name": "Service SMS",
-      "definition": "Es werden verschiedene SMS Service eingesetzt. Zum einen abhängig von der Applikationsanbindung zum andern als Backup bei einem Ausfall.",
-      "familyId": "9c34ecc4-7c33-4125-b42c-42cfacc29e31",
-      "responsible": [
-        {
-          "id": "6c618db7-840d-4735-95d7-3917b0bf5b28",
-          "name": "Service-Management",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Service-Management"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:03.626801Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/0c5a87c8-fb4c-4318-b86d-b3ef8a30e016"
-    },
-    {
-      "id": "b50b8915-ecba-4727-83d7-a0de59cf6817",
-      "slug": "service-dokumentenmanagement-b50b89",
-      "name": "Service Dokumentenmanagement",
-      "definition": "Der Service bietet eine zeitgemässe Infrastruktur, um Dokumentverwaltungssysteme nutzen zu können.",
-      "familyId": "4e223cee-6a0c-4bf7-9216-0ad7cf784c83",
-      "responsible": [],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T12:27:14.876977Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/b50b8915-ecba-4727-83d7-a0de59cf6817"
-    },
-    {
-      "id": "ba3a4d31-50fd-4cf9-b2f0-5e7b8de5cb2e",
-      "slug": "service-egovportal-ba3a4d",
-      "name": "Service eGovPortal",
-      "definition": "Portal für den Zugang zu kantonalen Leistungen. \nApplikationsintegration ins Portal.",
-      "familyId": "4e223cee-6a0c-4bf7-9216-0ad7cf784c83",
-      "responsible": [
-        {
-          "id": "106676ed-4027-471e-8a94-2706086fc2c3",
-          "name": "E-Channel Management",
-          "path": "Staatskanzlei (STK) / Kompetenzzentrum Digitale Verwaltung / E-Channel Management"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:05.576815Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/ba3a4d31-50fd-4cf9-b2f0-5e7b8de5cb2e"
-    },
-    {
-      "id": "4c4a0bbc-be72-4bb4-9095-68f8f5ad651d",
-      "slug": "service-fachanwendungen-4c4a0b",
-      "name": "Service Fachanwendungen",
-      "definition": "Spezifische Anwendungen in verschiedenen Bereichen.",
-      "familyId": "4e223cee-6a0c-4bf7-9216-0ad7cf784c83",
-      "responsible": [
-        {
-          "id": "6c618db7-840d-4735-95d7-3917b0bf5b28",
-          "name": "Service-Management",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Service-Management"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:03.628188Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/4c4a0bbc-be72-4bb4-9095-68f8f5ad651d"
-    },
-    {
-      "id": "7aeeaa7e-c97a-4bf0-b5a5-094f3949e028",
-      "slug": "service-geschaeftsverwaltung-7aeeaa",
-      "name": "Service Geschäftsverwaltung",
-      "definition": "Die elektronische Geschäftsverwaltung (GEVER) ermöglicht den einheitlichen und wirtschaftlichen Umgang mit Informationen. Die Mitarbeitenden der Verwaltung können damit ihre Arbeit nachvollziehbar und rechtskonform dokumentieren.",
-      "familyId": "4e223cee-6a0c-4bf7-9216-0ad7cf784c83",
-      "responsible": [
-        {
-          "id": "66ddddf0-2408-4784-b638-f074f47ac2a2",
-          "name": "Fachstelle GEVER",
-          "path": "Staatskanzlei (STK) / Kompetenzzentrum Digitale Verwaltung / Geschäftsarchitektur & strategische Projekte / Fachstelle GEVER"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:05.839108Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/7aeeaa7e-c97a-4bf0-b5a5-094f3949e028"
-    },
-    {
-      "id": "ea460f26-cf29-4997-8995-da743c355e44",
-      "slug": "service-webformulare-ea460f",
-      "name": "Service Webformulare",
-      "definition": "Erstellen, Bereitstellen und Aktualisieren von Online Webformulare (aforms Formulare - AFS ), Verwaltung des Antragspostfachs für die Datenverarbeitung der eingegangene Anträge.\n\n(Der Service beinhaltet keine TYPO3-Formulare.)",
-      "familyId": "4e223cee-6a0c-4bf7-9216-0ad7cf784c83",
-      "responsible": [
-        {
-          "id": "106676ed-4027-471e-8a94-2706086fc2c3",
-          "name": "E-Channel Management",
-          "path": "Staatskanzlei (STK) / Kompetenzzentrum Digitale Verwaltung / E-Channel Management"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:05.577818Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/ea460f26-cf29-4997-8995-da743c355e44"
-    },
-    {
-      "id": "e7291ff1-b46b-4cd9-9cd6-132fe1d3b54e",
-      "slug": "service-zahlungsloesungen-e7291f",
-      "name": "Service Zahlungslösungen",
-      "definition": "Bereitstellung und Unterhalt von Zahlungslösungen.",
-      "familyId": "4e223cee-6a0c-4bf7-9216-0ad7cf784c83",
-      "responsible": [
-        {
-          "id": "42684612-ed03-468b-879f-e58bf67fa7ba",
-          "name": "Integration & Entwicklung",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Integration & Entwicklung"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:02.819920Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/e7291ff1-b46b-4cd9-9cd6-132fe1d3b54e"
-    },
-    {
-      "id": "b8a07967-1ac0-4f72-ae6b-f5a18dcd95b1",
-      "slug": "service-zutrittsverwaltung-b8a079",
-      "name": "Service Zutrittsverwaltung",
-      "definition": "Zutritte werden elektronisch zugewiesen und können physisch über einen Batch benutzt werden. Zutritte könne hinzugefügt oder entfernt werden.",
-      "familyId": "4e223cee-6a0c-4bf7-9216-0ad7cf784c83",
-      "responsible": [],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T12:27:14.877866Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/b8a07967-1ac0-4f72-ae6b-f5a18dcd95b1"
     },
     {
       "id": "9fbe0c6a-523f-4c6b-bd31-0fe20cb458fb",
@@ -562,86 +93,6 @@
       ],
       "updatedAt": "2026-11-06T14:56:06.949906Z",
       "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/34be0167-938b-43a2-89f9-dc56cf9ab759"
-    },
-    {
-      "id": "a4ea3781-4fda-45dd-9c7c-d4af79e11d83",
-      "slug": "service-it-support-a4ea37",
-      "name": "Service IT-Support",
-      "definition": null,
-      "familyId": "e5a71732-bc39-4e04-8ad9-c0623e63a887",
-      "responsible": [
-        {
-          "id": "6c618db7-840d-4735-95d7-3917b0bf5b28",
-          "name": "Service-Management",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Service-Management"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:03.624390Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/a4ea3781-4fda-45dd-9c7c-d4af79e11d83"
-    },
-    {
-      "id": "9abccc07-99a0-42f1-8184-170e2f53a6c3",
-      "slug": "service-penetrationstesting-9abccc",
-      "name": "Service Penetrationstesting",
-      "definition": "Pentera bietet eine Plattform für automatisierte Penetrationstests, die dazu dient, die Schwachstellen in einem Netzwerk oder einer Infrastruktur zu identifizieren. Im Gegensatz zu traditionellen Penetrationstests, die oft manuell durchgeführt werden und je nach Umfang zeitaufwendig sind, automatisiert Pentera den Prozess, sodass periodisch die Sicherheit überprüft wird. Diese Tests umfassen:\n\n- Penetrationstest auf die Kantonale Infrastruktur\n- Schwachstellenbewertung\n- Exploitsimulation\n- Kennwort Stärke Analyse\n\nDie Plattform simuliert, wie ein echter Angreifer vorgehen würde, um Schwachstellen auszunutzen, und liefert umfassende Berichte über die gefundenen Sicherheitslücken.\n\nAusserdem hilft die Lösung von Pentera den Kanton auch dabei, ihre Compliance-Vorgaben zu erfüllen, indem sie detaillierte Berichte über die durchgeführten Tests und identifizierten Schwachstellen bereitstellt. Dies ist besonders wichtig für den Kanton, die Sicherheitsanforderungen nach ISO27001 oder Vorschriften wie GDPR, PCI-DSS oder HIPAA unterliegen.",
-      "familyId": "e5a71732-bc39-4e04-8ad9-c0623e63a887",
-      "responsible": [
-        {
-          "id": "7595bc7b-5078-4db8-bd18-bacdbaf0b276",
-          "name": "Management Systeme & GRC",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Management Systeme & GRC"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:03.924171Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9abccc07-99a0-42f1-8184-170e2f53a6c3"
-    },
-    {
-      "id": "cb408284-7bda-414a-bcf9-c051cee08838",
-      "slug": "service-schulung-cb4082",
-      "name": "Service Schulung",
-      "definition": "Das AIO bietet verschiedene Informatikkurse an.",
-      "familyId": "e5a71732-bc39-4e04-8ad9-c0623e63a887",
-      "responsible": [
-        {
-          "id": "6c618db7-840d-4735-95d7-3917b0bf5b28",
-          "name": "Service-Management",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Service-Management"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:03.625193Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/cb408284-7bda-414a-bcf9-c051cee08838"
-    },
-    {
-      "id": "a3ecfc12-f8fa-4376-9ddf-d12e3032fcd2",
-      "slug": "service-softwareentwicklung-a3ecfc",
-      "name": "Service Softwareentwicklung",
-      "definition": "Zeitgemässe Softwareentwicklung.",
-      "familyId": "e5a71732-bc39-4e04-8ad9-c0623e63a887",
-      "responsible": [
-        {
-          "id": "42684612-ed03-468b-879f-e58bf67fa7ba",
-          "name": "Integration & Entwicklung",
-          "path": "Finanzdepartement (FD) / Amt für Informatik und Organisation (AIO) / Business IT-Services / Integration & Entwicklung"
-        }
-      ],
-      "persons": [],
-      "actions": [],
-      "links": [],
-      "leistungIds": [],
-      "updatedAt": "2026-11-06T13:05:02.818944Z",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/a3ecfc12-f8fa-4376-9ddf-d12e3032fcd2"
     }
   ],
   "leistungen": [
@@ -809,7 +260,7 @@
       "subtype": "verwaltungsleistung",
       "subtypeLabel": "Verwaltungsleistung",
       "summary": "Weitere Personen zu einem laufenden Mitwirkungsverfahren Ihrer Dienststelle hinzufügen.",
-      "description": "Weitere Personen zu einem laufenden Mitwirkungsverfahren Ihrer Dienststelle hinzufügen.\n\n**Beschreibung:**\\\nSollen weitere Mitarbeitende an einem bestehenden Verfahren mitarbeiten, beantragen Sie hier ihren persönlichen Zugang. Sie geben an, um welches Verfahren es geht und wer Zugang erhalten soll. Die Person kann danach Stellungnahmen einsehen und bei der Auswertung mitwirken. Das AIO richtet den Zugang ein.\n\n**Gut zu wissen:** Für ein neues Verfahren brauchen Sie diesen Service nicht. Beantragen Sie stattdessen ein [digitales Mitwirkungsverfahren](https://ktso.leanix.net/eamktsosandbox/portals/Leistungen?transientUser=true#state=5f52fd6d-3ccd-4d51-8aca-984b4f61c5bb&session_state=TV2NdWWU7s75h8j1q8nn-TP5&iss=https://ch-signin.leanix.net/realms/service-provider&code=df7c2c8f-8fc9-08cc-3984-e021639057cb.TV2NdWWU7s75h8j1q8nn-TP5.317ce67f-06e0-4eba-b95e-a24e61726b4f), Ihr eigener Zugang ist darin enthalten.\n\n**Vorgehen**: Informieren Sie Ihren KICK, dass er über das ky2help einen Personenberechtigungsantrag erstellen soll.",
+      "description": "Weitere Personen zu einem laufenden Mitwirkungsverfahren Ihrer Dienststelle hinzufügen.\n\n**Beschreibung:**\\\nSollen weitere Mitarbeitende an einem bestehenden Verfahren mitarbeiten, beantragen Sie hier ihren persönlichen Zugang. Sie geben an, um welches Verfahren es geht und wer Zugang erhalten soll. Die Person kann danach Stellungnahmen einsehen und bei der Auswertung mitwirken. Das AIO richtet den Zugang ein.\n\n**Gut zu wissen:** Für ein neues Verfahren brauchen Sie diesen Service nicht. Beantragen Sie stattdessen ein [digitales Mitwirkungsverfahren](https://ktso.leanix.net/eamktsosandbox/portals/Leistungen?transientUser=true), Ihr eigener Zugang ist darin enthalten.\n\n**Vorgehen**: Informieren Sie Ihren KICK, dass er über das ky2help einen Personenberechtigungsantrag erstellen soll.",
       "serviceIds": [
         "9fbe0c6a-523f-4c6b-bd31-0fe20cb458fb"
       ],
@@ -828,12 +279,291 @@
   "issues": [
     {
       "severity": "warning",
+      "code": "DUPLICATE_DESCRIPTION",
+      "message": "Beschreibung identisch mit dem Service «Business IT-Servicekatalog / Arbeitsplatz-Services / Service SO!Workplace» (https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/52f0e9c4-841c-4412-8e1e-f88b557f0ecf). Vermutlich kopiert: Text in LeanIX prüfen.",
+      "factSheetId": "9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9",
+      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service IT-Arbeitsplatzinfrastruktur",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9",
+      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service IT-Arbeitsplatzinfrastruktur",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "0edf9a68-8389-46af-9023-1f7f93f6c40e",
+      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service Multifunktionsgerät (MFG)/Drucker",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/0edf9a68-8389-46af-9023-1f7f93f6c40e"
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_DESCRIPTION",
+      "message": "Beschreibung identisch mit dem Service «Business IT-Servicekatalog / Arbeitsplatz-Services / Service IT-Arbeitsplatzinfrastruktur» (https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9). Vermutlich kopiert: Text in LeanIX prüfen.",
+      "factSheetId": "52f0e9c4-841c-4412-8e1e-f88b557f0ecf",
+      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service SO!Workplace",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/52f0e9c4-841c-4412-8e1e-f88b557f0ecf"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "52f0e9c4-841c-4412-8e1e-f88b557f0ecf",
+      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service SO!Workplace",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/52f0e9c4-841c-4412-8e1e-f88b557f0ecf"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "21017880-4361-4e28-8550-c62cfea12d01",
+      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service Telefonie",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/21017880-4361-4e28-8550-c62cfea12d01"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "e0992c2e-e8d4-405c-b1b3-524c06f200dd",
+      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Domain",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/e0992c2e-e8d4-405c-b1b3-524c06f200dd"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "1e9f592b-7d37-4bb0-be51-0cce3e98e2d3",
+      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Fernzugriffe",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/1e9f592b-7d37-4bb0-be51-0cce3e98e2d3"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "5549b615-df89-46a4-a7c9-f32e06072beb",
+      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Identity and Access Management (IAM)",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/5549b615-df89-46a4-a7c9-f32e06072beb"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "9fdce7b6-0d18-48c3-b3a2-bdedab75be9a",
+      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service IT-Infrastruktur und Virtualisierung",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9fdce7b6-0d18-48c3-b3a2-bdedab75be9a"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "20297f7c-2f8d-4d68-89d6-d3b343aec9e4",
+      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Netzwerkinfrastruktur",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/20297f7c-2f8d-4d68-89d6-d3b343aec9e4"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "d67b92d8-96d6-4b5c-b6c1-2c6376f0e4df",
+      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Public Key Infrastructure und Zertifikate",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/d67b92d8-96d6-4b5c-b6c1-2c6376f0e4df"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "8e50bcc5-82b1-4081-b488-a282c50aeae1",
+      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service Datentransfer",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/8e50bcc5-82b1-4081-b488-a282c50aeae1"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "35da4c55-1a59-4213-9c03-1ba524e26a82",
+      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service Kollaboration",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/35da4c55-1a59-4213-9c03-1ba524e26a82"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "883c95df-e168-4b53-bfaf-76fbe35f5d90",
+      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service Messaging",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/883c95df-e168-4b53-bfaf-76fbe35f5d90"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "aa84a92c-9ec0-4e0c-bb34-ae6a2777cee1",
+      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service Mobile",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/aa84a92c-9ec0-4e0c-bb34-ae6a2777cee1"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "0c5a87c8-fb4c-4318-b86d-b3ef8a30e016",
+      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service SMS",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/0c5a87c8-fb4c-4318-b86d-b3ef8a30e016"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "b50b8915-ecba-4727-83d7-a0de59cf6817",
+      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Dokumentenmanagement",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/b50b8915-ecba-4727-83d7-a0de59cf6817"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "ba3a4d31-50fd-4cf9-b2f0-5e7b8de5cb2e",
+      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service eGovPortal",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/ba3a4d31-50fd-4cf9-b2f0-5e7b8de5cb2e"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "4c4a0bbc-be72-4bb4-9095-68f8f5ad651d",
+      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Fachanwendungen",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/4c4a0bbc-be72-4bb4-9095-68f8f5ad651d"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "7aeeaa7e-c97a-4bf0-b5a5-094f3949e028",
+      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Geschäftsverwaltung",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/7aeeaa7e-c97a-4bf0-b5a5-094f3949e028"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "ea460f26-cf29-4997-8995-da743c355e44",
+      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Webformulare",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/ea460f26-cf29-4997-8995-da743c355e44"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "e7291ff1-b46b-4cd9-9cd6-132fe1d3b54e",
+      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Zahlungslösungen",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/e7291ff1-b46b-4cd9-9cd6-132fe1d3b54e"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "b8a07967-1ac0-4f72-ae6b-f5a18dcd95b1",
+      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Zutrittsverwaltung",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/b8a07967-1ac0-4f72-ae6b-f5a18dcd95b1"
+    },
+    {
+      "severity": "warning",
+      "code": "DESCRIPTION_INSECURE_LINK",
+      "message": "Beschreibung enthält unverschlüsselte Links (http) auf mitwirken.so.ch. Bitte auf https umstellen.",
+      "factSheetId": "9fbe0c6a-523f-4c6b-bd31-0fe20cb458fb",
+      "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Digitales Mitwirkungsverfahren",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9fbe0c6a-523f-4c6b-bd31-0fe20cb458fb"
+    },
+    {
+      "severity": "warning",
       "code": "SERVICE_WITHOUT_DEFINITION",
       "message": "Service hat keine Beschreibung (Service-Definition).",
       "factSheetId": "a4ea3781-4fda-45dd-9c7c-d4af79e11d83",
       "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Service IT-Support",
       "factSheetType": "Leistungskategorie",
       "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/a4ea3781-4fda-45dd-9c7c-d4af79e11d83"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "a4ea3781-4fda-45dd-9c7c-d4af79e11d83",
+      "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Service IT-Support",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/a4ea3781-4fda-45dd-9c7c-d4af79e11d83"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "9abccc07-99a0-42f1-8184-170e2f53a6c3",
+      "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Service Penetrationstesting",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9abccc07-99a0-42f1-8184-170e2f53a6c3"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "cb408284-7bda-414a-bcf9-c051cee08838",
+      "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Service Schulung",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/cb408284-7bda-414a-bcf9-c051cee08838"
+    },
+    {
+      "severity": "warning",
+      "code": "SERVICE_WITHOUT_LEISTUNG",
+      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "a3ecfc12-f8fa-4376-9ddf-d12e3032fcd2",
+      "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Service Softwareentwicklung",
+      "factSheetType": "Leistungskategorie",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/a3ecfc12-f8fa-4376-9ddf-d12e3032fcd2"
+    },
+    {
+      "severity": "warning",
+      "code": "DESCRIPTION_INSECURE_LINK",
+      "message": "Beschreibung enthält unverschlüsselte Links (http) auf mitwirken.so.ch. Bitte auf https umstellen.",
+      "factSheetId": "2f483a4f-bb12-428e-b620-47bd23fcab86",
+      "factSheetName": "Digitale Mitwirkungs- und Vernehmlassungsverfahren starten",
+      "factSheetType": "behoerdenLeistungen",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/behoerdenLeistungen/2f483a4f-bb12-428e-b620-47bd23fcab86"
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_DESCRIPTION",
+      "message": "Beschreibung identisch mit der Leistung «SO!Desk Teamadministrator festlegen» (https://ktso.leanix.net/eamktsoLive/factsheet/behoerdenLeistungen/a0456a21-9599-43ee-8e4c-1e5338548381). Vermutlich kopiert: Text in LeanIX prüfen.",
+      "factSheetId": "2f483a4f-bb12-428e-b620-47bd23fcab86",
+      "factSheetName": "Digitale Mitwirkungs- und Vernehmlassungsverfahren starten",
+      "factSheetType": "behoerdenLeistungen",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/behoerdenLeistungen/2f483a4f-bb12-428e-b620-47bd23fcab86"
     },
     {
       "severity": "warning",
@@ -861,6 +591,15 @@
       "factSheetName": "eLearning Inhalte selbständig erstellen",
       "factSheetType": "behoerdenLeistungen",
       "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/behoerdenLeistungen/8106b084-6172-4bb2-9165-91fb7bdaf274"
+    },
+    {
+      "severity": "warning",
+      "code": "DESCRIPTION_INSECURE_LINK",
+      "message": "Beschreibung enthält unverschlüsselte Links (http) auf lernwelt.so.ch. Bitte auf https umstellen.",
+      "factSheetId": "22d00340-50d6-440d-ba1f-f8bf4eccc9e4",
+      "factSheetName": "eLearning Publisher Ausbildung absolvieren",
+      "factSheetType": "behoerdenLeistungen",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/behoerdenLeistungen/22d00340-50d6-440d-ba1f-f8bf4eccc9e4"
     },
     {
       "severity": "warning",
@@ -918,6 +657,24 @@
     },
     {
       "severity": "warning",
+      "code": "DESCRIPTION_INSECURE_LINK",
+      "message": "Beschreibung enthält unverschlüsselte Links (http) auf mitwirken.so.ch. Bitte auf https umstellen.",
+      "factSheetId": "a0456a21-9599-43ee-8e4c-1e5338548381",
+      "factSheetName": "SO!Desk Teamadministrator festlegen",
+      "factSheetType": "behoerdenLeistungen",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/behoerdenLeistungen/a0456a21-9599-43ee-8e4c-1e5338548381"
+    },
+    {
+      "severity": "warning",
+      "code": "DUPLICATE_DESCRIPTION",
+      "message": "Beschreibung identisch mit der Leistung «Digitale Mitwirkungs- und Vernehmlassungsverfahren starten» (https://ktso.leanix.net/eamktsoLive/factsheet/behoerdenLeistungen/2f483a4f-bb12-428e-b620-47bd23fcab86). Vermutlich kopiert: Text in LeanIX prüfen.",
+      "factSheetId": "a0456a21-9599-43ee-8e4c-1e5338548381",
+      "factSheetName": "SO!Desk Teamadministrator festlegen",
+      "factSheetType": "behoerdenLeistungen",
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/behoerdenLeistungen/a0456a21-9599-43ee-8e4c-1e5338548381"
+    },
+    {
+      "severity": "warning",
       "code": "LEISTUNG_WITHOUT_RESPONSIBLE",
       "message": "Leistung hat keine verantwortliche Organisationseinheit.",
       "factSheetId": "a0456a21-9599-43ee-8e4c-1e5338548381",
@@ -954,237 +711,30 @@
     },
     {
       "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9",
-      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service IT-Arbeitsplatzinfrastruktur",
+      "code": "FAMILY_WITHOUT_LEISTUNG",
+      "message": "Service-Familie hat keinen Service mit Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "92937716-ec73-4504-8582-d79ced154a92",
+      "factSheetName": "Business IT-Servicekatalog / Backend-Services",
       "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9e77adf3-0ce7-4aa7-be32-bbbfc19e05d9"
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/92937716-ec73-4504-8582-d79ced154a92"
     },
     {
       "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "0edf9a68-8389-46af-9023-1f7f93f6c40e",
-      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service Multifunktionsgerät (MFG)/Drucker",
+      "code": "FAMILY_WITHOUT_LEISTUNG",
+      "message": "Service-Familie hat keinen Service mit Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "9c34ecc4-7c33-4125-b42c-42cfacc29e31",
+      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services",
       "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/0edf9a68-8389-46af-9023-1f7f93f6c40e"
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9c34ecc4-7c33-4125-b42c-42cfacc29e31"
     },
     {
       "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "52f0e9c4-841c-4412-8e1e-f88b557f0ecf",
-      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service SO!Workplace",
+      "code": "FAMILY_WITHOUT_LEISTUNG",
+      "message": "Service-Familie hat keinen Service mit Leistung im Kanal «Business IT-Servicekatalog» und wird nicht im Portal angezeigt.",
+      "factSheetId": "4e223cee-6a0c-4bf7-9216-0ad7cf784c83",
+      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services",
       "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/52f0e9c4-841c-4412-8e1e-f88b557f0ecf"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "21017880-4361-4e28-8550-c62cfea12d01",
-      "factSheetName": "Business IT-Servicekatalog / Arbeitsplatz-Services / Service Telefonie",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/21017880-4361-4e28-8550-c62cfea12d01"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "e0992c2e-e8d4-405c-b1b3-524c06f200dd",
-      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Domain",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/e0992c2e-e8d4-405c-b1b3-524c06f200dd"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "1e9f592b-7d37-4bb0-be51-0cce3e98e2d3",
-      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Fernzugriffe",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/1e9f592b-7d37-4bb0-be51-0cce3e98e2d3"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "5549b615-df89-46a4-a7c9-f32e06072beb",
-      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Identity and Access Management (IAM)",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/5549b615-df89-46a4-a7c9-f32e06072beb"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "9fdce7b6-0d18-48c3-b3a2-bdedab75be9a",
-      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service IT-Infrastruktur und Virtualisierung",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9fdce7b6-0d18-48c3-b3a2-bdedab75be9a"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "20297f7c-2f8d-4d68-89d6-d3b343aec9e4",
-      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Netzwerkinfrastruktur",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/20297f7c-2f8d-4d68-89d6-d3b343aec9e4"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "d67b92d8-96d6-4b5c-b6c1-2c6376f0e4df",
-      "factSheetName": "Business IT-Servicekatalog / Backend-Services / Service Public Key Infrastructure und Zertifikate",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/d67b92d8-96d6-4b5c-b6c1-2c6376f0e4df"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "8e50bcc5-82b1-4081-b488-a282c50aeae1",
-      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service Datentransfer",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/8e50bcc5-82b1-4081-b488-a282c50aeae1"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "35da4c55-1a59-4213-9c03-1ba524e26a82",
-      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service Kollaboration",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/35da4c55-1a59-4213-9c03-1ba524e26a82"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "883c95df-e168-4b53-bfaf-76fbe35f5d90",
-      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service Messaging",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/883c95df-e168-4b53-bfaf-76fbe35f5d90"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "aa84a92c-9ec0-4e0c-bb34-ae6a2777cee1",
-      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service Mobile",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/aa84a92c-9ec0-4e0c-bb34-ae6a2777cee1"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "0c5a87c8-fb4c-4318-b86d-b3ef8a30e016",
-      "factSheetName": "Business IT-Servicekatalog / Kommunikations-Services / Service SMS",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/0c5a87c8-fb4c-4318-b86d-b3ef8a30e016"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "b50b8915-ecba-4727-83d7-a0de59cf6817",
-      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Dokumentenmanagement",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/b50b8915-ecba-4727-83d7-a0de59cf6817"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "ba3a4d31-50fd-4cf9-b2f0-5e7b8de5cb2e",
-      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service eGovPortal",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/ba3a4d31-50fd-4cf9-b2f0-5e7b8de5cb2e"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "4c4a0bbc-be72-4bb4-9095-68f8f5ad651d",
-      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Fachanwendungen",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/4c4a0bbc-be72-4bb4-9095-68f8f5ad651d"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "7aeeaa7e-c97a-4bf0-b5a5-094f3949e028",
-      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Geschäftsverwaltung",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/7aeeaa7e-c97a-4bf0-b5a5-094f3949e028"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "ea460f26-cf29-4997-8995-da743c355e44",
-      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Webformulare",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/ea460f26-cf29-4997-8995-da743c355e44"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "e7291ff1-b46b-4cd9-9cd6-132fe1d3b54e",
-      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Zahlungslösungen",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/e7291ff1-b46b-4cd9-9cd6-132fe1d3b54e"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "b8a07967-1ac0-4f72-ae6b-f5a18dcd95b1",
-      "factSheetName": "Business IT-Servicekatalog / Managed Application-Services / Service Zutrittsverwaltung",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/b8a07967-1ac0-4f72-ae6b-f5a18dcd95b1"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "a4ea3781-4fda-45dd-9c7c-d4af79e11d83",
-      "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Service IT-Support",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/a4ea3781-4fda-45dd-9c7c-d4af79e11d83"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "9abccc07-99a0-42f1-8184-170e2f53a6c3",
-      "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Service Penetrationstesting",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/9abccc07-99a0-42f1-8184-170e2f53a6c3"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "cb408284-7bda-414a-bcf9-c051cee08838",
-      "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Service Schulung",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/cb408284-7bda-414a-bcf9-c051cee08838"
-    },
-    {
-      "severity": "info",
-      "code": "SERVICE_WITHOUT_LEISTUNG",
-      "message": "Service hat keine Leistung im Kanal «Business IT-Servicekatalog».",
-      "factSheetId": "a3ecfc12-f8fa-4376-9ddf-d12e3032fcd2",
-      "factSheetName": "Business IT-Servicekatalog / Unterstützungs-Services / Service Softwareentwicklung",
-      "factSheetType": "Leistungskategorie",
-      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/a3ecfc12-f8fa-4376-9ddf-d12e3032fcd2"
+      "leanixUrl": "https://ktso.leanix.net/eamktsoLive/factsheet/Leistungskategorie/4e223cee-6a0c-4bf7-9216-0ad7cf784c83"
     },
     {
       "severity": "info",
@@ -1251,11 +801,12 @@
     }
   ],
   "stats": {
-    "families": 5,
-    "services": 29,
+    "families": 2,
+    "services": 3,
     "leistungen": 7,
     "leistungenInChannel": 13,
     "leistungenSkipped": 6,
-    "issues": 47
+    "actions": 0,
+    "issues": 58
   }
 }

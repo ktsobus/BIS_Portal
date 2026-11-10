@@ -40,10 +40,8 @@ export default async function FamilyPage({
   // Alter Slug (z. B. nach Umbenennung in LeanIX): auf den aktuellen umleiten.
   if (family.slug !== slug) redirect(`/kategorie/${family.slug}`)
 
-  const leistungCount = services.reduce(
-    (sum, service) => sum + service.leistungCount,
-    0
-  )
+  // Eindeutig gezählt (eine Leistung kann mehreren Services angehören).
+  const { leistungCount } = family
 
   return (
     <ContentPage

@@ -44,6 +44,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { authClient } from "@/lib/auth-client"
+import { formatDateShort } from "@/lib/format"
 import { errorMessage } from "@/lib/messages"
 import { orpc } from "@/lib/orpc"
 
@@ -60,11 +61,6 @@ const features = tableFeatures({
 })
 
 const helper = createColumnHelper<typeof features, AdminUser>()
-
-const dateFormat = new Intl.DateTimeFormat("de-CH", {
-  dateStyle: "medium",
-  timeZone: "Europe/Zurich",
-})
 
 const emptyUsers: AdminUser[] = []
 
@@ -128,7 +124,7 @@ function buildColumns(currentUserId: string) {
       header: "Erfasst",
       sortFn: "datetime",
       enableGlobalFilter: false,
-      cell: (info) => dateFormat.format(info.getValue()),
+      cell: (info) => formatDateShort(info.getValue()) ?? "–",
     }),
     helper.display({
       id: "actions",

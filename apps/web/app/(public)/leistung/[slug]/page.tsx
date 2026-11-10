@@ -19,8 +19,8 @@ import {
 } from "@/features/catalog/components/info-links"
 import { LeistungGrid } from "@/features/catalog/components/leistung-card"
 import { MarkdownText } from "@/features/catalog/components/markdown"
-import { orgUnitNames } from "@/features/catalog/components/org-units"
 import { Section } from "@/features/catalog/components/section"
+import { NoRequestPathHint } from "@/features/catalog/components/support-contact"
 import { TableOfContents } from "@/features/catalog/components/table-of-contents"
 import { loadFamily, loadLeistung, loadService } from "@/features/catalog/load"
 import { markdownToPlainText, plainExcerpt } from "@/features/catalog/text"
@@ -129,18 +129,11 @@ export default async function LeistungPage({
       <ServiceUseBox
         actions={leistung.actions}
         fallback={
-          <p>
-            Für diese Leistung ist im Portal noch kein Bestell- oder Anfrageweg
-            hinterlegt.{" "}
-            {responsible.length > 0 ? (
-              <>
-                Bitte wenden Sie sich an die verantwortliche Stelle:{" "}
-                <strong>{orgUnitNames(responsible)}</strong>.
-              </>
-            ) : (
-              "Bitte wenden Sie sich an den Service Desk des AIO."
-            )}
-          </p>
+          <NoRequestPathHint
+            message="Für diese Leistung ist im Portal noch kein Bestell- oder Anfrageweg hinterlegt."
+            responsible={responsible}
+            contact={result.data.status.contact}
+          />
         }
       />
 

@@ -1,5 +1,6 @@
 import type { CatalogLink, OrgUnit, Person } from "@workspace/api"
 
+import { safeHref } from "../links"
 import { ActionLinks } from "./action-links"
 import { OrgUnitList, PersonList } from "./org-units"
 
@@ -19,6 +20,8 @@ export function ServiceUseBox({
   fallback: React.ReactNode
 }) {
   const headingId = `${id}-titel`
+  // Nur Aktionen mit erlaubtem Ziel zählen, sonst bliebe die Box leer.
+  const visible = actions.filter((action) => safeHref(action.url))
   return (
     <section
       id={id}
@@ -28,10 +31,10 @@ export function ServiceUseBox({
       <h2 id={headingId} className="type-headline-md">
         Service nutzen
       </h2>
-      {actions.length > 0 ? (
-        <ActionLinks actions={actions} layout="stacked" />
+      {visible.length > 0 ? (
+        <ActionLinks actions={visible} layout="stacked" />
       ) : (
-        <div className="max-w-[60ch]">{fallback}</div>
+        fallback
       )}
     </section>
   )

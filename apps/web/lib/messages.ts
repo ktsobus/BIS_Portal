@@ -46,6 +46,13 @@ const authMessages: Record<string, string> = {
   YOU_ARE_NOT_ALLOWED_TO_CHANGE_USERS_ROLE:
     "Sie dürfen die Rolle dieses Benutzers nicht ändern.",
   CANNOT_CHANGE_OWN_ROLE: "Sie können Ihre eigene Rolle nicht ändern.",
+  LAST_ADMIN: "Das letzte Admin-Konto muss erhalten bleiben.",
+  ROLE_VIA_SET_ROLE_ONLY: "Rollen lassen sich nur über «Rolle ändern» setzen.",
+  INVALID_ROLE: "Diese Rolle gibt es nicht.",
+  SIGN_IN_TEMPORARILY_LOCKED:
+    "Zu viele fehlgeschlagene Anmeldeversuche für dieses Konto. Bitte warten Sie bis zu 15 Minuten und versuchen Sie es dann erneut.",
+  PASSWORD_TOO_SHORT: "Das Passwort muss mindestens 12 Zeichen lang sein.",
+  PASSWORD_TOO_LONG: "Das Passwort darf höchstens 128 Zeichen lang sein.",
   ADMIN_ACCOUNT_LINK_FORBIDDEN:
     "Diese E-Mail-Adresse gehört zu einem Admin-Konto mit Passwort. Bitte melden Sie sich mit dem Passwort an.",
 }

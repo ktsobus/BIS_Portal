@@ -6,11 +6,14 @@ import {
   type CatalogStatus,
   type SyncRun,
 } from "@workspace/api"
-import { desc } from "drizzle-orm"
+import { count, desc, eq } from "drizzle-orm"
 
 import demo from "@/data/demo-catalog.json"
 import { db, schema } from "@/db"
 import { catalogSource, env } from "@/lib/env"
+
+import type { PreviousStats } from "./assess"
+import { migrateSnapshotPayload } from "./snapshot-migrations"
 
 /**
  * Katalog-Store: hält den aktiven Snapshot im Speicher. Seiten lesen nur
@@ -18,7 +21,11 @@ import { catalogSource, env } from "@/lib/env"
  *
  * - Demo-Modus: mitgelieferter Snapshot (`data/demo-catalog.json`).
  * - LeanIX-Modus: Snapshot aus dem Sync; bei leerem Speicher (z. B. nach
- *   einem Neustart) einmalig der neueste Snapshot aus der Datenbank.
+ *   einem Neustart) der neueste gültige Snapshot aus der Datenbank. Ist die
+ *   Datenbank leer, wird sie nach einer Wartezeit erneut abgefragt (eine
+ *   andere Instanz kann inzwischen synchronisiert haben). Zusätzlich gleicht
+ *   der Scheduler den Speicher regelmässig mit der Datenbank ab
+ *   (`refreshFromDb`), damit alle Instanzen denselben Stand zeigen.
  *
  * Der Zustand liegt in `globalThis`, weil Next.js Module mehrfach laden kann
  * (Instrumentation/Scheduler und Routen teilen sonst keinen Cache).
@@ -39,13 +46,20 @@ interface StoreState {
   demo: StoredSnapshot | null
   /** Laufender Ladevorgang aus der DB (gleichzeitige Aufrufe teilen ihn). */
   loading: Promise<StoredSnapshot | null> | null
-  /** DB wurde erfolgreich abgefragt (auch wenn noch kein Snapshot da war). */
-  loadedFromDb: boolean
-  /** Letzter fehlgeschlagener DB-Zugriff (für eine Wartezeit vor dem nächsten). */
-  lastDbError: number | null
+  /**
+   * Letzte DB-Abfrage ohne Ergebnis (leer, ungültig oder Fehler). Vor dem
+   * nächsten Versuch gilt eine Wartezeit, damit nicht jede Anfrage die DB
+   * belastet.
+   */
+  lastMiss: number | null
+  /** Zuletzt in `refreshFromDb` gesehene neueste Zeile (`id|generatedAt`). */
+  lastSeenRow: string | null
 }
 
-const DB_RETRY_AFTER_MS = 30_000
+/** Wartezeit nach einer erfolglosen DB-Abfrage. */
+export const DB_RETRY_AFTER_MS = 30_000
+/** So viele der neuesten Zeilen werden nach einem gültigen Snapshot durchsucht. */
+const CANDIDATE_ROWS = 5
 
 const globalForStore = globalThis as unknown as {
   __bitsCatalogStore?: StoreState
@@ -56,8 +70,8 @@ function state(): StoreState {
     current: null,
     demo: null,
     loading: null,
-    loadedFromDb: false,
-    lastDbError: null,
+    lastMiss: null,
+    lastSeenRow: null,
   }
   return globalForStore.__bitsCatalogStore
 }
@@ -68,45 +82,98 @@ function demoSnapshot(): StoredSnapshot {
   return s.demo
 }
 
-/** Liest den neuesten gültigen Snapshot aus der Datenbank. */
+/** Gespeicherten Payload (ggf. migriert) gegen das aktuelle Schema prüfen. */
+function parseStoredPayload(payload: unknown) {
+  return catalogSnapshotSchema.safeParse(migrateSnapshotPayload(payload))
+}
+
+/**
+ * Liest den neuesten gültigen Snapshot aus der Datenbank. Ältere
+ * Schemaversionen werden migriert; eine einzelne defekte Zeile wird
+ * übersprungen (es zählen die neuesten fünf).
+ */
 export async function loadLatestSnapshotFromDb(): Promise<StoredSnapshot | null> {
+  const candidates = await db
+    .select({ id: schema.catalogSnapshot.id })
+    .from(schema.catalogSnapshot)
+    .orderBy(desc(schema.catalogSnapshot.createdAt))
+    .limit(CANDIDATE_ROWS)
+  for (const { id } of candidates) {
+    const [row] = await db
+      .select({ payload: schema.catalogSnapshot.payload })
+      .from(schema.catalogSnapshot)
+      .where(eq(schema.catalogSnapshot.id, id))
+    if (!row) continue
+    const parsed = parseStoredPayload(row.payload)
+    if (parsed.success) return { id, snapshot: parsed.data }
+    console.error(
+      `[catalog] Snapshot ${id} in der Datenbank ist ungültig (z. B. andere Schemaversion) und wird übersprungen: ${parsed.error.message.slice(0, 300)}`
+    )
+  }
+  return null
+}
+
+export interface LatestSnapshotRecord {
+  id: string
+  /** Kennzahlen der Zeile (Spalte `stats`), auch wenn der Payload ungültig ist. */
+  stats: PreviousStats | null
+  /** Gültiger Snapshot dieser Zeile oder `null` (z. B. andere Schemaversion). */
+  snapshot: CatalogSnapshot | null
+}
+
+function readStats(value: unknown): PreviousStats | null {
+  if (!value || typeof value !== "object") return null
+  const { leistungen, actions } = value as Record<string, unknown>
+  if (typeof leistungen !== "number") return null
+  return typeof actions === "number" ? { leistungen, actions } : { leistungen }
+}
+
+/**
+ * Neueste Zeile für den Vergleich im Sync: Die Plausibilisierung nutzt die
+ * schemaunabhängige Spalte `stats`, damit sie auch nach einem Upgrade mit
+ * neuer Schemaversion greift.
+ */
+export async function loadLatestSnapshotRecord(): Promise<LatestSnapshotRecord | null> {
   const [row] = await db
     .select({
       id: schema.catalogSnapshot.id,
+      stats: schema.catalogSnapshot.stats,
       payload: schema.catalogSnapshot.payload,
     })
     .from(schema.catalogSnapshot)
     .orderBy(desc(schema.catalogSnapshot.createdAt))
     .limit(1)
   if (!row) return null
-  const parsed = catalogSnapshotSchema.safeParse(row.payload)
-  if (!parsed.success) {
-    console.error(
-      `[catalog] Snapshot ${row.id} in der Datenbank ist ungültig und wird ignoriert: ${parsed.error.message.slice(0, 300)}`
-    )
-    return null
+  const parsed = parseStoredPayload(row.payload)
+  return {
+    id: row.id,
+    stats: readStats(row.stats),
+    snapshot: parsed.success ? parsed.data : null,
   }
-  return { id: row.id, snapshot: parsed.data }
 }
 
-/** Aktiver Snapshot im LeanIX-Modus (Speicher, sonst einmalig aus der DB). */
+/** Anzahl gespeicherter Snapshots (für den Admin-Bereich). */
+export async function countStoredSnapshots(): Promise<number> {
+  const [row] = await db.select({ value: count() }).from(schema.catalogSnapshot)
+  return row?.value ?? 0
+}
+
+/** Aktiver Snapshot im LeanIX-Modus (Speicher, sonst aus der DB). */
 async function currentLeanixSnapshot(): Promise<StoredSnapshot | null> {
   const s = state()
   if (s.current) return s.current
-  if (s.loadedFromDb) return null
-  if (s.lastDbError && Date.now() - s.lastDbError < DB_RETRY_AFTER_MS)
-    return null
+  if (s.lastMiss && Date.now() - s.lastMiss < DB_RETRY_AFTER_MS) return null
 
   s.loading ??= loadLatestSnapshotFromDb()
     .then((loaded) => {
       // Ein Sync kann inzwischen einen neueren Snapshot gesetzt haben.
       s.current ??= loaded
-      s.loadedFromDb = true
-      s.lastDbError = null
+      // Leer oder ungültig: nicht endgültig merken, später erneut fragen.
+      s.lastMiss = s.current ? null : Date.now()
       return s.current
     })
     .catch((error: unknown) => {
-      s.lastDbError = Date.now()
+      s.lastMiss = Date.now()
       console.error(
         `[catalog] Snapshot konnte nicht aus der Datenbank geladen werden: ${
           error instanceof Error ? error.message : String(error)
@@ -119,7 +186,6 @@ async function currentLeanixSnapshot(): Promise<StoredSnapshot | null> {
     })
   return s.loading
 }
-
 /** Aktueller Katalog-Snapshot oder `null`, wenn noch keiner vorhanden ist. */
 export async function getCatalog(): Promise<CatalogSnapshot | null> {
   if (catalogSource === "demo") return demoSnapshot().snapshot
@@ -162,15 +228,18 @@ export async function getStoredSnapshot(): Promise<StoredSnapshot | null> {
 export function setCurrentSnapshot(stored: StoredSnapshot) {
   const s = state()
   s.current = stored
-  s.loadedFromDb = true
+  s.lastMiss = null
 }
 
 /**
- * Lädt den neuesten Snapshot aus der DB, falls er neuer ist als der im
- * Speicher (z. B. wenn eine andere Instanz synchronisiert hat).
+ * Gleicht den Speicher mit der Datenbank ab: Lädt den neuesten gültigen
+ * Snapshot, wenn eine andere Instanz (oder ein manueller Sync dort) einen
+ * neueren Stand gespeichert hat. Billig, solange sich nichts ändert (nur
+ * `id` und `generated_at` der neuesten Zeile). Gibt `true` zurück, wenn
+ * der Speicher aktualisiert wurde.
  */
-export async function refreshFromDb(): Promise<void> {
-  if (catalogSource === "demo") return
+export async function refreshFromDb(): Promise<boolean> {
+  if (catalogSource === "demo") return false
   const s = state()
   const [latest] = await db
     .select({
@@ -180,14 +249,35 @@ export async function refreshFromDb(): Promise<void> {
     .from(schema.catalogSnapshot)
     .orderBy(desc(schema.catalogSnapshot.createdAt))
     .limit(1)
-  if (!latest) return
+  if (!latest) return false
+  const marker = `${latest.id}|${latest.generatedAt.toISOString()}`
+  const current = s.current
   if (
-    s.current?.id === latest.id &&
-    s.current.snapshot.generatedAt === latest.generatedAt.toISOString()
-  )
-    return
+    current?.id === latest.id &&
+    current.snapshot.generatedAt === latest.generatedAt.toISOString()
+  ) {
+    s.lastSeenRow = marker
+    return false
+  }
+  // Schon geprüft und nicht übernommen (z. B. ungültige Zeile): nicht bei
+  // jedem Abgleich erneut laden.
+  if (current && s.lastSeenRow === marker) return false
+
   const loaded = await loadLatestSnapshotFromDb()
-  if (loaded) setCurrentSnapshot(loaded)
+  s.lastSeenRow = marker
+  if (!loaded) return false
+  // Nie einen älteren Stand über einen neueren legen (z. B. wenn ein Sync in
+  // diesem Prozess gerade einen neuen Snapshot gesetzt hat).
+  const now = s.current
+  if (
+    now &&
+    now.id !== loaded.id &&
+    Date.parse(loaded.snapshot.generatedAt) <
+      Date.parse(now.snapshot.generatedAt)
+  )
+    return false
+  setCurrentSnapshot(loaded)
+  return true
 }
 
 type SyncRunRow = typeof schema.catalogSyncRun.$inferSelect

@@ -2,17 +2,9 @@ import { ArrowUpRightIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-/** http(s)-Links führen aus dem Portal hinaus und öffnen in neuem Tab. */
-export function isExternalUrl(url: string): boolean {
-  return /^https?:\/\//i.test(url.trim())
-}
+import { isExternalUrl } from "../links"
 
-/** Nur http(s), mailto und tel sind als Ziel erlaubt. */
-export function safeHref(url: string | null | undefined): string | null {
-  if (!url) return null
-  const trimmed = url.trim()
-  return /^(?:https?:\/\/|mailto:|tel:)/i.test(trimmed) ? trimmed : null
-}
+export { isExternalUrl, safeHref } from "../links"
 
 /** Kennzeichnung «extern, neuer Tab» (rotes ↗ + Text für Screenreader). */
 export function ExternalLinkHint({ className }: { className?: string }) {

@@ -48,13 +48,13 @@ export function ActionButton({ action }: { action: CatalogLink }) {
     <a
       href={href}
       data-kind={action.kind}
-      className="group/action inline-flex min-h-[3.875rem] w-full items-center gap-4 rounded-full bg-primary py-2.5 pr-[1.875rem] pl-2.5 text-left type-label-md text-primary-foreground transition-shadow duration-150 hover:shadow-press-dark active:shadow-press-dark sm:w-auto"
+      className="group/action inline-flex min-h-[3.875rem] w-full max-w-full min-w-0 items-center gap-4 rounded-full bg-primary py-2.5 pr-[1.875rem] pl-2.5 text-left type-label-md text-primary-foreground transition-shadow duration-150 hover:shadow-press-dark active:shadow-press-dark sm:w-auto"
       {...targetProps(href)}
     >
       <span className="inline-flex size-[2.625rem] shrink-0 items-center justify-center rounded-full bg-background text-primary">
         <ActionIcon href={href} className="size-[1.375rem]" />
       </span>
-      <span>
+      <span className="min-w-0 [overflow-wrap:anywhere]">
         {action.label}
         <ExternalHint href={href} />
       </span>
@@ -77,11 +77,14 @@ export function ActionPill({ action }: { action: CatalogLink }) {
       data-kind={action.kind}
       className={cn(
         buttonVariants({ variant: "outline", size: "sm" }),
-        "h-auto min-h-[2.625rem] py-2.5 text-left whitespace-normal"
+        // `max-w-full min-w-0 shrink` hebt `shrink-0` der Button-Basis auf:
+        // Lange Beschriftungen brechen um, statt bei 320 px aus der Karte zu
+        // laufen.
+        "h-auto min-h-[2.625rem] max-w-full min-w-0 shrink py-2.5 text-left whitespace-normal"
       )}
       {...targetProps(href)}
     >
-      <span>
+      <span className="min-w-0 [overflow-wrap:anywhere]">
         {action.label}
         <ExternalHint href={href} />
       </span>

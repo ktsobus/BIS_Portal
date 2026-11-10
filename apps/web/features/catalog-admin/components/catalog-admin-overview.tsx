@@ -6,6 +6,7 @@ import {
   BanIcon,
   CircleAlertIcon,
   CircleXIcon,
+  InfoIcon,
   RotateCwIcon,
   TriangleAlertIcon,
 } from "lucide-react"
@@ -89,7 +90,11 @@ export function CatalogAdminOverview() {
         title="Status"
         description="Woher die Daten stammen, wie aktuell sie sind und wie die Synchronisierung eingestellt ist."
       >
-        <SyncNowButton config={data.config} running={running} />
+        <SyncNowButton
+          config={data.config}
+          running={running}
+          hasSnapshot={data.status.available}
+        />
         <SyncStatusPanel data={data} />
       </AdminSection>
 
@@ -110,7 +115,7 @@ export function CatalogAdminOverview() {
       <AdminSection
         id="laeufe"
         title="Letzte Synchronisierungen"
-        description="Protokoll der Läufe. Schlägt ein Lauf fehl oder wird er abgelehnt, bleibt der bisherige Stand aktiv."
+        description="Protokoll der Läufe. Schlägt ein Lauf fehl oder wird er abgelehnt, bleibt ein bisheriger Stand aktiv."
       >
         <SyncRunsTable runs={data.runs} />
       </AdminSection>
@@ -181,7 +186,44 @@ function Notices({ data }: { data: Overview }) {
         </AlertTitle>
         <AlertDescription className="text-foreground!">
           {lastRun.message ? <p>{lastRun.message}</p> : null}
-          <p>Der bisherige Stand bleibt aktiv.</p>
+          <p>
+            {status.available
+              ? "Der bisherige Stand bleibt aktiv."
+              : "Es ist noch kein Stand vorhanden; das Portal meldet «Der Katalog ist vorübergehend nicht verfügbar»."}
+          </p>
+        </AlertDescription>
+      </Alert>
+    )
+  }
+
+  // Ohne Standard-Aktion enden Leistungen ohne Aktions-Ressource ohne Link.
+  const withoutAction = data.issues.filter(
+    (issue) => issue.code === "LEISTUNG_WITHOUT_ACTION"
+  ).length
+  if (
+    status.available &&
+    !config.fallbackActionConfigured &&
+    withoutAction > 0
+  ) {
+    notices.push(
+      <Alert key="no-fallback" className="p-4">
+        <InfoIcon aria-hidden="true" />
+        <AlertTitle className="text-base font-bold">
+          Keine Standard-Aktion für Leistungen ohne Bestellweg
+        </AlertTitle>
+        <AlertDescription className="text-foreground!">
+          <p>
+            {withoutAction === 1
+              ? "1 Leistung hat"
+              : `${withoutAction} Leistungen haben`}{" "}
+            keine Ressource für einen nächsten Schritt. Das Portal nennt dort
+            nur die verantwortliche Stelle bzw. den Service Desk, ohne Link.
+          </p>
+          <p>
+            Ressource in LeanIX erfassen oder die Standard-Aktion{" "}
+            <code>CATALOG_FALLBACK_REQUEST_URL</code> (z. B. Service Desk)
+            konfigurieren.
+          </p>
         </AlertDescription>
       </Alert>
     )

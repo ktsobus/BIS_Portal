@@ -2,11 +2,16 @@ import { describe, expect, it } from "vitest"
 
 import {
   cleanDescription,
+  cleanLabel,
   createSlugger,
   extractSummary,
+  findHttpLinkHosts,
   findLeanixLinks,
+  sanitizeLeanixLinks,
   slugify,
   slugWithId,
+  stripLeanixSessionParams,
+  stripUrlCredentials,
   truncateAtWord,
 } from "./text"
 
@@ -114,5 +119,71 @@ describe("findLeanixLinks", () => {
       )
     ).toEqual(["https://ktso.leanix.net/eamktsoLive/factsheet/X/1"])
     expect(findLeanixLinks("Kein Link")).toEqual([])
+  })
+})
+
+describe("LeanIX-Links bereinigen", () => {
+  const copied =
+    "https://ktso.leanix.net/eamktsosandbox/portals/Leistungen?transientUser=true#state=5f52&session_state=TV2N&iss=https://ch-signin.leanix.net/realms/sp&code=df7c.TV2N"
+
+  it("entfernt Fragment und OAuth-Parameter", () => {
+    expect(stripLeanixSessionParams(copied)).toBe(
+      "https://ktso.leanix.net/eamktsosandbox/portals/Leistungen?transientUser=true"
+    )
+    expect(
+      stripLeanixSessionParams(
+        "https://eu.leanix.net/x?a=1&state=s&code=c&iss=i&session_state=t"
+      )
+    ).toBe("https://eu.leanix.net/x?a=1")
+  })
+
+  it("lässt andere Links, nackte Hosts und saubere Links unverändert", () => {
+    expect(stripLeanixSessionParams("https://example.org/?code=1#x")).toBe(
+      "https://example.org/?code=1#x"
+    )
+    expect(stripLeanixSessionParams("ktso.leanix.net/x#state=1")).toBe(
+      "ktso.leanix.net/x#state=1"
+    )
+    const clean = "https://ktso.leanix.net/eamktsoLive/factsheet/X/1"
+    expect(stripLeanixSessionParams(clean)).toBe(clean)
+  })
+
+  it("ersetzt alle Vorkommen in Markdown und behält Satzzeichen", () => {
+    expect(
+      sanitizeLeanixLinks(
+        `Siehe [hier](${copied}), oder ${copied}. Ohne Schema: ktso.leanix.net`
+      )
+    ).toBe(
+      "Siehe [hier](https://ktso.leanix.net/eamktsosandbox/portals/Leistungen?transientUser=true), oder https://ktso.leanix.net/eamktsosandbox/portals/Leistungen?transientUser=true. Ohne Schema: ktso.leanix.net"
+    )
+    expect(sanitizeLeanixLinks(null)).toBeNull()
+  })
+})
+
+describe("Links in Beschreibungen", () => {
+  it("entfernt Zugangsdaten aus http(s)-Links", () => {
+    expect(
+      stripUrlCredentials(
+        "[a](https://user:pass@host.example/x) und http://u@h.example, mailto:a@b.ch"
+      )
+    ).toBe("[a](https://host.example/x) und http://h.example, mailto:a@b.ch")
+  })
+
+  it("findet die Hosts unverschlüsselter Links", () => {
+    expect(
+      findHttpLinkHosts(
+        "[A](http://Mitwirken.so.ch/x), http://mitwirken.so.ch:8080 und https://sicher.ch"
+      )
+    ).toEqual(["mitwirken.so.ch"])
+    expect(findHttpLinkHosts(null)).toEqual([])
+  })
+})
+
+describe("cleanLabel", () => {
+  it("entfernt Steuer- und Bidi-Zeichen", () => {
+    expect(cleanLabel("Bidi ‮gnp.exe")).toBe("Bidi gnp.exe")
+    expect(cleanLabel(" A⁦B⁩\nC\t ")).toBe("AB C")
+    expect(cleanLabel("‮ ")).toBeNull()
+    expect(cleanLabel(null)).toBeNull()
   })
 })

@@ -22,18 +22,15 @@ export default async function AdminLayout({
   return (
     <AdminShell
       withTabs
-      meta={[
-        {
-          key: "user",
-          node: (
-            <span className="inline-flex min-h-11 items-center type-body-sm">
-              Angemeldet als&nbsp;
-              <strong title={user.email}>{user.name || user.email}</strong>
-            </span>
-          ),
-        },
-        { key: "sign-out", node: <SignOutButton /> },
-      ]}
+      account={
+        <>
+          <span className="inline-flex min-h-11 items-center type-body-sm">
+            Angemeldet als&nbsp;
+            <strong title={user.email}>{user.name || user.email}</strong>
+          </span>
+          <SignOutButton />
+        </>
+      }
     >
       {children}
     </AdminShell>

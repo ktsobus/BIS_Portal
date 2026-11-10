@@ -17,10 +17,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      // Ersetzt «Notifications alt+T» (englisch) als Name der Region.
+      customAriaLabel="Meldungen"
       icons={{
         success: <CircleCheckIcon className="size-5" />,
         info: <InfoIcon className="size-5" />,
-        warning: <TriangleAlertIcon className="size-5 text-primary" />,
+        warning: <TriangleAlertIcon className="size-5" />,
         error: <OctagonXIcon className="size-5 text-primary" />,
         loading: <Loader2Icon className="size-4 animate-spin" />,
       }}

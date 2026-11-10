@@ -146,11 +146,88 @@ export function truncateAtWord(text: string, max: number): string {
   return `${cut}${ellipsis}`
 }
 
+const LEANIX_LINK_PATTERN =
+  /\b(?:https?:\/\/)?(?:[a-z0-9-]+\.)*leanix\.net(?:[/?#:][^\s)\]>"']*)?/gi
+
 /** Findet Links auf LeanIX (für Portalnutzende ohne LeanIX-Konto unbrauchbar). */
 export function findLeanixLinks(text: string | null | undefined): string[] {
   if (!text) return []
-  const matches = text.match(
-    /\b(?:https?:\/\/)?(?:[a-z0-9-]+\.)*leanix\.net(?:[/?#:][^\s)\]>"']*)?/gi
+  return [...new Set(text.match(LEANIX_LINK_PATTERN) ?? [])]
+}
+
+/** Anmelde-/Sitzungsparameter, die in kopierten LeanIX-Links stecken können. */
+const LEANIX_SESSION_PARAMS = ["state", "session_state", "code", "iss"]
+
+/**
+ * Bereinigt einen Link auf `*.leanix.net`: Fragment und OAuth-Parameter
+ * (`state`, `session_state`, `code`, `iss`) entfernen. Andere Links und
+ * nackte Hosts ohne Schema bleiben unverändert.
+ */
+export function stripLeanixSessionParams(link: string): string {
+  if (!/^https?:\/\//i.test(link)) return link
+  // Satzzeichen am Ende gehören zum Text, nicht zur URL.
+  const trailing = /[.,;:!?]+$/.exec(link)?.[0] ?? ""
+  const core = trailing ? link.slice(0, -trailing.length) : link
+  let url: URL
+  try {
+    url = new URL(core)
+  } catch {
+    return link
+  }
+  if (!/(?:^|\.)leanix\.net$/i.test(url.hostname)) return link
+  const params = LEANIX_SESSION_PARAMS.filter((name) =>
+    url.searchParams.has(name)
   )
-  return [...new Set(matches ?? [])]
+  if (!url.hash && params.length === 0) return link
+  url.hash = ""
+  for (const name of params) url.searchParams.delete(name)
+  return `${url.href}${trailing}`
+}
+
+/**
+ * Entfernt Sitzungsartefakte (Fragment, OAuth-Parameter) aus allen
+ * LeanIX-Links eines Textes. Solche Links entstehen, wenn jemand die
+ * Adresse nach dem Login aus dem Browser kopiert; sie sollen nicht an alle
+ * Besucherinnen und Besucher ausgeliefert werden.
+ */
+export function sanitizeLeanixLinks(text: string | null): string | null {
+  if (!text) return text
+  return text.replace(LEANIX_LINK_PATTERN, (match) =>
+    stripLeanixSessionParams(match)
+  )
+}
+
+/** Zugangsdaten (`user:pass@`) in http(s)-Links. */
+const URL_CREDENTIALS = /\b(https?:\/\/)[^\s/?#@()<>[\]"']+@/gi
+
+/** Entfernt Zugangsdaten (`https://user:pass@host` → `https://host`) aus Links. */
+export function stripUrlCredentials(text: string | null): string | null {
+  if (!text) return text
+  return text.replace(URL_CREDENTIALS, "$1")
+}
+
+/** Hosts aller unverschlüsselten Links (`http://…`) in einem Text. */
+export function findHttpLinkHosts(text: string | null | undefined): string[] {
+  if (!text) return []
+  const hosts = [...text.matchAll(/\bhttp:\/\/([^\s/?#:()<>[\]"']+)/gi)].map(
+    (match) => match[1]!.toLowerCase()
+  )
+  return [...new Set(hosts)]
+}
+
+/** Steuerzeichen (C0/C1, inkl. Zeilenumbrüche). */
+// eslint-disable-next-line no-control-regex -- Steuerzeichen sollen gefunden werden
+const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/g
+/** Bidi-Steuerzeichen (z. B. U+202E), die die Leserichtung umkehren können. */
+const BIDI_CHARS = /[\u200e\u200f\u202a-\u202e\u2066-\u2069]/g
+
+/** Einzeilige Beschriftung: Steuer- und Bidi-Zeichen entfernen, Leerraum normalisieren. */
+export function cleanLabel(value: string | null | undefined): string | null {
+  if (typeof value !== "string") return null
+  const text = value
+    .replace(BIDI_CHARS, "")
+    .replace(CONTROL_CHARS, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+  return text === "" ? null : text
 }

@@ -7,14 +7,18 @@ import type {
   CatalogServicePage,
   CatalogSnapshot,
   Family,
+  FamilySummary,
   Leistung,
   LeistungSummary,
+  PublicFamily,
+  PublicLeistung,
+  PublicService,
   SearchEntry,
   Service,
   ServiceSummary,
 } from "@workspace/api"
 
-import { markdownToPlainText, plainExcerpt, truncateText } from "../text"
+import { markdownToPlainText, plainExcerpt } from "../text"
 import { withFallbackAction } from "./fallback"
 
 /**
@@ -29,25 +33,41 @@ export interface ViewOptions {
   showPersons: boolean
 }
 
+/** Index über die öffentliche Sicht (ohne LeanIX-Links, Personen nach Option). */
 interface CatalogIndex {
-  families: Family[]
-  services: Service[]
-  leistungen: Leistung[]
-  familyById: Map<string, Family>
-  serviceById: Map<string, Service>
-  leistungById: Map<string, Leistung>
+  families: PublicFamily[]
+  services: PublicService[]
+  leistungen: PublicLeistung[]
+  familyById: Map<string, PublicFamily>
+  serviceById: Map<string, PublicService>
+  leistungById: Map<string, PublicLeistung>
 }
 
 const indexCache = new WeakMap<CatalogSnapshot, Map<string, CatalogIndex>>()
 
-function prepareLeistung(leistung: Leistung, options: ViewOptions): Leistung {
+/*
+ * Öffentliche Sicht: Links ins LeanIX-Fact-Sheet entfernen (Datensparsamkeit)
+ * und Personen nur ausliefern, wenn sie freigeschaltet sind. Letzteres ist
+ * die letzte Schutzschicht, falls ein Snapshot doch Personen enthält.
+ */
+function prepareFamily({ leanixUrl: _url, ...family }: Family): PublicFamily {
+  return family
+}
+
+function prepareLeistung(
+  { leanixUrl: _url, ...leistung }: Leistung,
+  options: ViewOptions
+): PublicLeistung {
   const withAction = withFallbackAction(leistung, options.fallbackAction)
   return options.showPersons || withAction.persons.length === 0
     ? withAction
     : { ...withAction, persons: [] }
 }
 
-function prepareService(service: Service, options: ViewOptions): Service {
+function prepareService(
+  { leanixUrl: _url, ...service }: Service,
+  options: ViewOptions
+): PublicService {
   return options.showPersons || service.persons.length === 0
     ? service
     : { ...service, persons: [] }
@@ -63,13 +83,14 @@ function getIndex(snapshot: CatalogSnapshot, options: ViewOptions) {
   const cached = bySnapshot.get(key)
   if (cached) return cached
 
+  const families = snapshot.families.map(prepareFamily)
   const services = snapshot.services.map((s) => prepareService(s, options))
   const leistungen = snapshot.leistungen.map((l) => prepareLeistung(l, options))
   const index: CatalogIndex = {
-    families: snapshot.families,
+    families,
     services,
     leistungen,
-    familyById: new Map(snapshot.families.map((f) => [f.id, f])),
+    familyById: new Map(families.map((f) => [f.id, f])),
     serviceById: new Map(services.map((s) => [s.id, s])),
     leistungById: new Map(leistungen.map((l) => [l.id, l])),
   }
@@ -106,7 +127,10 @@ function existing<T>(ids: string[], map: Map<string, T>): T[] {
   })
 }
 
-function familyOf(index: CatalogIndex, service: Service): Family | undefined {
+function familyOf(
+  index: CatalogIndex,
+  service: PublicService
+): PublicFamily | undefined {
   return (
     index.familyById.get(service.familyId) ??
     index.families.find((family) => family.serviceIds.includes(service.id))
@@ -115,7 +139,7 @@ function familyOf(index: CatalogIndex, service: Service): Family | undefined {
 
 function toServiceSummary(
   index: CatalogIndex,
-  service: Service
+  service: PublicService
 ): ServiceSummary {
   return {
     id: service.id,
@@ -128,7 +152,7 @@ function toServiceSummary(
   }
 }
 
-function toLeistungSummary(leistung: Leistung): LeistungSummary {
+function toLeistungSummary(leistung: PublicLeistung): LeistungSummary {
   return {
     id: leistung.id,
     slug: leistung.slug,
@@ -140,7 +164,7 @@ function toLeistungSummary(leistung: Leistung): LeistungSummary {
   }
 }
 
-function placementsOf(index: CatalogIndex, leistung: Leistung) {
+function placementsOf(index: CatalogIndex, leistung: PublicLeistung) {
   return existing(leistung.serviceIds, index.serviceById).flatMap((service) => {
     const family = familyOf(index, service)
     return family ? [{ family, service }] : []
@@ -149,25 +173,34 @@ function placementsOf(index: CatalogIndex, leistung: Leistung) {
 
 type WithoutStatus<T> = Omit<T, "status">
 
+/**
+ * Familie mit Anzahl Services und Anzahl *verschiedener* Leistungen: Eine
+ * Leistung, die mehreren Services der Familie angehört, zählt einmal.
+ */
+function toFamilySummary(
+  index: CatalogIndex,
+  family: PublicFamily
+): FamilySummary {
+  const services = existing(family.serviceIds, index.serviceById)
+  const leistungIds = new Set(
+    services.flatMap((service) =>
+      service.leistungIds.filter((id) => index.leistungById.has(id))
+    )
+  )
+  return {
+    ...family,
+    serviceCount: services.length,
+    leistungCount: leistungIds.size,
+  }
+}
+
 export function buildOverview(
   snapshot: CatalogSnapshot,
   options: ViewOptions
 ): WithoutStatus<CatalogOverview> {
   const index = getIndex(snapshot, options)
   return {
-    families: index.families.map((family) => {
-      const services = existing(family.serviceIds, index.serviceById)
-      const leistungIds = new Set(
-        services.flatMap((service) =>
-          service.leistungIds.filter((id) => index.leistungById.has(id))
-        )
-      )
-      return {
-        ...family,
-        serviceCount: services.length,
-        leistungCount: leistungIds.size,
-      }
-    }),
+    families: index.families.map((family) => toFamilySummary(index, family)),
   }
 }
 
@@ -180,7 +213,7 @@ export function buildFamilyPage(
   const family = findBySlug(index.families, slug)
   if (!family) return null
   return {
-    family,
+    family: toFamilySummary(index, family),
     services: existing(family.serviceIds, index.serviceById).map((service) =>
       toServiceSummary(index, service)
     ),
@@ -234,7 +267,7 @@ function uniqueSorted(values: Iterable<string>): string[] {
 /** Kontext einer Leistung, z. B. «Unterstützungs-Services › Service eLearning». */
 function leistungContext(
   index: CatalogIndex,
-  leistung: Leistung,
+  leistung: PublicLeistung,
   depth = 0
 ): string {
   const placements = placementsOf(index, leistung)
@@ -254,7 +287,10 @@ function leistungContext(
   return ""
 }
 
-const KEYWORD_TEXT_LENGTH = 400
+/** Klartext mehrerer Markdown-Texte für die Volltextsuche (ohne Kürzung). */
+function fullText(...markdown: (string | null | undefined)[]): string {
+  return markdown.map(markdownToPlainText).filter(Boolean).join(" ")
+}
 
 export function buildSearchIndex(
   snapshot: CatalogSnapshot,
@@ -275,10 +311,8 @@ export function buildSearchIndex(
       ...leistung.applications.map((app) => app.name),
       ...leistung.audiences.map((audience) => audience.name),
       ...leistung.responsible.map((unit) => unit.name),
-      truncateText(
-        markdownToPlainText(leistung.description),
-        KEYWORD_TEXT_LENGTH
-      ),
+      // Volltext: Kurzbeschreibung und ganze Beschreibung.
+      fullText(leistung.summary, leistung.description),
     ]
       .filter(Boolean)
       .join(" "),
@@ -301,10 +335,8 @@ export function buildSearchIndex(
         keywords: [
           ...service.responsible.map((unit) => unit.name),
           ...leistungen.map((leistung) => leistung.name),
-          truncateText(
-            markdownToPlainText(service.definition),
-            KEYWORD_TEXT_LENGTH
-          ),
+          // Volltext der Service-Definition.
+          fullText(service.definition),
         ]
           .filter(Boolean)
           .join(" "),

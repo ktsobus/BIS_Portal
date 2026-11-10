@@ -23,6 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider>
         <TooltipProvider>
           {children}
+          {/* Ohne `richColors`: Farben und Kontrast regelt globals.css. */}
           <Toaster />
         </TooltipProvider>
       </ThemeProvider>

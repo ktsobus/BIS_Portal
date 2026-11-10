@@ -1,16 +1,29 @@
-# Production image for apps/web (Next.js standalone output).
+# Production image for the BITS-Portal (apps/web, Next.js standalone output).
 #
-#   docker build -t app .                   # runtime image (default target)
-#   docker build -t app-migrate --target migrate .
+#   docker build -t bits-portal .                          # runtime image (default target)
+#   docker build -t bits-portal-migrate --target migrate .
 #
-# See docker-compose.prod.yml for a full self-hosted setup.
+# See docker-compose.prod.yml and docs/betrieb.md for a full self-hosted setup.
+#
+# The build needs the base image and an npm registry. Without internet access
+# (internal build server) point both at internal mirrors:
+#   --build-arg NODE_IMAGE=registry.example/library/node:24-alpine
+#   --build-arg NPM_REGISTRY=https://npm.example/repository/npm
+# An outgoing proxy comes in through the predefined build args
+# (--build-arg HTTPS_PROXY=… --build-arg NO_PROXY=…).
 
-ARG NODE_VERSION=24
+ARG NODE_IMAGE=node:24-alpine
 
 # ---------------------------------------------------------------------------
-FROM node:${NODE_VERSION}-alpine AS base
+FROM ${NODE_IMAGE} AS base
+# Registry for corepack (pnpm itself) and pnpm (all packages).
+ARG NPM_REGISTRY=https://registry.npmjs.org
 # pnpm comes from corepack, pinned by "packageManager" in package.json.
+# NODE_USE_ENV_PROXY=1: corepack (Node fetch) ignores HTTPS_PROXY otherwise.
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
+    COREPACK_NPM_REGISTRY=${NPM_REGISTRY} \
+    npm_config_registry=${NPM_REGISTRY} \
+    NODE_USE_ENV_PROXY=1 \
     NEXT_TELEMETRY_DISABLED=1
 RUN corepack enable
 WORKDIR /app
@@ -48,21 +61,30 @@ WORKDIR /app/apps/web
 CMD ["pnpm", "exec", "drizzle-kit", "migrate"]
 
 # ---------------------------------------------------------------------------
-FROM node:${NODE_VERSION}-alpine AS runner
+FROM ${NODE_IMAGE} AS runner
+# NODE_USE_ENV_PROXY=1: Node only honours HTTPS_PROXY/NO_PROXY (outgoing proxy
+# to ktso.leanix.net) with it. Without those variables it has no effect.
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
+    NODE_USE_ENV_PROXY=1 \
     PORT=3000 \
     HOSTNAME=0.0.0.0
 WORKDIR /app
 
 # The standalone server keeps the monorepo layout: server.js is in apps/web.
+# The standalone output contains neither public/ (logo, favicon) nor
+# .next/static (JS/CSS); server.js serves both from next to itself.
 COPY --from=builder --chown=node:node /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=node:node /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder --chown=node:node /app/apps/web/public ./apps/web/public
 
 USER node
 EXPOSE 3000
+# Readiness: HTTP 503, wenn die Datenbank nicht erreichbar ist oder kein
+# Katalog vorliegt (Liveness ohne Abhängigkeiten: /rpc/health/check). Shell-
+# Form, damit ${PORT} zur Laufzeit aufgelöst wird.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget -qO /dev/null http://127.0.0.1:3000/rpc/health/check || exit 1
+  CMD wget -qO /dev/null "http://127.0.0.1:${PORT:-3000}/rpc/health/ready" || exit 1
 # Run node directly (no npm/pnpm wrapper) so SIGTERM reaches the server and it
 # can drain in-flight requests.
 CMD ["node", "apps/web/server.js"]

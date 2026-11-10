@@ -17,8 +17,8 @@ import {
 } from "@/features/catalog/components/info-links"
 import { LeistungGrid } from "@/features/catalog/components/leistung-card"
 import { MarkdownText } from "@/features/catalog/components/markdown"
-import { orgUnitNames } from "@/features/catalog/components/org-units"
 import { Section } from "@/features/catalog/components/section"
+import { NoRequestPathHint } from "@/features/catalog/components/support-contact"
 import { TableOfContents } from "@/features/catalog/components/table-of-contents"
 import { loadFamily, loadService } from "@/features/catalog/load"
 import { countLabel, plainExcerpt } from "@/features/catalog/text"
@@ -104,17 +104,11 @@ export default async function ServicePage({
             id="keine-leistungen"
             title="Noch keine Leistungen erfasst"
           >
-            <p className="max-w-[70ch]">
-              Für diesen Service sind im Portal noch keine Leistungen erfasst.{" "}
-              {service.responsible.length > 0 ? (
-                <>
-                  Bei Fragen wenden Sie sich bitte an die verantwortliche
-                  Stelle: <strong>{orgUnitNames(service.responsible)}</strong>.
-                </>
-              ) : (
-                "Bei Fragen wenden Sie sich bitte an den Service Desk des Amts für Informatik und Organisation."
-              )}
-            </p>
+            <NoRequestPathHint
+              message="Für diesen Service sind im Portal noch keine Leistungen erfasst."
+              responsible={service.responsible}
+              contact={result.data.status.contact}
+            />
           </ContactBox>
         )}
       </Section>

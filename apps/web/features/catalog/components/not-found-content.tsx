@@ -27,7 +27,7 @@ export function NotFoundContent() {
             href="/suche"
             className={buttonVariants({ variant: "outline" })}
           >
-            Leistung suchen
+            Services und Leistungen suchen
             <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
           </Link>
         </li>

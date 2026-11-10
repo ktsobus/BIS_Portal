@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import type { GraphqlResult } from "./client"
+import {
+  LeanixError,
+  type GraphqlErrorInfo,
+  type GraphqlResult,
+} from "./client"
 import {
   buildKategorienQuery,
   buildLeistungenQuery,
@@ -49,11 +53,15 @@ describe("Abfragen", () => {
   })
 })
 
-/** Liefert `nodes` in Seiten zu `size` Einträgen. */
+/**
+ * Liefert `nodes` in Seiten zu `size` Einträgen. `stopAfter`: meldet nach
+ * so vielen Einträgen `hasNextPage: false` (unvollständiges Paging).
+ */
 function pagedExecutor(
   nodes: Array<{ id: string }>,
   size: number,
-  errors: string[] = []
+  errors: GraphqlErrorInfo[] = [],
+  options: { stopAfter?: number; totalCount?: number } = {}
 ) {
   const calls: Array<Record<string, unknown> | undefined> = []
   const executor: GraphqlExecutor = {
@@ -62,23 +70,26 @@ function pagedExecutor(
       const start = variables?.after ? Number(variables.after) : 0
       const page = nodes.slice(start, start + size)
       const end = start + page.length
+      const last = Math.min(nodes.length, options.stopAfter ?? nodes.length)
       return {
         data: {
           allFactSheets: {
-            totalCount: nodes.length,
+            totalCount: options.totalCount ?? nodes.length,
             pageInfo: {
-              hasNextPage: end < nodes.length,
+              hasNextPage: end < last,
               endCursor: String(end),
             },
             edges: [...page.map((node) => ({ node })), { node: {} }],
           },
         },
-        errors: errors.map((message) => ({ message })),
+        errors,
       } as GraphqlResult<TData>
     },
   }
   return { executor, calls }
 }
+
+const nodePath = (field: string) => ["allFactSheets", "edges", 0, "node", field]
 
 describe("fetchAllPages", () => {
   it("lädt alle Seiten und ignoriert leere Knoten", async () => {
@@ -97,12 +108,68 @@ describe("fetchAllPages", () => {
     expect(calls.map((v) => v?.after)).toEqual([null, "2", "4"])
   })
 
-  it("sammelt Teilfehler als Hinweise", async () => {
-    const { executor } = pagedExecutor([{ id: "a" }], 10, ["Teilfehler"])
-    const result = await fetchCatalogRaw(executor, { showPersons: false })
+  it("sammelt tolerierbare Teilfehler als Hinweise (z. B. Personen)", async () => {
+    const { executor } = pagedExecutor([{ id: "a" }], 10, [
+      { message: "Teilfehler", path: nodePath("subscriptions") },
+    ])
+    const result = await fetchCatalogRaw(executor, { showPersons: true })
     expect(result.warnings).toEqual([
-      "Leistungen: Teilfehler",
-      "Leistungskategorien: Teilfehler",
+      "Leistungen: Teilfehler (allFactSheets/edges/0/node/subscriptions)",
+      "Leistungskategorien: Teilfehler (allFactSheets/edges/0/node/subscriptions)",
+    ])
+  })
+
+  it("bricht bei Teilfehlern auf Ressourcen ab (documents)", async () => {
+    const message =
+      "Exception while fetching data (/allFactSheets/edges[0]/node/documents) : Access denied"
+    const { executor } = pagedExecutor([{ id: "a" }], 10, [
+      { message, path: nodePath("documents") },
+    ])
+    const error = await fetchAllPages(executor, "q", "Leistungen").catch(
+      (e: unknown) => e
+    )
+    expect(error).toBeInstanceOf(LeanixError)
+    expect((error as LeanixError).kind).toBe("graphql")
+    expect((error as LeanixError).message).toContain(
+      "Leistungen: LeanIX meldet Teilfehler"
+    )
+    expect((error as LeanixError).message).toContain("Access denied")
+  })
+
+  it("bricht bei Teilfehlern auf Kanal, Relationen, Knoten oder ohne Pfad ab", async () => {
+    for (const path of [
+      nodePath("kanal"),
+      nodePath("status"),
+      nodePath("relbehoerdenLeistungenToLeistungskategorie"),
+      ["allFactSheets", "edges", 0, "node"],
+      undefined,
+    ]) {
+      const { executor } = pagedExecutor([{ id: "a" }], 10, [
+        { message: "Fehler", path },
+      ])
+      await expect(fetchAllPages(executor, "q", "Test")).rejects.toThrow(
+        /Teilfehler/
+      )
+    }
+  })
+
+  it("bricht bei unvollständigem Paging ab", async () => {
+    const nodes = Array.from({ length: 18 }, (_, i) => ({ id: `n${i}` }))
+    // Erste Seite meldet hasNextPage=false, obwohl totalCount 18 ist.
+    const { executor } = pagedExecutor(nodes, 14, [], { stopAfter: 14 })
+    await expect(fetchAllPages(executor, "q", "Leistungen")).rejects.toThrow(
+      "Leistungen: nur 14 von 18 Einträgen geladen (unvollständige Antwort)"
+    )
+  })
+
+  it("entfernt doppelte Einträge und meldet mehr Einträge als erwartet", async () => {
+    const nodes = [{ id: "a" }, { id: "b" }, { id: "a" }, { id: "c" }]
+    const { executor } = pagedExecutor(nodes, 2, [], { totalCount: 2 })
+    const result = await fetchAllPages(executor, "q", "Test")
+    expect(result.nodes.map((n) => n.id)).toEqual(["a", "b", "c"])
+    expect(result.warnings).toEqual([
+      "Test: 1 doppelte Einträge ignoriert",
+      "Test: 3 Einträge geladen, LeanIX meldet 2",
     ])
   })
 

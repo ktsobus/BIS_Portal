@@ -38,6 +38,7 @@ export function SiteHeader({
   tabs,
   tabsLabel = "Hauptnavigation",
   meta,
+  account,
 }: {
   /** `admin` kennzeichnet den Admin-Bereich und blendet die Suche aus. */
   variant?: "public" | "admin"
@@ -45,6 +46,11 @@ export function SiteHeader({
   tabs?: PrimaryTab[]
   tabsLabel?: string
   meta?: MetaItem[]
+  /**
+   * Angemeldetes Konto (Name, «Abmelden») als benannte Region, damit es per
+   * Landmarken-Navigation erreichbar ist; steht vor der Meta-Navigation.
+   */
+  account?: React.ReactNode
 }) {
   const isAdmin = variant === "admin"
   const items = tabs ?? (isAdmin ? [] : PUBLIC_TABS)
@@ -89,25 +95,42 @@ export function SiteHeader({
           </p>
         </div>
 
-        {metaItems.length > 0 ? (
-          <nav
-            aria-label="Meta-Navigation"
-            className="col-start-2 row-start-1 hidden justify-self-end pt-7 lg:block"
-          >
-            <ul className="flex items-center gap-x-10">
-              {metaItems.map((item) => (
-                <li key={item.key}>{item.node}</li>
-              ))}
-            </ul>
-          </nav>
+        {metaItems.length > 0 || account ? (
+          <div className="col-start-2 row-start-1 hidden items-center gap-x-10 justify-self-end pt-7 lg:flex">
+            {account ? (
+              <section
+                aria-label="Angemeldetes Konto"
+                className="flex items-center gap-x-10"
+              >
+                {account}
+              </section>
+            ) : null}
+            {metaItems.length > 0 ? (
+              <nav aria-label="Meta-Navigation">
+                <ul className="flex items-center gap-x-10">
+                  {metaItems.map((item) => (
+                    <li key={item.key}>{item.node}</li>
+                  ))}
+                </ul>
+              </nav>
+            ) : null}
+          </div>
         ) : null}
 
-        {hasSearch || metaItems.length > 0 ? (
+        {hasSearch || metaItems.length > 0 || account ? (
           <MobileMenu
             buttonClassName="col-start-2 row-start-1 mt-4 justify-self-end"
             panelClassName="col-span-full row-start-3 mt-px flex flex-col gap-6"
           >
             {hasSearch ? <HeaderSearch id="suche-mobil" /> : null}
+            {account ? (
+              <section
+                aria-label="Angemeldetes Konto (mobil)"
+                className="flex flex-wrap items-center gap-x-6 gap-y-1"
+              >
+                {account}
+              </section>
+            ) : null}
             {metaItems.length > 0 ? (
               <nav aria-label="Meta-Navigation (mobil)">
                 <ul className="flex flex-col">
