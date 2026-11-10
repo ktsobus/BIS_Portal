@@ -20,10 +20,10 @@ export function SiteHeader({
         <Link
           href={homeHref}
           aria-label="BITS-Portal, Startseite"
-          className="flex items-center gap-5 rounded-sm py-[18px] sm:gap-6"
+          className="flex items-center gap-5 rounded-sm py-5 sm:gap-6"
         >
           <Logo />
-          <span className="hidden border-l border-line pl-5 text-base font-extrabold text-ink min-[30rem]:block sm:pl-6">
+          <span className="hidden border-l border-line pl-5 text-base font-bold text-ink min-[30rem]:block sm:pl-6">
             BITS-Portal
           </span>
         </Link>

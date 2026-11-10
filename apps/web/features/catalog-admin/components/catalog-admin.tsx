@@ -205,7 +205,7 @@ function StatusCard({ data }: { data: CatalogAdminOverview }) {
               className="border-line px-6 py-4 max-lg:border-b lg:border-r lg:last:border-r-0"
             >
               <dt className="text-xs text-muted">{name}</dt>
-              <dd className="mt-0.5 text-2xl font-extrabold text-ink tabular-nums">
+              <dd className="mt-0.5 text-2xl font-bold text-ink tabular-nums">
                 {value === undefined ? "–" : formatNumber(value)}
               </dd>
             </div>
@@ -234,6 +234,28 @@ function FactSheetName({ issue }: { issue: QualityIssue }) {
         {parents ? ` in ${parents}` : null}
       </span>
     </>
+  )
+}
+
+const URL_IN_TEXT = /(https:\/\/[^\s)]+)/
+
+/**
+ * Meldungen nennen das betroffene Fact Sheet teils mit voller LeanIX-Adresse.
+ * Die Adresse wird zum kurzen Link, damit der Satz lesbar bleibt.
+ */
+function IssueMessage({ message }: { message: string }) {
+  return (
+    <span className="[overflow-wrap:anywhere]">
+      {message.split(URL_IN_TEXT).map((part, index) =>
+        index % 2 === 1 ? (
+          <ExternalLink key={index} href={part} className="link">
+            in LeanIX öffnen
+          </ExternalLink>
+        ) : (
+          part
+        )
+      )}
+    </span>
   )
 }
 
@@ -360,10 +382,18 @@ function QualityReport({ issues }: { issues: QualityIssue[] }) {
                       <FactSheetName issue={issue} />
                     </Td>
                     <Td>
-                      {issue.message}
-                      <span className="block font-mono text-xs text-muted">
+                      <IssueMessage message={issue.message} />
+                      <button
+                        type="button"
+                        title="Nur Auffälligkeiten dieser Art anzeigen"
+                        onClick={() => {
+                          setText(issue.code)
+                          setLimit(PAGE_SIZE)
+                        }}
+                        className="mt-0.5 block rounded-sm font-mono text-xs text-muted underline-offset-[0.2em] hover:text-ink hover:underline"
+                      >
                         {issue.code}
-                      </span>
+                      </button>
                     </Td>
                   </tr>
                 ))}
@@ -537,7 +567,7 @@ export function CatalogAdmin() {
           </div>
 
           <section aria-labelledby="qualitaet-titel">
-            <h2 id="qualitaet-titel" className="text-2xl font-extrabold">
+            <h2 id="qualitaet-titel" className="text-2xl font-bold">
               Datenqualität
             </h2>
             <p className="mt-1 mb-4 max-w-[65ch] text-sm text-text">
@@ -548,7 +578,7 @@ export function CatalogAdmin() {
           </section>
 
           <section aria-labelledby="verlauf-titel">
-            <h2 id="verlauf-titel" className="mb-4 text-2xl font-extrabold">
+            <h2 id="verlauf-titel" className="mb-4 text-2xl font-bold">
               Verlauf der Abgleiche
             </h2>
             <RunsTable runs={data.runs} demo={demo} />

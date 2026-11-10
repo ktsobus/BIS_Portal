@@ -13,8 +13,9 @@ type Item = Pick<
 >
 
 /**
- * Leistungen als Liste: Name, Art, Kurzbeschreibung und gleich daneben der
+ * Leistungen als Liste: Name, Art, Kurzbeschreibung und gleich darunter der
  * nächste Schritt. Niemand muss die Detailseite öffnen, um zu bestellen.
+ * Jede Zeile hat denselben Aufbau, unabhängig von der Länge des Namens.
  */
 export function LeistungList({ leistungen }: { leistungen: Item[] }) {
   return (
@@ -23,45 +24,38 @@ export function LeistungList({ leistungen }: { leistungen: Item[] }) {
         {leistungen.map((leistung) => (
           <li
             key={leistung.id}
-            className="grid gap-x-8 gap-y-4 border-b border-line px-5 py-5 last:border-b-0 md:grid-cols-[minmax(0,1fr)_auto] md:px-6"
+            className="border-b border-line px-5 py-5 last:border-b-0 md:px-6"
           >
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h3 className="text-lg font-bold">
-                  <Link
-                    href={`/leistung/${leistung.slug}`}
-                    className="rounded-sm underline-offset-[0.18em] hover:underline"
-                  >
-                    {leistung.name}
-                  </Link>
-                </h3>
-                {leistung.subtypeLabel ? (
-                  <Badge>{leistung.subtypeLabel}</Badge>
-                ) : null}
-              </div>
-              {leistung.summary ? (
-                <p className="mt-1.5 max-w-[70ch] text-text">
-                  {leistung.summary}
-                </p>
-              ) : null}
-              <p className="mt-2">
-                <Link
-                  href={`/leistung/${leistung.slug}`}
-                  className="group inline-flex items-center gap-1.5 rounded-sm text-sm font-bold text-blue underline-offset-[0.2em] hover:text-blue-strong hover:underline"
-                >
-                  Details
-                  <span className="sr-only">: {leistung.name}</span>
-                  <ArrowRight
-                    aria-hidden="true"
-                    className="size-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5"
-                  />
-                </Link>
+            <h3 className="text-lg font-bold">
+              <Link
+                href={`/leistung/${leistung.slug}`}
+                className="rounded-sm underline-offset-[0.18em] hover:underline"
+              >
+                {leistung.name}
+              </Link>
+            </h3>
+            {leistung.subtypeLabel ? (
+              <p className="mt-1.5">
+                <Badge>{leistung.subtypeLabel}</Badge>
               </p>
+            ) : null}
+            {leistung.summary ? (
+              <p className="mt-2 max-w-[70ch] text-text">{leistung.summary}</p>
+            ) : null}
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <ActionLinks actions={leistung.actions} />
+              <Link
+                href={`/leistung/${leistung.slug}`}
+                className="group inline-flex items-center gap-1.5 rounded-sm text-sm font-bold text-blue underline-offset-[0.2em] hover:text-blue-strong hover:underline"
+              >
+                Details
+                <span className="sr-only">: {leistung.name}</span>
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5"
+                />
+              </Link>
             </div>
-            <ActionLinks
-              actions={leistung.actions}
-              className="md:max-w-64 md:flex-col md:items-stretch"
-            />
           </li>
         ))}
       </ul>

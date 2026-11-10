@@ -30,7 +30,11 @@ export function PageHead({
       <div
         className={cn(
           "container-page",
-          spacious ? "pt-10 pb-10 md:pt-14 md:pb-12" : "pt-6 pb-8 md:pb-10"
+          spacious
+            ? "pt-10 pb-10 md:pt-14 md:pb-12"
+            : crumbs
+              ? "pt-6 pb-8 md:pb-10"
+              : "pt-10 pb-8 md:pt-12 md:pb-10"
         )}
       >
         {crumbs ? (

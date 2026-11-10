@@ -12,10 +12,10 @@ export function Logo({ className }: { className?: string }) {
     <Image
       src="/brand/kanton-solothurn-logo.svg"
       alt="Kanton Solothurn"
-      width={196}
-      height={18}
+      width={217}
+      height={20}
       priority
-      className={cn("h-4 w-auto shrink-0 sm:h-[18px]", className)}
+      className={cn("h-4 w-auto shrink-0 sm:h-5", className)}
     />
   )
 }

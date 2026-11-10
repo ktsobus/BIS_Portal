@@ -59,19 +59,21 @@ export default async function ServicePage({
           <span>{countLabel(leistungen.length, "Leistung", "Leistungen")}</span>
         }
       />
-      <div className="container-page grid gap-x-12 gap-y-10 py-8 md:py-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="container-page grid gap-x-12 gap-y-10 py-8 md:py-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="min-w-0 space-y-10">
           {service.definition ? (
             <section aria-labelledby="definition-titel">
-              <h2 id="definition-titel" className="text-2xl font-extrabold">
+              <h2 id="definition-titel" className="text-2xl font-bold">
                 Worum es geht
               </h2>
-              <MarkdownText className="mt-3">{service.definition}</MarkdownText>
+              <Card className="mt-4 p-5 md:p-6">
+                <MarkdownText>{service.definition}</MarkdownText>
+              </Card>
             </section>
           ) : null}
 
           <section aria-labelledby="leistungen-titel">
-            <h2 id="leistungen-titel" className="text-2xl font-extrabold">
+            <h2 id="leistungen-titel" className="text-2xl font-bold">
               Leistungen
             </h2>
             <div className="mt-4">
@@ -94,7 +96,7 @@ export default async function ServicePage({
         <aside className="space-y-5 lg:sticky lg:top-6 lg:self-start">
           {service.actions.length > 0 ? (
             <Card className="p-5">
-              <h2 className="text-lg font-extrabold">Direkt zum Service</h2>
+              <h2 className="text-lg font-bold">Direkt zum Service</h2>
               <ActionLinks actions={service.actions} stretch className="mt-3" />
             </Card>
           ) : null}

@@ -20,7 +20,7 @@ export function HelpPanel({
       aria-labelledby="hilfe-titel"
       className={cn("rounded-lg bg-blue-tint p-6", className)}
     >
-      <h2 id="hilfe-titel" className="text-xl font-extrabold">
+      <h2 id="hilfe-titel" className="text-xl font-bold">
         Nichts Passendes gefunden?
       </h2>
       {hasSupportContact(contact) ? (

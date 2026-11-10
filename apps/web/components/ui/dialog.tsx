@@ -43,7 +43,7 @@ export function Dialog({
         >
           <div className="flex items-start gap-4 border-b border-line px-6 py-4">
             <div className="min-w-0 flex-1">
-              <Primitive.Title className="text-xl font-extrabold text-ink">
+              <Primitive.Title className="text-xl font-bold text-ink">
                 {title}
               </Primitive.Title>
               {description ? (
@@ -98,7 +98,7 @@ export function ConfirmDialog({
       <AlertPrimitive.Portal>
         <AlertPrimitive.Overlay className={overlay} />
         <AlertPrimitive.Content className={cn(panel, "max-w-md p-6")}>
-          <AlertPrimitive.Title className="text-xl font-extrabold text-ink">
+          <AlertPrimitive.Title className="text-xl font-bold text-ink">
             {title}
           </AlertPrimitive.Title>
           <AlertPrimitive.Description asChild>

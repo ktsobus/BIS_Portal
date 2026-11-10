@@ -21,7 +21,7 @@ export function FamilyCard({
   const hidden = services.length - shown.length
   return (
     <Card className="flex flex-col p-6">
-      <h3 className="text-xl font-extrabold">
+      <h3 className="text-xl font-bold">
         <Link
           href={href}
           className="rounded-sm underline-offset-[0.18em] hover:underline"

@@ -52,7 +52,7 @@ export default async function FamilyPage({
       />
       <div className="container-page grid gap-8 py-8 md:py-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <section aria-labelledby="services-titel">
-          <h2 id="services-titel" className="text-2xl font-extrabold">
+          <h2 id="services-titel" className="text-2xl font-bold">
             Services
           </h2>
           {services.length > 0 ? (
@@ -66,7 +66,7 @@ export default async function FamilyPage({
                       className="relative flex items-center gap-4 border-b border-line px-5 py-5 transition-colors duration-150 ease-out last:border-b-0 hover:bg-ground md:px-6"
                     >
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-xl font-extrabold">
+                        <h3 className="text-xl font-bold">
                           <Link
                             href={`/service/${service.slug}`}
                             className="rounded-sm after:absolute after:inset-0"

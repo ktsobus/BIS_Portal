@@ -51,7 +51,7 @@ service management in LeanIX, without a code change.
 - The catalog is a snapshot refreshed every 15 minutes. If LeanIX is down the last good
   snapshot stays; it is marked stale after 24 hours. Without any snapshot the public pages show
   a «catalog unavailable» state with the central contact.
-- Demo mode serves a bundled snapshot (2 families, 3 services, 6 Leistungen today). The real
+- Demo mode serves a bundled snapshot (2 families, 3 services, 7 Leistungen today). The real
   workspace has 5 families and 29 services, most of them still without a published Leistung.
 - Admin area: sync status and history, manual sync, data-quality report with links into LeanIX,
   admin accounts (password, always role admin), SAML providers, two-factor rule for admins.

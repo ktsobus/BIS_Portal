@@ -28,7 +28,7 @@ export default async function StartPage() {
       </PageHead>
 
       <div className="container-page py-10 md:py-12">
-        <h2 className="text-2xl font-extrabold">Service-Familien</h2>
+        <h2 className="text-2xl font-bold">Service-Familien</h2>
         {families.length > 0 ? (
           <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {families.map((family, index) => {

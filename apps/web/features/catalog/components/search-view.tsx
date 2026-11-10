@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useState } from "react"
 import Link from "next/link"
 import type { SearchEntry, SupportContact } from "@workspace/api"
-import { Search, X } from "lucide-react"
+import { ChevronRight, Search, X } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -170,7 +170,7 @@ export function SearchView({
       </form>
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-        <h2 role="status" className="text-xl font-extrabold">
+        <h2 role="status" className="text-xl font-bold">
           {filtered
             ? countLabel(results.length, "Treffer", "Treffer")
             : `Alle ${countLabel(results.length, "Eintrag", "Einträge")}`}
@@ -192,9 +192,9 @@ export function SearchView({
             {results.map((entry) => (
               <li
                 key={`${entry.kind}-${entry.id}`}
-                className="relative border-b border-line px-5 py-4 transition-colors duration-150 ease-out last:border-b-0 hover:bg-ground md:px-6"
+                className="relative flex items-center gap-4 border-b border-line px-5 py-4 transition-colors duration-150 ease-out last:border-b-0 hover:bg-ground md:px-6"
               >
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <div className="min-w-0 flex-1">
                   <h3 className="text-lg font-bold">
                     <Link
                       href={entryHref(entry)}
@@ -203,18 +203,24 @@ export function SearchView({
                       {entry.name}
                     </Link>
                   </h3>
-                  <Badge>
-                    {entry.kind === "service"
-                      ? "Service"
-                      : (entry.subtypeLabel ?? "Leistung")}
-                  </Badge>
-                </div>
-                {entry.summary ? (
-                  <p className="mt-1 line-clamp-2 max-w-[70ch] text-sm text-text">
-                    {entry.summary}
+                  <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+                    <Badge>
+                      {entry.kind === "service"
+                        ? "Service"
+                        : (entry.subtypeLabel ?? "Leistung")}
+                    </Badge>
+                    {entry.context}
                   </p>
-                ) : null}
-                <p className="mt-1.5 text-sm text-muted">{entry.context}</p>
+                  {entry.summary ? (
+                    <p className="mt-2 max-w-[70ch] text-text">
+                      {entry.summary}
+                    </p>
+                  ) : null}
+                </div>
+                <ChevronRight
+                  aria-hidden="true"
+                  className="size-5 shrink-0 text-muted"
+                />
               </li>
             ))}
           </ul>

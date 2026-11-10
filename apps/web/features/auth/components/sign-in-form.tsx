@@ -179,12 +179,12 @@ export function SignInForm({
       {error ? <Notice tone="error">{error}</Notice> : null}
       {sso ? (
         <Card className="p-6">
-          <h2 className="mb-4 text-xl font-extrabold">Mit Kantonskonto</h2>
+          <h2 className="mb-4 text-xl font-bold">Mit Kantonskonto</h2>
           <SsoSignIn callbackUrl={callbackUrl} />
         </Card>
       ) : null}
       <Card className="p-6">
-        <h2 className="mb-4 text-xl font-extrabold">
+        <h2 className="mb-4 text-xl font-bold">
           {sso ? "Mit Passwort" : "Mit E-Mail-Adresse und Passwort"}
         </h2>
         <PasswordSignIn callbackUrl={callbackUrl} />

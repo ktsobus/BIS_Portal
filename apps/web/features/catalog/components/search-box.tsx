@@ -173,6 +173,15 @@ export function SearchBox({ className }: { className?: string }) {
           onKeyDown={onInputKeyDown}
           className="h-13 w-full rounded-md border border-line-strong bg-white pr-4 pl-12 text-base text-ink transition-colors duration-150 ease-out hover:border-ink"
         />
+        {query ? null : (
+          <kbd
+            aria-hidden="true"
+            title="Taste «/» setzt den Fokus ins Suchfeld"
+            className="pointer-events-none absolute top-1/2 right-3.5 hidden h-6 min-w-6 -translate-y-1/2 place-items-center rounded-sm border border-line bg-ground px-1.5 font-sans text-xs text-muted md:grid"
+          >
+            /
+          </kbd>
+        )}
         <div
           id={listId}
           role="listbox"

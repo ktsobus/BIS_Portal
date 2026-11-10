@@ -20,7 +20,7 @@ export function CatalogFooter({
     <footer className="mt-auto border-t border-line bg-white">
       <div className="container-page grid gap-x-12 gap-y-8 py-10 text-sm md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <div>
-          <p className="text-base font-extrabold text-ink italic">
+          <p className="text-base font-bold text-ink italic">
             Amt für Informatik und Organisation
           </p>
           <p className="mt-1 text-text italic">

@@ -18,7 +18,7 @@ export default function GlobalError({
       <body>
         <title>Fehler · BITS-Portal</title>
         <main className="container-page py-14">
-          <h1 className="text-3xl font-extrabold">
+          <h1 className="text-3xl font-bold">
             Das BITS-Portal ist gerade nicht erreichbar
           </h1>
           <p className="mt-3 max-w-[40rem] text-lg">

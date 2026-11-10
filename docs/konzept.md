@@ -472,7 +472,7 @@ Aktions-Ressource zeigen einen Standard-Kontakt (z. B. Service Desk) – offene 
 | Solothurner Rot `#CC0000`, Schwarz, Weiss | Akzent für Schaltflächen und Titelmarke; Kontrast auf Weiss 5,9:1 (WCAG AA) |
 | Grafik-Grau `#646B76`, Schwarz `#333333` | Sekundärtext (5,4:1 auf Weiss), Fliesstext                                   |
 | Tonwerte (z. B. DodgerBlue4 8 % `#ECF1F6`) | Hinweisflächen, Auswahl; DodgerBlue4 für Links und Fokus; Zustände aus den Grafikfarben |
-| Frutiger LT Std 55/56/75/76              | Freie Schrift Open Sans (humanistisch, Frutiger-Linie), lokal eingebunden: 400, 700, 800 + kursiv; Frutiger-Webfont später mit Lizenz |
+| Frutiger LT Std 55/56/75/76              | Freie Schrift Open Sans (humanistisch, Frutiger-Linie), lokal eingebunden: 400 und 700, je mit kursiv; Frutiger-Webfont später mit Lizenz |
 | Keine Verläufe, keine Schatten           | Flache Flächen, Haarlinien; nur CD-Farben als Tokens (`app/globals.css`)     |
 | Rotes Quadrat beim Seitentitel           | Titelkomponente mit rotem Quadrat                                            |
 | Linksbündig, max. ~70 Zeichen            | `max-w-[70ch]` für Fliesstext, nichts zentriert                              |

@@ -77,27 +77,33 @@ export default async function LeistungPage({
           leistung.subtypeLabel ? <Badge>{leistung.subtypeLabel}</Badge> : null
         }
       />
-      <div className="container-page grid gap-x-12 gap-y-10 py-8 md:py-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="min-w-0 space-y-10 lg:order-1">
-          <section aria-labelledby="beschreibung-titel">
-            <h2 id="beschreibung-titel" className="sr-only">
-              Beschreibung
-            </h2>
-            {leistung.description ? (
-              <MarkdownText className="text-[1.0625rem]">
-                {leistung.description}
-              </MarkdownText>
-            ) : (
-              <p className="max-w-[60ch] text-muted">
-                Für diese Leistung ist in LeanIX noch keine Beschreibung
-                erfasst.
-              </p>
-            )}
-          </section>
+      {/*
+        Schmal: «Nächster Schritt» zuerst, dann die Beschreibung, dann die
+        übrigen Angaben. Breit: Beschreibung links, alles andere rechts.
+      */}
+      <div className="container-page grid gap-x-12 gap-y-8 py-8 md:py-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-y-10">
+        <div className="min-w-0 space-y-10 max-lg:order-2">
+          <Card className="p-5 md:p-8">
+            <section aria-labelledby="beschreibung-titel">
+              <h2 id="beschreibung-titel" className="sr-only">
+                Beschreibung
+              </h2>
+              {leistung.description ? (
+                <MarkdownText className="text-[1.0625rem]">
+                  {leistung.description}
+                </MarkdownText>
+              ) : (
+                <p className="max-w-[60ch] text-muted">
+                  Für diese Leistung ist in LeanIX noch keine Beschreibung
+                  erfasst.
+                </p>
+              )}
+            </section>
+          </Card>
 
           {parent ? (
             <section aria-labelledby="teil-von-titel">
-              <h2 id="teil-von-titel" className="text-2xl font-extrabold">
+              <h2 id="teil-von-titel" className="text-2xl font-bold">
                 Teil der Leistung
               </h2>
               <div className="mt-4">
@@ -108,7 +114,7 @@ export default async function LeistungPage({
 
           {children.length > 0 ? (
             <section aria-labelledby="teilleistungen-titel">
-              <h2 id="teilleistungen-titel" className="text-2xl font-extrabold">
+              <h2 id="teilleistungen-titel" className="text-2xl font-bold">
                 Dazu gehören
               </h2>
               <div className="mt-4">
@@ -118,9 +124,9 @@ export default async function LeistungPage({
           ) : null}
         </div>
 
-        <aside className="space-y-5 lg:sticky lg:top-6 lg:order-2 lg:self-start">
-          <Card className="p-5">
-            <h2 className="text-lg font-extrabold">Nächster Schritt</h2>
+        <aside className="max-lg:contents lg:sticky lg:top-6 lg:space-y-5 lg:self-start">
+          <Card className="p-5 max-lg:order-1">
+            <h2 className="text-lg font-bold">Nächster Schritt</h2>
             {leistung.actions.length > 0 ? (
               <>
                 {onlyFallback ? (
@@ -147,58 +153,62 @@ export default async function LeistungPage({
             )}
           </Card>
 
-          {leistung.responsible.length > 0 ? (
-            <DetailSection title="Verantwortlich">
-              <OrgUnitList units={leistung.responsible} />
-            </DetailSection>
-          ) : null}
-          {leistung.persons.length > 0 ? (
-            <DetailSection title="Ansprechpersonen">
-              <PersonList persons={leistung.persons} />
-            </DetailSection>
-          ) : null}
-          {leistung.audiences.length > 0 ? (
-            <DetailSection title="Leistungsbezüger">
-              <p>{leistung.audiences.map((item) => item.name).join(", ")}</p>
-            </DetailSection>
-          ) : null}
-          {leistung.applications.length > 0 ? (
-            <DetailSection title="Anwendungen">
-              <p>{leistung.applications.map((item) => item.name).join(", ")}</p>
-            </DetailSection>
-          ) : null}
-          {placements.length > 0 ? (
-            <DetailSection
-              title={
-                placements.length > 1
-                  ? "Gehört zu den Services"
-                  : "Gehört zum Service"
-              }
-            >
-              <ul className="space-y-1">
-                {placements.map(({ service, family }) => (
-                  <li key={service.id}>
-                    <Link href={`/service/${service.slug}`} className="link">
-                      {service.name}
-                    </Link>
-                    <span className="block text-xs text-muted">
-                      {family.name}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </DetailSection>
-          ) : null}
-          {leistung.links.length > 0 ? (
-            <DetailSection title="Weitere Informationen">
-              <InfoLinkList links={leistung.links} />
-            </DetailSection>
-          ) : null}
-          {updated ? (
-            <DetailSection title="Stand">
-              <p>Zuletzt geändert am {updated}</p>
-            </DetailSection>
-          ) : null}
+          <div className="space-y-5 max-lg:order-3">
+            {leistung.responsible.length > 0 ? (
+              <DetailSection title="Verantwortlich">
+                <OrgUnitList units={leistung.responsible} />
+              </DetailSection>
+            ) : null}
+            {leistung.persons.length > 0 ? (
+              <DetailSection title="Ansprechpersonen">
+                <PersonList persons={leistung.persons} />
+              </DetailSection>
+            ) : null}
+            {leistung.audiences.length > 0 ? (
+              <DetailSection title="Leistungsbezüger">
+                <p>{leistung.audiences.map((item) => item.name).join(", ")}</p>
+              </DetailSection>
+            ) : null}
+            {leistung.applications.length > 0 ? (
+              <DetailSection title="Anwendungen">
+                <p>
+                  {leistung.applications.map((item) => item.name).join(", ")}
+                </p>
+              </DetailSection>
+            ) : null}
+            {placements.length > 0 ? (
+              <DetailSection
+                title={
+                  placements.length > 1
+                    ? "Gehört zu den Services"
+                    : "Gehört zum Service"
+                }
+              >
+                <ul className="space-y-1">
+                  {placements.map(({ service, family }) => (
+                    <li key={service.id}>
+                      <Link href={`/service/${service.slug}`} className="link">
+                        {service.name}
+                      </Link>
+                      <span className="block text-xs text-muted">
+                        {family.name}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </DetailSection>
+            ) : null}
+            {leistung.links.length > 0 ? (
+              <DetailSection title="Weitere Informationen">
+                <InfoLinkList links={leistung.links} />
+              </DetailSection>
+            ) : null}
+            {updated ? (
+              <DetailSection title="Stand">
+                <p>Zuletzt geändert am {updated}</p>
+              </DetailSection>
+            ) : null}
+          </div>
         </aside>
       </div>
     </>

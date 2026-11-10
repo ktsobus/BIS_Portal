@@ -26,12 +26,12 @@ export function AdminShell({
           <Link
             href="/admin"
             aria-label="BITS-Portal, Verwaltung"
-            className="block rounded-sm py-[18px] lg:px-3"
+            className="block rounded-sm py-5 lg:px-3"
           >
             <Logo />
           </Link>
-          <p className="text-sm font-extrabold text-ink lg:mt-1 lg:px-3">
-            BITS-Portal · Verwaltung
+          <p className="text-sm font-bold whitespace-nowrap text-ink lg:mt-1 lg:px-3">
+            <span className="max-lg:hidden">BITS-Portal · </span>Verwaltung
           </p>
         </div>
         <AdminNav />
