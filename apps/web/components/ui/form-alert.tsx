@@ -24,13 +24,11 @@ export function FormAlert({
       id={id}
       variant="destructive"
       tabIndex={-1}
-      className="p-4 outline-none"
+      className="outline-none"
     >
       <CircleAlertIcon aria-hidden="true" />
-      <AlertTitle className="text-base font-bold">{title}</AlertTitle>
-      <AlertDescription className="text-foreground!">
-        {children}
-      </AlertDescription>
+      <AlertTitle>{title}</AlertTitle>
+      <AlertDescription>{children}</AlertDescription>
     </Alert>
   )
 }
