@@ -1,75 +1,36 @@
-"use client"
+import type { ComponentProps } from "react"
 
-import * as React from "react"
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+const stackedClasses =
+  "max-md:block max-md:[&_tbody]:block max-md:[&_td]:block max-md:[&_td]:border-0 max-md:[&_td]:px-0 max-md:[&_td]:py-1 max-md:[&_td]:text-left max-md:[&_td:empty]:hidden max-md:[&_thead]:sr-only max-md:[&_tr]:block max-md:[&_tr]:border-b max-md:[&_tr]:border-line max-md:[&_tr]:px-4 max-md:[&_tr]:py-3 max-md:[&_tr:last-child]:border-b-0"
+
+/**
+ * Tabelle in einem Rahmen. Auf schmalen Bildschirmen wird jede Zeile zu
+ * einem Block (die Spaltentitel stehen dann als `label` bei den Zellen),
+ * damit niemand seitlich scrollen muss.
+ */
+export function Table({ className, ...props }: ComponentProps<"table">) {
   return (
-    <div
-      data-slot="table-container"
-      className="relative w-full overflow-x-auto"
-    >
+    <div className="overflow-x-auto rounded-lg border border-line bg-white">
       <table
-        data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
+        className={cn(
+          "w-full border-collapse text-left text-sm",
+          stackedClasses,
+          className
+        )}
         {...props}
       />
     </div>
   )
 }
 
-function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
-  return (
-    <thead
-      data-slot="table-header"
-      className={cn("[&_tr]:border-b", className)}
-      {...props}
-    />
-  )
-}
-
-function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
-  return (
-    <tbody
-      data-slot="table-body"
-      className={cn("[&_tr:last-child]:border-0", className)}
-      {...props}
-    />
-  )
-}
-
-function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
-  return (
-    <tfoot
-      data-slot="table-footer"
-      className={cn(
-        "border-t bg-muted/50 font-bold [&>tr]:last:border-b-0",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
-  return (
-    <tr
-      data-slot="table-row"
-      className={cn(
-        "border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function TableHead({ className, ...props }: React.ComponentProps<"th">) {
+export function Th({ className, ...props }: ComponentProps<"th">) {
   return (
     <th
-      data-slot="table-head"
+      scope="col"
       className={cn(
-        "h-10 px-2 text-left align-middle font-bold whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",
+        "border-b border-line bg-ground px-4 py-2.5 text-xs font-bold whitespace-nowrap text-muted",
         className
       )}
       {...props}
@@ -77,39 +38,24 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   )
 }
 
-function TableCell({ className, ...props }: React.ComponentProps<"td">) {
+export function Td({
+  className,
+  label,
+  ...props
+}: ComponentProps<"td"> & {
+  /** Spaltentitel für die Blockansicht auf schmalen Bildschirmen. */
+  label?: string
+}) {
   return (
     <td
-      data-slot="table-cell"
+      data-label={label}
       className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0",
+        "border-b border-line px-4 py-3 align-top text-text [tr:last-child>&]:border-b-0",
+        label &&
+          "max-md:before:block max-md:before:text-xs max-md:before:text-muted max-md:before:content-[attr(data-label)]",
         className
       )}
       {...props}
     />
   )
-}
-
-function TableCaption({
-  className,
-  ...props
-}: React.ComponentProps<"caption">) {
-  return (
-    <caption
-      data-slot="table-caption"
-      className={cn("mt-4 text-sm text-muted-foreground", className)}
-      {...props}
-    />
-  )
-}
-
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
 }

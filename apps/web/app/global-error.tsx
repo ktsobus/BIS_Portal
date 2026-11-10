@@ -1,29 +1,38 @@
 "use client"
 
-// Ersetzt bei einem Fehler im Root-Layout das ganze Dokument; Schrift und
-// CD-Stile müssen deshalb hier selbst geladen werden.
-import "@fontsource-variable/source-sans-3/wght.css"
-import "@fontsource-variable/source-sans-3/wght-italic.css"
 import "./globals.css"
 
-import { AdminShell } from "@/features/admin/components/admin-shell"
-import { ErrorNotice } from "@/features/admin/components/error-notice"
-
-/** Notseite für Fehler im Root-Layout selbst (deutsch, im CD). */
+/**
+ * Fängt Fehler in der Rahmenseite. Ersetzt das Root-Layout und bringt darum
+ * ein eigenes Dokument mit; bewusst ohne Logo und Provider, damit die Seite
+ * auch bei einem Fehler in diesen Teilen erscheint.
+ */
 export default function GlobalError({
-  error,
   retry,
 }: {
   error: unknown
   retry: () => void
 }) {
   return (
-    <html lang="de-CH" className="antialiased">
+    <html lang="de-CH">
       <body>
-        <title>Fehler · Business-IT-Serviceportal · Kanton Solothurn</title>
-        <AdminShell variant="public">
-          <ErrorNotice error={error} retry={retry} />
-        </AdminShell>
+        <title>Fehler · BITS-Portal</title>
+        <main className="container-page py-14">
+          <h1 className="text-3xl font-extrabold">
+            Das BITS-Portal ist gerade nicht erreichbar
+          </h1>
+          <p className="mt-3 max-w-[40rem] text-lg">
+            Auf dem Server ist ein Fehler aufgetreten. Versuchen Sie es in
+            einigen Minuten erneut.
+          </p>
+          <button
+            type="button"
+            onClick={() => retry()}
+            className="mt-7 inline-flex h-12 items-center rounded-md border border-red bg-red px-5 font-bold text-white hover:border-red-strong hover:bg-red-strong"
+          >
+            Erneut versuchen
+          </button>
+        </main>
       </body>
     </html>
   )

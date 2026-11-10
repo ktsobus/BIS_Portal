@@ -1,151 +1,127 @@
+import type { ReactNode } from "react"
 import type { OrgUnit, SupportContact } from "@workspace/api"
+import { Mail, Phone } from "lucide-react"
 
+import { ExternalLink } from "@/components/site/external-link"
 import { cn } from "@/lib/utils"
 
 import { phoneHref, safeHref } from "../links"
-import { ActionLink } from "./action-links"
-import { ExternalLink } from "./external-link"
-import { orgUnitNames } from "./org-units"
+import { ActionLinks } from "./action-links"
 
-/** Hat der Kontakt mindestens einen nutzbaren Weg? */
+/** Ein zentraler Kontakt ist nur nutzbar, wenn er ein gültiges Ziel hat. */
 export function hasSupportContact(
   contact: SupportContact | null | undefined
 ): contact is SupportContact {
+  if (!contact) return false
   return Boolean(
-    contact &&
-    ((contact.request && safeHref(contact.request.url)) ||
-      contact.email ||
-      contact.phone)
+    safeHref(contact.request?.url) || contact.email || contact.phone
   )
 }
 
-/**
- * Zentraler Kontakt (Service Desk) aus der Konfiguration:
- * - `buttons`: Anfrageweg als Schaltfläche, darunter E-Mail und Telefon
- *   (Hinweise ohne eigenen Bestell- oder Anfrageweg, Ausfallseite)
- * - `links`: alles als Textlinks (Fusszeile)
- */
+/** Zentraler Kontakt (Service Desk): Anfrageweg, E-Mail und Telefon. */
 export function SupportContactLinks({
   contact,
-  variant = "buttons",
+  variant = "button",
   className,
 }: {
   contact: SupportContact
-  variant?: "buttons" | "links"
+  /** `link`: alles als Textlinks (Fusszeile). */
+  variant?: "button" | "link"
   className?: string
 }) {
-  const request =
-    contact.request && safeHref(contact.request.url) ? contact.request : null
-  if (!request && !contact.email && !contact.phone) return null
-
-  const details = (
-    <>
-      {contact.email ? (
-        <li>
-          E-Mail:{" "}
-          <a href={`mailto:${contact.email}`} className="link-cd">
-            {contact.email}
-          </a>
-        </li>
-      ) : null}
-      {contact.phone ? (
-        <li>
-          Telefon:{" "}
-          <a href={phoneHref(contact.phone)} className="link-cd">
-            {contact.phone}
-          </a>
-        </li>
-      ) : null}
-    </>
-  )
-
-  if (variant === "links") {
-    return (
-      <ul className={cn("flex flex-col gap-1", className)}>
-        {request ? (
-          <li>
-            <ExternalLink href={request.url}>{request.label}</ExternalLink>
-          </li>
-        ) : null}
-        {details}
-      </ul>
-    )
-  }
-
+  const direct = "inline-flex items-center gap-2 link"
+  const requestHref = safeHref(contact.request?.url)
   return (
-    <div className={cn("flex flex-col items-start gap-3", className)}>
-      {request ? <ActionLink action={request} /> : null}
+    <div className={cn("space-y-3", className)}>
+      {contact.request && variant === "button" ? (
+        <ActionLinks actions={[contact.request]} />
+      ) : null}
+      {contact.request && requestHref && variant === "link" ? (
+        <p className="text-sm">
+          <ExternalLink
+            href={requestHref}
+            data-kind={contact.request.kind}
+            className="link font-bold"
+          >
+            {contact.request.label}
+          </ExternalLink>
+        </p>
+      ) : null}
       {contact.email || contact.phone ? (
-        <ul className="flex flex-col gap-1">{details}</ul>
+        <ul className="space-y-1.5 text-sm">
+          {contact.email ? (
+            <li>
+              <a href={`mailto:${contact.email}`} className={direct}>
+                <Mail aria-hidden="true" className="size-4 shrink-0" />
+                <span className="break-all">{contact.email}</span>
+              </a>
+            </li>
+          ) : null}
+          {contact.phone ? (
+            <li>
+              <a href={phoneHref(contact.phone)} className={direct}>
+                <Phone aria-hidden="true" className="size-4 shrink-0" />
+                {contact.phone}
+              </a>
+            </li>
+          ) : null}
+        </ul>
       ) : null}
     </div>
   )
 }
 
-/**
- * An wen wenden? Verantwortliche Stelle und/oder Service Desk; endet mit
- * Doppelpunkt, wenn darunter Kontaktangaben folgen.
- */
-export function ContactSentence({
-  responsible,
-  withContact,
-}: {
-  responsible: OrgUnit[]
-  withContact: boolean
-}) {
-  const names = orgUnitNames(responsible)
-  if (names) {
-    return withContact ? (
-      <>
-        Bitte wenden Sie sich an die verantwortliche Stelle (
-        <strong>{names}</strong>) oder an den Service Desk des AIO:
-      </>
-    ) : (
-      <>
-        Bitte wenden Sie sich an die verantwortliche Stelle:{" "}
-        <strong>{names}</strong>.
-      </>
-    )
-  }
-  return withContact
-    ? "Bitte wenden Sie sich an den Service Desk des AIO:"
-    : "Bitte wenden Sie sich an den Service Desk des AIO."
+function unitNames(units: OrgUnit[]): ReactNode {
+  return units.map((unit, index) => (
+    <span key={unit.id}>
+      {index > 0 ? (index === units.length - 1 ? " oder " : ", ") : null}
+      <strong>{unit.name}</strong>
+    </span>
+  ))
 }
 
 /**
- * Hinweis ohne eigenen Bestell- oder Anfrageweg (Leistung ohne Aktion,
- * Service ohne Leistungen): Text, verantwortliche Stelle und – falls
- * konfiguriert – der zentrale Kontakt als Schaltfläche bzw. Links.
+ * Hinweis, wenn eine Leistung oder ein Service keinen eigenen Bestell- oder
+ * Anfrageweg hat: an wen sich die Person stattdessen wendet. Ohne
+ * Konfiguration bleibt es beim Text; es wird kein Kontakt erfunden.
  */
 export function NoRequestPathHint({
   message,
   responsible,
   contact,
-  emphasize = false,
+  className,
 }: {
-  message: string
+  message?: string
   responsible: OrgUnit[]
   contact: SupportContact | null | undefined
-  /** Einleitung fett und als eigener Absatz (Service ohne Leistungen). */
-  emphasize?: boolean
+  className?: string
 }) {
   const withContact = hasSupportContact(contact)
-  const sentence = (
-    <ContactSentence responsible={responsible} withContact={withContact} />
-  )
   return (
-    <>
-      {emphasize ? (
+    <div className={cn("space-y-3 text-sm text-text", className)}>
+      {message ? <p>{message}</p> : null}
+      {withContact ? (
         <>
-          <p className="font-bold">{message}</p>
-          <p>{sentence}</p>
+          <p>
+            {responsible.length > 0 ? (
+              <>
+                Bitte wenden Sie sich an die verantwortliche Stelle (
+                {unitNames(responsible)}) oder an den Service Desk des AIO:
+              </>
+            ) : (
+              "Bitte wenden Sie sich an den Service Desk des AIO:"
+            )}
+          </p>
+          <SupportContactLinks contact={contact} />
         </>
-      ) : (
+      ) : responsible.length > 0 ? (
         <p>
-          {message} {sentence}
+          Bitte wenden Sie sich an die verantwortliche Stelle:{" "}
+          {unitNames(responsible)}.
         </p>
+      ) : (
+        <p>Bitte wenden Sie sich an den Service Desk des AIO.</p>
       )}
-      {withContact ? <SupportContactLinks contact={contact} /> : null}
-    </>
+    </div>
   )
 }

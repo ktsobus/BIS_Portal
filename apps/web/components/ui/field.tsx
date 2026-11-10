@@ -1,257 +1,107 @@
-"use client"
+import type { ComponentProps, ReactNode } from "react"
+import { ChevronDown } from "lucide-react"
 
-import { useMemo } from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
 
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+const control =
+  "w-full rounded-md border border-line-strong bg-white px-3 text-base text-ink transition-colors duration-150 ease-out hover:border-ink disabled:cursor-not-allowed disabled:bg-ground disabled:text-muted disabled:hover:border-line-strong aria-invalid:border-red"
 
-function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
+export function Input({ className, ...props }: ComponentProps<"input">) {
+  return <input className={cn(control, "h-10", className)} {...props} />
+}
+
+export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
   return (
-    <fieldset
-      data-slot="field-set"
-      className={cn(
-        "flex flex-col gap-4 has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3",
-        className
-      )}
+    <textarea
+      className={cn(control, "min-h-24 py-2 leading-normal", className)}
       {...props}
     />
   )
 }
 
-function FieldLegend({
-  className,
-  variant = "legend",
-  ...props
-}: React.ComponentProps<"legend"> & { variant?: "legend" | "label" }) {
-  return (
-    <legend
-      data-slot="field-legend"
-      data-variant={variant}
-      className={cn(
-        "mb-1.5 font-bold data-[variant=label]:text-sm data-[variant=legend]:text-base",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="field-group"
-      className={cn(
-        "group/field-group @container/field-group flex w-full flex-col gap-5 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-const fieldVariants = cva(
-  "group/field flex w-full gap-2 data-[invalid=true]:text-destructive",
-  {
-    variants: {
-      orientation: {
-        vertical: "flex-col *:w-full [&>.sr-only]:w-auto",
-        horizontal:
-          "flex-row items-center has-[>[data-slot=field-content]]:items-start *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
-        responsive:
-          "flex-col *:w-full @md/field-group:flex-row @md/field-group:items-center @md/field-group:*:w-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:*:data-[slot=field-label]:flex-auto [&>.sr-only]:w-auto @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
-      },
-    },
-    defaultVariants: {
-      orientation: "vertical",
-    },
-  }
-)
-
-function Field({
-  className,
-  orientation = "vertical",
-  ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) {
-  return (
-    <div
-      role="group"
-      data-slot="field"
-      data-orientation={orientation}
-      className={cn(fieldVariants({ orientation }), className)}
-      {...props}
-    />
-  )
-}
-
-function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="field-content"
-      className={cn(
-        "group/field-content flex flex-1 flex-col gap-0.5 leading-snug",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldLabel({
-  className,
-  ...props
-}: React.ComponentProps<typeof Label>) {
-  return (
-    <Label
-      data-slot="field-label"
-      className={cn(
-        "group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:border-primary/30 has-data-checked:bg-primary/5 has-[>[data-slot=field]]:rounded-lg has-[>[data-slot=field]]:border has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/50 has-[>[data-slot=field]]:has-[:focus-visible]:border-ring has-[>[data-slot=field]]:has-[:focus-visible]:ring-3 has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50 *:data-[slot=field]:p-2.5 dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10",
-        "has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="field-label"
-      className={cn(
-        "flex w-fit items-center gap-2 text-base font-bold group-data-[disabled=true]/field:opacity-50",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
-  return (
-    <p
-      data-slot="field-description"
-      className={cn(
-        "text-left text-sm leading-normal font-normal text-muted-foreground group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5",
-        "last:mt-0 nth-last-2:-mt-1",
-        "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldSeparator({
-  children,
-  className,
-  ...props
-}: React.ComponentProps<"div"> & {
-  children?: React.ReactNode
-}) {
-  return (
-    <div
-      data-slot="field-separator"
-      data-content={!!children}
-      className={cn(
-        "relative -my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2",
-        className
-      )}
-      {...props}
-    >
-      <Separator className="absolute inset-0 top-1/2" />
-      {children && (
-        <span
-          className="relative mx-auto block w-fit bg-background px-2 text-muted-foreground"
-          data-slot="field-separator-content"
-        >
-          {children}
-        </span>
-      )}
-    </div>
-  )
-}
-
-function FieldError({
+/** Natives Auswahlfeld: vertraute Bedienung, auch auf Mobilgeräten. */
+export function Select({
   className,
   children,
-  errors,
   ...props
-}: React.ComponentProps<"div"> & {
-  errors?: Array<{ message?: string } | undefined>
-}) {
-  const content = useMemo(() => {
-    if (children) {
-      return children
-    }
-
-    if (!errors?.length) {
-      return null
-    }
-
-    const uniqueErrors = [
-      ...new Map(errors.map((error) => [error?.message, error])).values(),
-    ]
-
-    if (uniqueErrors?.length == 1) {
-      return uniqueErrors[0]?.message
-    }
-
-    return (
-      <ul className="ml-4 flex list-disc flex-col gap-1">
-        {uniqueErrors.map(
-          (error, index) =>
-            error?.message && <li key={index}>{error.message}</li>
-        )}
-      </ul>
-    )
-  }, [children, errors])
-
-  if (!content) {
-    return null
-  }
-
+}: ComponentProps<"select">) {
   return (
-    <div
-      role="alert"
-      data-slot="field-error"
-      className={cn("text-sm font-normal text-destructive", className)}
+    <span className={cn("relative block", className)}>
+      <select
+        className={cn(control, "h-10 appearance-none pr-9 text-ellipsis")}
+        {...props}
+      >
+        {children}
+      </select>
+      <ChevronDown
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted"
+      />
+    </span>
+  )
+}
+
+export function Label({ className, ...props }: ComponentProps<"label">) {
+  return (
+    <label
+      className={cn("block text-sm font-bold text-ink", className)}
       {...props}
-    >
-      {content}
-    </div>
+    />
   )
 }
 
 /**
- * IDs für Hinweis (`FieldDescription`) und Fehler (`FieldError`) eines Felds
- * und der passende `aria-describedby`-Wert für das Eingabeelement (WCAG
- * 1.3.1/3.3.2). Verweist nur auf tatsächlich angezeigte Elemente.
+ * Formularfeld: Beschriftung über dem Feld, Hilfetext darunter, Fehler unter
+ * dem Feld. Das Feld selbst erhält `id`, `aria-describedby` und
+ * `aria-invalid` von `fieldProps`.
  */
-function fieldDescribedBy(
-  name: string,
-  { description, invalid }: { description?: boolean; invalid?: boolean }
-) {
-  const descriptionId = `${name}-description`
-  const errorId = `${name}-error`
-  const describedBy =
-    [description ? descriptionId : null, invalid ? errorId : null]
-      .filter(Boolean)
-      .join(" ") || undefined
-  return { descriptionId, errorId, describedBy }
+export function Field({
+  id,
+  label,
+  hint,
+  error,
+  optional = false,
+  children,
+  className,
+}: {
+  id: string
+  label: ReactNode
+  hint?: ReactNode
+  error?: string
+  optional?: boolean
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={cn("space-y-1.5", className)}>
+      <Label htmlFor={id}>
+        {label}
+        {optional ? (
+          <span className="font-normal text-muted"> (optional)</span>
+        ) : null}
+      </Label>
+      {children}
+      {error ? (
+        <p id={`${id}-error`} className="text-sm font-bold text-red">
+          {error}
+        </p>
+      ) : hint ? (
+        <p id={`${id}-hint`} className="text-sm text-muted">
+          {hint}
+        </p>
+      ) : null}
+    </div>
+  )
 }
 
-export {
-  fieldDescribedBy,
-  Field,
-  FieldLabel,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-  FieldContent,
-  FieldTitle,
+/** Attribute für das Eingabeelement in einem `Field`. */
+export function fieldProps(
+  id: string,
+  { hint, error }: { hint?: boolean; error?: boolean } = {}
+) {
+  return {
+    id,
+    "aria-invalid": error || undefined,
+    "aria-describedby": error ? `${id}-error` : hint ? `${id}-hint` : undefined,
+  }
 }

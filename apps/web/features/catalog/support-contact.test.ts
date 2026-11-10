@@ -34,7 +34,6 @@ const renderServiceHint = (
 ) =>
   renderToStaticMarkup(
     createElement(NoRequestPathHint, {
-      emphasize: true,
       message:
         "Für diesen Service sind im Portal noch keine Leistungen erfasst.",
       responsible,
@@ -53,6 +52,7 @@ describe("Kontaktweg ohne eigenen Bestell- oder Anfrageweg", () => {
     expect(html).toContain('target="_blank"')
     expect(html).toContain("<strong>Service-Management</strong>")
     expect(html).toContain("oder an den Service Desk des AIO:")
+    expect(html).toContain("öffnet in neuem Tab")
   })
 
   it("zeigt E-Mail und Telefon als mailto- bzw. tel-Link", () => {
@@ -71,8 +71,9 @@ describe("Kontaktweg ohne eigenen Bestell- oder Anfrageweg", () => {
     const html = renderServiceHint(null, [serviceManagement])
     expect(html).not.toContain("<a ")
     expect(html).toContain(
-      "Bitte wenden Sie sich an die verantwortliche Stelle: <strong>Service-Management</strong>."
+      "Bitte wenden Sie sich an die verantwortliche Stelle:"
     )
+    expect(html).toContain("<strong>Service-Management</strong>")
   })
 
   it("Telefon als Standard-Aktion erscheint mit Telefon-Symbol", () => {

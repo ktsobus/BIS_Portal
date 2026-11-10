@@ -11,8 +11,11 @@ erreichbar; der Admin-Bereich (`/admin`) zeigt Sync-Status und Datenqualität.
 - **[Discovery-Skript](scripts/leanix-discovery.mjs)** – liest das LeanIX-Datenmodell aus (nur lesend)
 
 Techstack: [Laeri/dev-template](https://github.com/Laeri/dev-template) (pnpm, Turborepo,
-Next.js 16, Tailwind v4, shadcn/ui, oRPC, TanStack Query, Zod 4, better-auth, Drizzle + Postgres) ·
-Design: [CD-Manual Kanton Solothurn](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn) ·
+Next.js 16, Tailwind v4, oRPC, TanStack Query, Zod 4, better-auth, Drizzle + Postgres); die
+Oberfläche hat eigene Bausteine auf Radix-Primitives statt shadcn/ui ·
+Design: [CD-Manual Kanton Solothurn](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn), von Grund auf
+gestaltet mit [Impeccable](https://github.com/pbakaus/impeccable)
+([Produkt](apps/web/PRODUCT.md), [Design](apps/web/DESIGN.md)) ·
 Regeln für Code und Agenten: [AGENTS.md](AGENTS.md)
 
 ## Entwicklung

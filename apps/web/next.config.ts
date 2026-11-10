@@ -6,7 +6,7 @@ import { PHASE_DEVELOPMENT_SERVER } from "next/constants"
 /**
  * Content Security Policy ohne Nonces: Das Portal lädt nichts von fremden
  * Hosts (Schrift und Logo liegen lokal). `'unsafe-inline'` ist für die
- * Inline-Skripte von Next.js und next-themes nötig, `'unsafe-eval'` nur im
+ * Inline-Skripte von Next.js nötig, `'unsafe-eval'` nur im
  * Entwicklungsmodus (React-Fehleranzeige). Externe Links (LeanIX, ky2help,
  * SmartForm) sind Navigationen und von der Policy nicht betroffen.
  * Eine Nonce-basierte Policy würde dynamisches Rendering aller Seiten

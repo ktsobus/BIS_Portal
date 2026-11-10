@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "open sans",
+        "createdAt": "2026-11-10T08:37:32.275Z",
+        "reason": "Stand-in for the house typeface Frutiger LT Std (no web licence); closest freely licensed face in the Frutiger lineage, chosen by the owner's delegation"
+      }
+    ]
+  }
+}

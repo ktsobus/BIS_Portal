@@ -1,164 +1,120 @@
 "use client"
 
-import * as React from "react"
-import { cn } from "cn"
-import { Dialog as DialogPrimitive } from "radix-ui"
+import type { ReactNode } from "react"
+import { X } from "lucide-react"
+import { AlertDialog as AlertPrimitive, Dialog as Primitive } from "radix-ui"
 
-import { Button } from "@/components/ui/button"
-import { XIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-function Dialog({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
-}
+import { Button } from "./button"
 
-function DialogTrigger({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
-}
+const overlay = "fixed inset-0 z-40 bg-ink/45 data-[state=open]:animate-fade-in"
+const panel =
+  "fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-line-strong bg-white data-[state=open]:animate-fade-in"
 
-function DialogPortal({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Portal>) {
-  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
-}
-
-function DialogClose({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Close>) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
-}
-
-function DialogOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
-  return (
-    <DialogPrimitive.Overlay
-      data-slot="dialog-overlay"
-      className={cn(
-        "fixed inset-0 isolate z-50 bg-black/40 duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function DialogContent({
-  className,
+/**
+ * Dialog für Aufgaben, die geschützten Fokus brauchen (z. B. ein Konto
+ * erfassen). Kopf und Fuss bleiben stehen, der Inhalt scrollt.
+ */
+export function Dialog({
+  open,
+  onOpenChange,
+  title,
+  description,
   children,
-  showCloseButton = true,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean
+  footer,
+  size = "md",
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  description?: ReactNode
+  children: ReactNode
+  footer?: ReactNode
+  size?: "md" | "lg"
 }) {
   return (
-    <DialogPortal>
-      <DialogOverlay />
-      <DialogPrimitive.Content
-        data-slot="dialog-content"
-        className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-          className
-        )}
-        {...props}
-      >
-        {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close data-slot="dialog-close" asChild>
-            <Button
-              variant="ghost"
-              className="absolute top-2 right-2"
-              size="icon-sm"
+    <Primitive.Root open={open} onOpenChange={onOpenChange}>
+      <Primitive.Portal>
+        <Primitive.Overlay className={overlay} />
+        <Primitive.Content
+          className={cn(panel, size === "lg" ? "max-w-2xl" : "max-w-lg")}
+          {...(description ? {} : { "aria-describedby": undefined })}
+        >
+          <div className="flex items-start gap-4 border-b border-line px-6 py-4">
+            <div className="min-w-0 flex-1">
+              <Primitive.Title className="text-xl font-extrabold text-ink">
+                {title}
+              </Primitive.Title>
+              {description ? (
+                <Primitive.Description className="mt-1 text-sm text-muted">
+                  {description}
+                </Primitive.Description>
+              ) : null}
+            </div>
+            <Primitive.Close
+              className="-mr-2 grid size-9 shrink-0 place-items-center rounded-md text-muted transition-colors duration-150 hover:bg-ground hover:text-ink"
+              aria-label="Schliessen"
             >
-              <XIcon />
-              <span className="sr-only">Close</span>
-            </Button>
-          </DialogPrimitive.Close>
-        )}
-      </DialogPrimitive.Content>
-    </DialogPortal>
+              <X aria-hidden="true" className="size-5" />
+            </Primitive.Close>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+            {children}
+          </div>
+          {footer ? (
+            <div className="flex flex-wrap justify-end gap-3 border-t border-line px-6 py-4">
+              {footer}
+            </div>
+          ) : null}
+        </Primitive.Content>
+      </Primitive.Portal>
+    </Primitive.Root>
   )
 }
 
-function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="dialog-header"
-      className={cn("flex flex-col gap-2", className)}
-      {...props}
-    />
-  )
-}
-
-function DialogFooter({
-  className,
-  showCloseButton = false,
+/** Rückfrage vor einer Aktion, die sich nicht rückgängig machen lässt. */
+export function ConfirmDialog({
+  open,
+  onOpenChange,
+  title,
   children,
-  ...props
-}: React.ComponentProps<"div"> & {
-  showCloseButton?: boolean
+  confirmLabel,
+  onConfirm,
+  loading = false,
+  error,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  children: ReactNode
+  confirmLabel: string
+  onConfirm: () => void
+  loading?: boolean
+  error?: ReactNode
 }) {
   return (
-    <div
-      data-slot="dialog-footer"
-      className={cn(
-        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end",
-        className
-      )}
-      {...props}
-    >
-      {children}
-      {showCloseButton && (
-        <DialogPrimitive.Close asChild>
-          <Button variant="outline">Close</Button>
-        </DialogPrimitive.Close>
-      )}
-    </div>
+    <AlertPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <AlertPrimitive.Portal>
+        <AlertPrimitive.Overlay className={overlay} />
+        <AlertPrimitive.Content className={cn(panel, "max-w-md p-6")}>
+          <AlertPrimitive.Title className="text-xl font-extrabold text-ink">
+            {title}
+          </AlertPrimitive.Title>
+          <AlertPrimitive.Description asChild>
+            <div className="mt-2 text-sm text-text">{children}</div>
+          </AlertPrimitive.Description>
+          {error ? <div className="mt-4">{error}</div> : null}
+          <div className="mt-6 flex flex-wrap justify-end gap-3">
+            <AlertPrimitive.Cancel asChild>
+              <Button disabled={loading}>Abbrechen</Button>
+            </AlertPrimitive.Cancel>
+            <Button variant="primary" loading={loading} onClick={onConfirm}>
+              {confirmLabel}
+            </Button>
+          </div>
+        </AlertPrimitive.Content>
+      </AlertPrimitive.Portal>
+    </AlertPrimitive.Root>
   )
-}
-
-function DialogTitle({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Title>) {
-  return (
-    <DialogPrimitive.Title
-      data-slot="dialog-title"
-      className={cn("font-heading text-lg leading-tight font-bold", className)}
-      {...props}
-    />
-  )
-}
-
-function DialogDescription({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Description>) {
-  return (
-    <DialogPrimitive.Description
-      data-slot="dialog-description"
-      className={cn(
-        "text-sm text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
 }

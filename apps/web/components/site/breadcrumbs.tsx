@@ -1,45 +1,38 @@
 import Link from "next/link"
+import { ChevronRight } from "lucide-react"
 
-export interface BreadcrumbItem {
+export interface Crumb {
   label: string
-  /** Ohne `href` = aktuelle Seite. */
   href?: string
 }
 
-/** Brotkrumen «Start › Familie › Service › Leistung». */
-export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
-  if (items.length === 0) return null
-
+/** Pfad im Katalog: Katalog › Familie › Service › Leistung. */
+export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
-    <nav aria-label="Brotkrumen" className="text-sm text-muted-foreground">
-      <ol className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1
-          return (
-            <li
-              key={`${index}-${item.label}`}
-              className="flex min-w-0 items-baseline gap-x-2"
-            >
-              {item.href && !isLast ? (
-                <Link href={item.href} className="link-cd">
-                  {item.label}
-                </Link>
-              ) : (
-                <span
-                  aria-current={isLast ? "page" : undefined}
-                  className={isLast ? "text-foreground" : undefined}
-                >
-                  {item.label}
-                </span>
-              )}
-              {isLast ? null : (
-                <span aria-hidden="true" className="text-foreground">
-                  ›
-                </span>
-              )}
-            </li>
-          )
-        })}
+    <nav aria-label="Brotkrumen" className="text-sm text-muted">
+      <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+        {items.map((item, index) => (
+          <li
+            key={`${item.label}-${index}`}
+            className="flex items-center gap-1.5"
+          >
+            {index > 0 ? (
+              <ChevronRight aria-hidden="true" className="size-3.5 shrink-0" />
+            ) : null}
+            {item.href ? (
+              <Link
+                href={item.href}
+                className="rounded-sm underline-offset-[0.2em] transition-colors duration-150 hover:text-ink hover:underline"
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <span aria-current="page" className="text-text">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
       </ol>
     </nav>
   )

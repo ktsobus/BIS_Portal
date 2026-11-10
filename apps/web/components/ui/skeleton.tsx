@@ -1,13 +1,14 @@
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
 
-function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
+/** Platzhalter in der Form des Inhalts, solange Daten laden. */
+export function Skeleton({ className }: { className?: string }) {
   return (
     <div
-      data-slot="skeleton"
-      className={cn("animate-pulse rounded-md bg-muted", className)}
-      {...props}
+      aria-hidden="true"
+      className={cn(
+        "animate-pulse-soft rounded-sm bg-ground-strong",
+        className
+      )}
     />
   )
 }
-
-export { Skeleton }

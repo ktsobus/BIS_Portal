@@ -286,7 +286,7 @@ gültigen Snapshot.
    übersprungen. Fällt LeanIX aus, läuft das Portal unverändert weiter. Fusszeile: «Stand: …»;
    ab einem Schwellwert (z. B. 24 h ohne erfolgreichen Sync) Hinweis für Admins.
 5. **Aktualisierung** –
-   - MVP: Intervall (z. B. alle 15 Minuten) + Schaltfläche «Jetzt synchronisieren» im Admin-Bereich.
+   - MVP: Intervall (z. B. alle 15 Minuten) + Schaltfläche «Jetzt abgleichen» im Admin-Bereich.
      Der manuelle Sync läuft im Hintergrund; die Anfrage kehrt sofort zurück (kein Timeout im
      Reverse Proxy), der Admin-Bereich zeigt den Fortschritt.
    - Ausbau: Webhook-PULL-Subscription auf Fact-Sheet-Änderungen; bei relevanten Ereignissen
@@ -360,8 +360,10 @@ Leere Werte gelten als nicht gesetzt (Schema in `apps/web/lib/env-schema.ts`).
 ## 5. Techstack und Projektstruktur
 
 Vorgabe ist [Laeri/dev-template](https://github.com/Laeri/dev-template) (fix): pnpm + Turborepo,
-Next.js 16 (App Router), Tailwind CSS v4, shadcn/ui, oRPC (contract-first), TanStack Query,
-Zod 4, better-auth, Drizzle + Postgres, Docker.
+Next.js 16 (App Router), Tailwind CSS v4, oRPC (contract-first), TanStack Query,
+Zod 4, better-auth, Drizzle + Postgres, Docker. Die Oberfläche wurde am 10.11.2026 von Grund
+auf neu gebaut (eigene Bausteine auf Radix-Primitives statt shadcn/ui, siehe
+[DESIGN.md](../apps/web/DESIGN.md)).
 
 ### 5.1 Was übernommen, angepasst, entfernt wird
 
@@ -469,9 +471,9 @@ Aktions-Ressource zeigen einen Standard-Kontakt (z. B. Service Desk) – offene 
 | ---------------------------------------- | ---------------------------------------------------------------------------- |
 | Solothurner Rot `#CC0000`, Schwarz, Weiss | Akzent für Schaltflächen und Titelmarke; Kontrast auf Weiss 5,9:1 (WCAG AA) |
 | Grafik-Grau `#646B76`, Schwarz `#333333` | Sekundärtext (5,4:1 auf Weiss), Fliesstext                                   |
-| Tonwerte (z. B. DodgerBlue4 8 % `#ECF1F6`) | Flächen für Kacheln und Hinweise                                           |
-| Frutiger LT Std 55/56/75/76              | PoC: freie Schrift Source Sans 3 (humanistisch, ähnlicher Charakter), nur 400/700 + kursiv; Frutiger-Webfont später mit Lizenz |
-| Keine Verläufe, keine Schatten           | Flache Flächen, Haarlinien; shadcn-Schatten im Theme entfernen               |
+| Tonwerte (z. B. DodgerBlue4 8 % `#ECF1F6`) | Hinweisflächen, Auswahl; DodgerBlue4 für Links und Fokus; Zustände aus den Grafikfarben |
+| Frutiger LT Std 55/56/75/76              | Freie Schrift Open Sans (humanistisch, Frutiger-Linie), lokal eingebunden: 400, 700, 800 + kursiv; Frutiger-Webfont später mit Lizenz |
+| Keine Verläufe, keine Schatten           | Flache Flächen, Haarlinien; nur CD-Farben als Tokens (`app/globals.css`)     |
 | Rotes Quadrat beim Seitentitel           | Titelkomponente mit rotem Quadrat                                            |
 | Linksbündig, max. ~70 Zeichen            | `max-w-[70ch]` für Fliesstext, nichts zentriert                              |
 | « », –, …                                | UI-Texte entsprechend; Listen mit Halbgeviertstrich                          |
@@ -549,7 +551,7 @@ Beteiligte Teams (Auftragstyp «mehrere Teams»):
 | Ressourcentypen | Noch offen, voraussichtlich vor allem Links → vorläufige Zuordnung (Kapitel 2.4), jederzeit änderbar |
 | Hosting | Interner Server (Docker-Image + Postgres) |
 | Zugriff | Katalog ohne Anmeldung; Admin mit SSO (SAML) wenn möglich, für den PoC zusätzlich einfache Anmeldung (Passwort) |
-| Schrift | Gratis-Schrift statt Frutiger: **Source Sans 3** (SIL OFL), lokal eingebunden, ohne Google-Fonts-Abruf |
+| Schrift | Gratis-Schrift statt Frutiger, lokal eingebunden, ohne Google-Fonts-Abruf: seit dem Neubau der Oberfläche **Open Sans** (SIL OFL), zuvor Source Sans 3 |
 | Logo | Online beschaffen, wenn möglich über eine API (siehe `docs/branding.md`); muss im PoC nicht final sein |
 | Gruppierung | Gemäss Folien: Leistungskategorie Ebene 2 = Familie, Ebene 3 = Service, darunter Leistungen |
 | Freigabe | Kanal reicht; Qualitätssiegel ist kein Kriterium (Kapitel 2.2) |
@@ -627,7 +629,7 @@ Leistungen im Kanal.
 - Snapshot-Cache in Postgres mit Plausibilisierung (Schrumpf-Schutz, Vollständigkeit, Teilfehler),
   Intervall-Sync, Advisory-Lock, Abgleich zwischen Instanzen; das Portal liest nie live aus LeanIX.
 - Admin-Bereich: Passwort-Anmeldung (Ersteinrichtung über `/setup`), optional SAML-SSO,
-  Katalog-Status, «Jetzt synchronisieren», letzte Läufe, Datenqualitätsbericht, Benutzer.
+  Katalog-Status, «Jetzt abgleichen», letzte Läufe, Datenqualitätsbericht, Benutzer.
 - Sicherheit: CSRF-/Origin-Prüfung, Sicherheits-Header (CSP), Drosselung von Fehlanmeldungen,
   Passwortregeln, kein E-Mail-Versand.
 - Betrieb: Docker-Image (Standalone, inkl. Logo), Compose für den internen Server,

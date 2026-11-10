@@ -11,12 +11,20 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Repo conventions
 
 - Package manager: pnpm 11 workspace. `minimumReleaseAge` (7 days) is enforced in `pnpm-workspace.yaml`; don't remove it. If an install is blocked, loosen the version range instead.
-- TanStack Table is **v9** (`useTable`, `tableFeatures`, `create*RowModel`), not v8. See `node_modules/@tanstack/react-table/skills/`.
-- shadcn forms use `Field` + react-hook-form `Controller` (there is no `Form` component).
+- Forms use react-hook-form (`register`) with a zod resolver and `Field` + `fieldProps` from `components/ui/field.tsx`; German messages come from `lib/messages.ts`.
 - API changes start in `packages/api` (contract), then the feature's `server/router.ts` (registered in `apps/web/server/router.ts`).
 - `packages/api` is the only shared package. It holds the wire contract (zod + `@orpc/contract` only) and must stay free of server code; the client imports it.
-- Everything else lives in `apps/web`: shadcn components in `components/ui`, Drizzle in `db/`. The portal sends no email (no password reset, no email verification). Env vars are in `apps/web/.env`.
+- Everything else lives in `apps/web`: the project's own UI primitives in `components/ui`, Drizzle in `db/`. The portal sends no email (no password reset, no email verification). Env vars are in `apps/web/.env`.
 - Feature folders: feature code lives in `apps/web/features/<feature>/` (`components/`, `server/router.ts`, feature helpers). Pages in `app/` stay thin and compose feature components. Features don't import each other's internals; code several features need goes to `components/ui`, `lib/` or `db/`. Contracts/schemas stay in `packages/api` (one file per feature), Drizzle tables in `db/schema/`.
+
+## UI and design
+
+- The frontend was built from the ground up with [Impeccable](https://github.com/pbakaus/impeccable). Its records live in `apps/web`: `PRODUCT.md` (product truth), `DESIGN.md` + `.impeccable/design.json` (visual system), `.impeccable/surfaces/` (direction contract), `.impeccable/config.json` (detector exceptions). Read `PRODUCT.md` and `DESIGN.md` before changing UI; run `npx impeccable detect apps/web/app apps/web/components apps/web/features` before finishing.
+- The only visual reference is the [CD-Manual Kanton Solothurn](https://github.com/ktsobus/CD-Manual-Kanton-Solothurn). All colours are CD colours or tints of them and are defined as tokens in `apps/web/app/globals.css` (`--color-*: initial` removes Tailwind's palette, so arbitrary colours don't exist). No gradients, no shadows, no dark mode (the colour logo may only sit on white and no negative logo is on hand).
+- There is no component library and no shadcn. `components/ui` holds small own primitives (button, field, dialog, table, notice, badge/status, toast, switch) on top of `radix-ui` for behaviour; icons come from `lucide-react`. `components/site` is the public shell (header, page head with the red title square, breadcrumbs), `components/admin` the admin shell. Reuse these before adding new ones; one button shape, one form vocabulary.
+- Typeface: Open Sans (SIL OFL), self-hosted in `apps/web/public/fonts/open-sans/`, as stand-in for Frutiger LT Std. Weights 400 (text), 700 (labels, buttons), 800 (titles), 800 italic (sender). No requests to font hosts.
+- UI copy is German in Swiss orthography (ss, no ß), with « », – and …; text is left-aligned, prose at most about 70 characters wide.
+- Red (`--color-red`) is the primary action, the current navigation mark and the title square. One red button per group; the service-desk fallback action stays secondary in lists (`features/catalog/components/action-links.tsx`).
 
 ## Data access
 

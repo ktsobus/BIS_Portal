@@ -1,39 +1,38 @@
-import type { Metadata } from "next"
-
-// Source Sans 3 (frei, selbst gehostet): normal und kursiv, variable Gewichte.
-// Bewusst nicht über next/font/google, der Build-Server hat evtl. kein Internet.
-import "@fontsource-variable/source-sans-3/wght.css"
-import "@fontsource-variable/source-sans-3/wght-italic.css"
-import "./globals.css"
+import type { Metadata, Viewport } from "next"
 
 import { Providers } from "@/components/providers"
 
-const siteName = "Business-IT-Serviceportal · Kanton Solothurn"
+import "./globals.css"
 
 export const metadata: Metadata = {
   title: {
-    default: siteName,
-    template: `%s · ${siteName}`,
+    default: "BITS-Portal · Kanton Solothurn",
+    template: "%s · BITS-Portal",
   },
   description:
-    "Business-IT-Services des Amts für Informatik und Organisation (AIO): Leistungen, Verantwortliche und nächste Schritte.",
-  applicationName: "Business-IT-Serviceportal",
+    "Business IT-Servicekatalog des Amts für Informatik und Organisation (AIO), Kanton Solothurn: IT-Leistungen finden, bestellen und anfragen.",
+  robots: { index: false, follow: false },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#ffffff",
+}
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="de-CH" suppressHydrationWarning className="antialiased">
+    <html lang="de-CH">
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/open-sans/open-sans-latin-wght-normal.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>
-        <a
-          href="#inhalt"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-background focus:px-4 focus:py-2 focus:font-bold focus:text-foreground focus:underline"
-        >
-          Zum Inhalt
-        </a>
         <Providers>{children}</Providers>
       </body>
     </html>

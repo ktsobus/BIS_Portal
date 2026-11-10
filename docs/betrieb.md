@@ -171,7 +171,7 @@ Ausnahme `APP_URL`: Sie steckt im Bundle, also mit `--build`.
 | `GET /rpc/health/check`                 | Liveness: Server antwortet (HTTP 200), ohne Abhängigkeiten zu prüfen.                                  |
 | `GET /rpc/health/ready`                 | Readiness, nutzt auch der Docker-`HEALTHCHECK`: 200 (`ok`/`degraded`), 503 ohne DB oder ohne Katalog   |
 | `GET /rpc/catalog/status`               | Katalog: `available` (Snapshot geladen), `source` (`leanix`/`demo`), `generatedAt`, `stale` (veraltet) |
-| `/admin/catalog` (angemeldet als Admin) | Sync-Status, letzte Läufe, «Jetzt synchronisieren», Datenqualitätsbericht mit Links in die Fact Sheets |
+| `/admin/catalog` (angemeldet als Admin) | Sync-Status, letzte Läufe, «Jetzt abgleichen», Datenqualitätsbericht mit Links in die Fact Sheets |
 
 Für ein Monitoring eignet sich `/rpc/catalog/status`: Alarm bei `available: false`, bei
 `source: "demo"` in Produktion oder bei `stale: true` (länger als `CATALOG_STALE_AFTER_HOURS`
@@ -202,7 +202,7 @@ Der Sync nutzt den API-Token eines **technischen Benutzers** in LeanIX
 1. In LeanIX für den technischen Benutzer einen neuen Token erzeugen (Ablaufdatum setzen).
 2. `LEANIX_API_TOKEN` in `.env.prod` ersetzen.
 3. `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d app`
-4. In `/admin/catalog` «Jetzt synchronisieren» auslösen und prüfen, dass der Lauf erfolgreich ist.
+4. In `/admin/catalog` «Jetzt abgleichen» auslösen und prüfen, dass der Lauf erfolgreich ist.
 5. Den alten Token in LeanIX widerrufen.
 
 Läuft ein Token ab, schlagen die Syncs fehl; das Portal zeigt weiter den letzten gültigen Stand.
@@ -256,7 +256,7 @@ lassen sich 2FA-Geheimnisse nach einer Wiederherstellung nicht mehr lesen.
 | ----------------- | ------------------------------------------------------------------------------------ |
 | `/setup`          | Ersten Admin anlegen (nur solange es keinen gibt)                                    |
 | `/sign-in`        | Anmeldung mit Passwort oder SAML                                                     |
-| `/admin/catalog`  | Sync-Status, letzte Läufe, «Jetzt synchronisieren», Datenqualitätsbericht            |
+| `/admin/catalog`  | Sync-Status, letzte Läufe, «Jetzt abgleichen», Datenqualitätsbericht            |
 | `/admin/users`    | Passwort-Benutzer anlegen, Adminrechte vergeben und entziehen                        |
 | `/admin/security` | Zwei-Faktor-Authentisierung (TOTP) für Admins mit Passwort verlangen (Standard: aus) |
 | `/admin/saml`     | SAML-Identity-Provider (z. B. Entra ID) hinzufügen                                   |
