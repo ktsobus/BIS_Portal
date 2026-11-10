@@ -36,14 +36,14 @@ export function FamilyTiles({ items }: { items: FamilyTileData[] }) {
               title={family.name}
               meta={
                 <>
-                  {countLabel(family.serviceCount, "Service", "Services")} ·{" "}
+                  {countLabel(family.serviceCount, "Service", "Services")}
                   {family.leistungCount === 0
-                    ? "noch keine Leistungen"
-                    : countLabel(
+                    ? ", noch keine Leistungen"
+                    : ` mit ${countLabel(
                         family.leistungCount,
                         "Leistung",
                         "Leistungen"
-                      )}
+                      )}`}
                 </>
               }
             >

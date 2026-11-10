@@ -9,10 +9,7 @@ import { buttonVariants } from "@/components/ui/button"
 export function NotFoundContent() {
   return (
     <ContentPage>
-      <PageTitle
-        eyebrow="Fehler 404"
-        lead="Die gewünschte Seite gibt es nicht oder nicht mehr. Möglicherweise wurde die Leistung umbenannt oder ist im Portal nicht mehr veröffentlicht."
-      >
+      <PageTitle lead="Die gewünschte Seite gibt es nicht oder nicht mehr. Möglicherweise wurde die Leistung umbenannt oder ist im Portal nicht mehr veröffentlicht.">
         Seite nicht gefunden
       </PageTitle>
       <ul className="flex flex-wrap gap-3">
@@ -27,7 +24,7 @@ export function NotFoundContent() {
             href="/suche"
             className={buttonVariants({ variant: "outline" })}
           >
-            Services und Leistungen suchen
+            Zur Suche
             <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
           </Link>
         </li>

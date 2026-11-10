@@ -6,8 +6,8 @@ import { requireAdmin } from "@/lib/session"
 
 export const metadata: Metadata = {
   title: {
-    default: "Administration · Business-IT-Serviceportal",
-    template: "%s · Administration · Business-IT-Serviceportal",
+    default: "Administration – Business-IT-Serviceportal",
+    template: "%s – Administration – Business-IT-Serviceportal",
   },
   robots: { index: false, follow: false },
 }

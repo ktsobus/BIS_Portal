@@ -454,13 +454,17 @@ Slugs aus Name + kurzer ID (stabil bei gleichen Namen); bei Umbenennung Weiterle
 
 | Seite        | Inhalt                                                                                   |
 | ------------ | ---------------------------------------------------------------------------------------- |
-| Start        | Titel, grosses Suchfeld «Was benötigen Sie?»; Service-Familien als Servicekarten mit Anzahl Services und Vorschau |
+| Start        | Titel mit Lead, grosses Suchfeld; Service-Familien als Servicekarten mit Anzahl Services und Vorschau |
 | Familie (Ebene 2) | Seitennavigation (alle Familien); Services als Servicekarten mit Stelle und Definition (gekürzt) |
-| Service (Ebene 3) | Seitennavigation (Services der Familie, aktueller Service mit seinen Leistungen); Definition, Inhaltsverzeichnis, Leistungen als Kacheln (Kurzbeschreibung, Subtyp, Schaltflächen «Bestellen» / «Anfrage stellen»), ohne Leistungen eine Kontaktbox mit dem zentralen Kontakt, Zuständigkeit |
-| Leistung     | Box «Service nutzen» mit den Aktionen (Hauptaufgabe; ohne Aktion Hinweis mit verantwortlicher Stelle und zentralem Kontakt), Inhaltsverzeichnis, Beschreibung, Eckdaten (Leistungsbezüger, Anwendungen), Zuständigkeit, weitere Informationen, «Stand: …» |
-| Suche        | Volltext über Name, Beschreibung, Service, Anwendungen; Filter Subtyp und Leistungsbezüger als Chips; Treffer als Servicekarten; clientseitig (kleine Datenmenge) |
+| Service (Ebene 3) | Seitennavigation (Services der Familie, aktueller Service mit seinen Leistungen); Definition, Leistungen als Servicekarten (Subtyp, Kurzbeschreibung; eigene Bestell-/Anfragewege aus LeanIX als Pillen, die Standard-Aktion nur auf der Detailseite), ohne Leistungen eine Kontaktbox mit dem zentralen Kontakt, Zuständigkeit |
+| Leistung     | Box «Service nutzen» mit den Aktionen (Hauptaufgabe; ohne Aktion Hinweis mit verantwortlicher Stelle und zentralem Kontakt), Beschreibung, Eckdaten (Art der Leistung, Leistungsbezüger, Anwendungen), Zuständigkeit, weitere Informationen, «Stand: …» |
+| Suche        | Volltext über Name, Beschreibung, Service, Anwendungen; Filter Subtyp und Leistungsbezüger als Chips (nur bei mehr als einem Wert); Treffer als Servicekarten; clientseitig (kleine Datenmenge) |
 
 Brotkrumen auf allen Seiten (Start › Familie › Service › Leistung), mobil als Rücklink.
+Ein Inhaltsverzeichnis (Sprungmarken) erscheint erst ab drei Abschnitten; die Box
+«Zuständigkeit» entfällt, wenn weder Stelle noch Ansprechperson erfasst ist. Kopf, Inhalt und
+Fusszeile beginnen an derselben linken Kante (`container-page`); der Stand der Daten steht in
+der Meta-Zeile unter der Fusszeile.
 Leistungen ohne Aktions-Ressource zeigen einen Standard-Kontakt (z. B. Service Desk) –
 offene Frage 2.
 

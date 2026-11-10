@@ -1,15 +1,20 @@
 import Link from "next/link"
 import type { LeistungSummary } from "@workspace/api"
-import { ArrowRightIcon } from "lucide-react"
 
+import { cn } from "@/lib/utils"
+
+import { isFallbackAction } from "../server/fallback"
 import { plainExcerpt } from "../text"
 import { ActionLinks } from "./action-links"
-import { SubtypeBadge } from "./subtype-badge"
+import { ArrowCircle } from "./arrow-circle"
+import { cardTileClass } from "./service-card"
 
 /**
- * Leistung als blassgrüne Kachel: Subtyp, Name, Kurzbeschreibung, Aktionen
- * als weisse Pillen und «Details →». Nicht als Ganzes verlinkt, weil die
- * Aktionen eigene Ziele haben.
+ * Leistung als Servicekarte: Name, Art, Kurzbeschreibung, roter Pfeilkreis.
+ * Die ganze Kachel führt zur Leistung (gestreckter Titel-Link); hat die
+ * Leistung eigene Bestell- oder Anfragewege, liegen sie als weisse Pillen
+ * darüber. Der zentrale Kontakt (Standard-Aktion) erscheint hier nicht: Er
+ * stünde auf jeder Kachel gleich und gehört auf die Detailseite.
  */
 export function LeistungCard({
   leistung,
@@ -20,37 +25,28 @@ export function LeistungCard({
 }) {
   const Heading = `h${headingLevel}` as const
   const summary = plainExcerpt(leistung.summary, 200)
+  const actions = leistung.actions.filter((action) => !isFallbackAction(action))
 
   return (
-    <article className="flex h-full flex-col gap-3 rounded-tile bg-tile-service p-6">
-      <Heading className="type-headline-sm text-pretty">
+    // Die Fläche zeichnet der Link (::before), damit besuchte Leistungen
+    // dunkler erscheinen können; `isolate` hält sie hinter dem Inhalt.
+    <article className={cn(cardTileClass, "isolate bg-transparent")}>
+      <Heading className="type-headline-sm text-pretty transition-colors duration-200 group-hover:text-primary">
         <Link
           href={`/leistung/${leistung.slug}`}
-          className="transition-colors duration-200 hover:text-primary"
+          className="card-link before:absolute before:inset-0 before:-z-10 before:rounded-tile before:bg-tile-service before:transition-colors before:duration-200 after:absolute after:inset-0 after:rounded-tile visited:before:bg-tile-service-visited"
         >
           {leistung.name}
         </Link>
       </Heading>
-      {/* Visuell über dem Titel, im Lesefluss danach. */}
-      <SubtypeBadge
-        label={leistung.subtypeLabel}
-        className="order-first self-start"
-      />
-      {summary ? <p className="type-body-md">{summary}</p> : null}
-      <div className="mt-auto flex flex-col items-start gap-4 pt-2">
-        <ActionLinks actions={leistung.actions} />
-        <Link
-          href={`/leistung/${leistung.slug}`}
-          className="group/more inline-flex min-h-11 items-center gap-[0.35em] type-label-lg transition-colors duration-200 hover:text-primary"
-        >
-          Details
-          <span className="sr-only"> zu «{leistung.name}»</span>
-          <ArrowRightIcon
-            aria-hidden="true"
-            strokeWidth={1.5}
-            className="size-[1.375rem] text-primary"
-          />
-        </Link>
+      {leistung.subtypeLabel ? (
+        <p className="type-body-sm">{leistung.subtypeLabel}</p>
+      ) : null}
+      {summary ? <p className="line-clamp-4 type-body-md">{summary}</p> : null}
+      <div className="mt-auto flex flex-wrap items-end justify-between gap-x-4 gap-y-3 pt-2">
+        {/* Über dem gestreckten Link, damit die Pillen ihr eigenes Ziel haben. */}
+        <ActionLinks actions={actions} className="relative z-10" />
+        <ArrowCircle className="ml-auto group-hover:shadow-press-dark" />
       </div>
     </article>
   )

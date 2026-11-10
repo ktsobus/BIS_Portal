@@ -128,6 +128,14 @@ Nutzungsbewilligung des Kantons.
   am Link oder sichtbarer Portalname neben dem Logo.
 - Logo nicht drehen, stauchen, umfärben, beschneiden oder mit Effekten (Schatten) versehen.
 
+## Browser-Symbol (Favicon)
+
+`apps/web/app/icon.svg` ist ein neutrales Symbol des Portals: roter Kreis (`#CC0000`) mit
+weissem Pfeil, das Bedienelement «Pfeilkreis» aus dem Designsystem. Es ist bewusst **nicht**
+das Logo oder Wappen (das Logo wird nicht nachgezeichnet oder beschnitten, siehe oben) und
+ersetzt das Standard-Symbol des Frameworks. Stellt das Kompetenzzentrum offizielle App-Icons
+bereit, diese Datei ersetzen (`icon.svg` bzw. `favicon.ico`, `apple-icon.png` in `app/`).
+
 ## Produktivbetrieb
 
 Die Originaldateien (SVG; Varianten farbig, schwarz heraldisch und negativ weiss heraldisch)

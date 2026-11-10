@@ -4,6 +4,10 @@ import { cn } from "@/lib/utils"
 
 import { ArrowCircle } from "./arrow-circle"
 
+/** Kachel einer verlinkten Karte: Mint, 10 px, hebt sich beim Überfahren. */
+export const cardTileClass =
+  "group relative flex h-full flex-col gap-3 rounded-tile bg-tile-service p-6 transition-[box-shadow,background-color] duration-200 hover:shadow-lift md:min-h-60"
+
 /**
  * Servicekarte nach so.ch: blassgrüne Kachel (10 px, 24 px Innenabstand),
  * Titel 24 px Black, Stelle bzw. Metadaten 14 px, roter Pfeilkreis unten
@@ -17,7 +21,6 @@ export function ServiceCard({
   id,
   href,
   title,
-  eyebrow,
   meta,
   children,
   headingLevel = 3,
@@ -27,8 +30,6 @@ export function ServiceCard({
   id: string
   href: string
   title: string
-  /** Kleine Zeile über dem Titel, z. B. «Verwaltungsleistung». */
-  eyebrow?: React.ReactNode
   /** Zeile unter dem Titel (14 px), z. B. die verantwortliche Stelle. */
   meta?: React.ReactNode
   /** Weiterer Inhalt (z. B. Kurzbeschreibung), auf drei Zeilen gekürzt. */
@@ -46,11 +47,11 @@ export function ServiceCard({
       aria-labelledby={titleId}
       aria-describedby={metaId}
       className={cn(
-        "group focus-inset relative flex h-full flex-col gap-3 rounded-tile bg-tile-service p-6 transition-[box-shadow,background-color] duration-200 visited:bg-tile-service-visited hover:shadow-lift md:min-h-[17.8125rem]",
+        cardTileClass,
+        "focus-inset visited:bg-tile-service-visited",
         className
       )}
     >
-      {eyebrow ? <p className="type-eyebrow">{eyebrow}</p> : null}
       <Heading
         id={titleId}
         className="type-headline-md text-pretty transition-colors duration-200 group-hover:text-primary"
@@ -63,7 +64,7 @@ export function ServiceCard({
         </div>
       ) : null}
       {children ? <div className="type-body-md">{children}</div> : null}
-      <ArrowCircle className="mt-auto self-end group-hover:shadow-press-dark" />
+      <ArrowCircle className="mt-auto self-end group-hover:shadow-press-dark group-active:shadow-press-dark" />
     </Link>
   )
 }

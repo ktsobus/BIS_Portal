@@ -29,7 +29,9 @@ export interface MetaItem {
 
 /**
  * Seitenkopf nach so.ch: Logo oben links, Meta-Navigation oben rechts,
- * Hauptreiter unten links, Suchfeld unten rechts; weiss mit Haarlinie.
+ * Hauptreiter unten links, Suchfeld unten rechts; weiss mit Haarlinie. Der
+ * Kopf steht in derselben Seitenbreite wie Inhalt und Fusszeile, damit Logo,
+ * Reiter und Titel an einer Kante beginnen.
  * Mobil wandern Meta-Navigation und Suche in ein aufklappbares Menü, die
  * Reiter bleiben unter dem Logo sichtbar.
  */
@@ -67,7 +69,7 @@ export function SiteHeader({
     <header data-variant={variant} className="border-b border-hairline">
       <div
         className={cn(
-          "container-chrome grid grid-cols-[minmax(0,1fr)_auto] gap-x-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,35.625rem)] lg:gap-x-12",
+          "container-page grid grid-cols-[minmax(0,1fr)_auto] gap-x-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,35.625rem)] lg:gap-x-12",
           !hasTabs && "pb-5 lg:pb-8"
         )}
       >
@@ -120,7 +122,7 @@ export function SiteHeader({
         {hasSearch || metaItems.length > 0 || account ? (
           <MobileMenu
             buttonClassName="col-start-2 row-start-1 mt-4 justify-self-end"
-            panelClassName="col-span-full row-start-3 mt-px flex flex-col gap-6"
+            panelClassName="col-span-full row-start-3 mt-px flex flex-col gap-4"
           >
             {hasSearch ? <HeaderSearch id="suche-mobil" /> : null}
             {account ? (
@@ -137,7 +139,7 @@ export function SiteHeader({
                   {metaItems.map((item) => (
                     <li
                       key={item.key}
-                      className="border-b border-hairline py-2 first:border-t"
+                      className="border-b border-hairline py-2 last:border-b-0 last:pb-0"
                     >
                       {item.node}
                     </li>

@@ -40,9 +40,6 @@ export default async function FamilyPage({
   // Alter Slug (z. B. nach Umbenennung in LeanIX): auf den aktuellen umleiten.
   if (family.slug !== slug) redirect(`/kategorie/${family.slug}`)
 
-  // Eindeutig gezählt (eine Leistung kann mehreren Services angehören).
-  const { leistungCount } = family
-
   return (
     <ContentPage
       breadcrumbs={[{ label: "Start", href: "/" }, { label: family.name }]}
@@ -56,17 +53,11 @@ export default async function FamilyPage({
       }
     >
       <div className="flex flex-col gap-6">
-        <PageTitle eyebrow="Service-Familie">{family.name}</PageTitle>
+        <PageTitle>{family.name}</PageTitle>
         <MarkdownText headingLevel={2}>{family.description}</MarkdownText>
       </div>
 
       <Section id="services" title="Services">
-        <p>
-          {countLabel(services.length, "Service", "Services")}
-          {leistungCount > 0
-            ? ` · ${countLabel(leistungCount, "Leistung", "Leistungen")} im Portal`
-            : null}
-        </p>
         <ServiceList services={services} />
       </Section>
     </ContentPage>

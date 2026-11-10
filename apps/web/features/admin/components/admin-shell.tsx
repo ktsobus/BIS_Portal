@@ -53,14 +53,7 @@ export function AdminShell({
       >
         {children}
       </main>
-      <SiteFooterFrame
-        compact
-        cta={
-          isAdmin
-            ? { href: "/", label: "Zum Portal" }
-            : { href: "/suche", label: "Alle Leistungen" }
-        }
-      />
+      <SiteFooterFrame compact signInLink={!isAdmin} />
     </div>
   )
 }

@@ -37,7 +37,7 @@ export function HeaderSearch({
         id={id}
         name="q"
         type="search"
-        placeholder="Services und Leistungen suchen …"
+        placeholder="Suche"
         autoComplete="off"
         className="field-underline h-[3.1875rem] w-full min-w-0 rounded-none border-0 border-b border-ink bg-transparent pr-12 pl-0 text-base text-ink transition-[border-color,box-shadow] duration-200 placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
       />

@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { ArrowRightIcon } from "lucide-react"
 
-import { buttonVariants } from "@/components/ui/button"
 import { currentYear } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
@@ -9,25 +8,28 @@ import { FooterSender } from "./footer-sender"
 
 /**
  * Fusszeile nach so.ch ohne Datenzugriff: Schieferfläche mit 10-px-Ecken,
- * eingerückt vom Fensterrand; links Absender, Zusatzangaben und eine
- * Schaltfläche, rechts optional Direktlinks; darunter eine weisse
- * Meta-Zeile mit Copyright. Ohne Server-Aufrufe, damit sie auch in
- * Fehlerseiten (Client Components) nutzbar ist.
+ * eingerückt vom Fensterrand; links Absender und Kontakt, rechts optional
+ * Direktlinks; darunter eine weisse Meta-Zeile mit Copyright, Links und dem
+ * Stand der Daten. Ohne Server-Aufrufe, damit sie auch in Fehlerseiten
+ * (Client Components) nutzbar ist.
  */
 export function SiteFooterFrame({
   info,
   directLinks,
-  cta,
+  status,
   compact = false,
+  signInLink = true,
 }: {
-  /** Unter dem Absender, z. B. Kontakt und Stand der Daten. */
+  /** Unter dem Absender, z. B. der Kontakt zum Service Desk. */
   info?: React.ReactNode
   /** Rechte Spalten, z. B. Direktlinks auf die Service-Familien. */
   directLinks?: React.ReactNode
-  /** Schaltfläche auf der Schieferfläche (Pille mit Haarlinie). */
-  cta: { href: string; label: string }
+  /** Rechts in der Meta-Zeile, z. B. «Stand der Daten: …». */
+  status?: React.ReactNode
   /** Weniger Innenabstand (Admin-Bereich, Fehlerseiten). */
   compact?: boolean
+  /** «Anmeldung Administration» in der Meta-Zeile (nicht im Admin-Bereich). */
+  signInLink?: boolean
 }) {
   return (
     <footer className="mt-16 lg:mt-24">
@@ -35,54 +37,43 @@ export function SiteFooterFrame({
         <div className="on-dark mx-auto max-w-chrome rounded-tile bg-secondary text-secondary-foreground">
           <div
             className={cn(
-              "container-page grid gap-x-6 gap-y-12 py-12 lg:grid-cols-3 lg:gap-y-16",
-              compact ? "lg:py-16" : "lg:py-24"
+              "container-page grid gap-x-6 gap-y-12 lg:grid-cols-3",
+              compact ? "py-10 lg:py-12" : "py-12 lg:py-24"
             )}
           >
             <div className="flex flex-col gap-8">
               <FooterSender />
               {info}
-              <ul className="flex flex-col items-start gap-3">
-                <li>
-                  <Link
-                    href={cta.href}
-                    className={buttonVariants({ variant: "on-dark" })}
-                  >
-                    {cta.label}
-                    <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
-                  </Link>
-                </li>
-              </ul>
             </div>
             {directLinks}
           </div>
         </div>
       </div>
 
-      <div className="container-chrome flex flex-col gap-x-6 gap-y-2 py-6 type-body-sm sm:flex-row sm:items-center">
+      <div className="container-page flex flex-col gap-x-6 gap-y-1 py-6 type-body-sm md:flex-row md:items-center">
         <p className="text-ink">© {currentYear()}, Kanton Solothurn</p>
         <ul className="flex flex-wrap gap-x-6">
           <li>
-            <Link
-              href="/suche"
-              className="inline-flex min-h-11 items-center transition-colors duration-200 hover:text-primary"
-            >
+            <Link href="/suche" className={metaLinkClass}>
               Suche
             </Link>
           </li>
-          <li>
-            <Link
-              href="/sign-in"
-              className="inline-flex min-h-11 items-center transition-colors duration-200 hover:text-primary"
-            >
-              Anmeldung Administration
-            </Link>
-          </li>
+          {signInLink ? (
+            <li>
+              <Link href="/sign-in" className={metaLinkClass}>
+                Anmeldung Administration
+              </Link>
+            </li>
+          ) : null}
         </ul>
+        {status ? <p className="md:ml-auto md:text-right">{status}</p> : null}
       </div>
     </footer>
   )
 }
+
+const metaLinkClass =
+  "inline-flex min-h-11 items-center transition-colors duration-200 hover:text-primary"
 
 /**
  * Direktlinks auf der Schieferfläche: weisse Beschriftung (18 px) und rechts

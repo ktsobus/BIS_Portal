@@ -10,6 +10,7 @@ import { CatalogUnavailable } from "@/features/catalog/components/catalog-unavai
 import { ServiceTreeSideNav } from "@/features/catalog/components/catalog-side-nav"
 import { DashList } from "@/features/catalog/components/dash-list"
 import {
+  hasResponsible,
   ResponsibleBox,
   ServiceUseBox,
 } from "@/features/catalog/components/info-boxes"
@@ -52,6 +53,27 @@ function leadText(summary: string | null, description: string | null) {
   return markdownToPlainText(description).startsWith(start) ? null : lead
 }
 
+/** Zeile der Eckdaten: Bezeichnung links, Werte rechts, Haarlinie darunter. */
+function Fact({ label, values }: { label: string; values: string[] }) {
+  if (values.length === 0) return null
+  return (
+    <div className="flex flex-col gap-1 border-b border-hairline py-4 sm:grid sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-6">
+      <dt className="font-bold">{label}</dt>
+      <dd>
+        {values.length === 1 ? (
+          values[0]
+        ) : (
+          <ul className="flex flex-col gap-1">
+            {values.map((value, index) => (
+              <li key={`${index}-${value}`}>{value}</li>
+            ))}
+          </ul>
+        )}
+      </dd>
+    </div>
+  )
+}
+
 export default async function LeistungPage({
   params,
 }: PageProps<"/leistung/[slug]">) {
@@ -91,12 +113,17 @@ export default async function LeistungPage({
   const updatedAt = formatDate(leistung.updatedAt)
   const lead = leadText(leistung.summary, leistung.description)
 
+  const hasFacts =
+    Boolean(leistung.subtypeLabel) ||
+    leistung.audiences.length > 0 ||
+    leistung.applications.length > 0
+
   const toc = [
     { id: "beschreibung", label: "Beschreibung" },
-    ...(leistung.audiences.length > 0 || leistung.applications.length > 0
-      ? [{ id: "eckdaten", label: "Eckdaten" }]
+    ...(hasFacts ? [{ id: "eckdaten", label: "Eckdaten" }] : []),
+    ...(hasResponsible(responsible, leistung.persons)
+      ? [{ id: "verantwortlich", label: "Zuständigkeit" }]
       : []),
-    { id: "verantwortlich", label: "Zuständigkeit" },
     ...(hasInfoLinks
       ? [{ id: "weitere-informationen", label: "Weitere Informationen" }]
       : []),
@@ -121,9 +148,7 @@ export default async function LeistungPage({
         ) : null
       }
     >
-      <PageTitle eyebrow={leistung.subtypeLabel ?? "Leistung"} lead={lead}>
-        {leistung.name}
-      </PageTitle>
+      <PageTitle lead={lead}>{leistung.name}</PageTitle>
 
       {/* Hauptaufgabe der Seite: bestellen bzw. anfragen. */}
       <ServiceUseBox
@@ -147,35 +172,22 @@ export default async function LeistungPage({
         )}
       </Section>
 
-      {leistung.audiences.length > 0 || leistung.applications.length > 0 ? (
+      {hasFacts ? (
         <Section id="eckdaten" title="Eckdaten">
-          <dl className="grid gap-x-12 gap-y-6 sm:grid-cols-2">
-            {leistung.audiences.length > 0 ? (
-              <div className="flex flex-col gap-2">
-                <dt className="type-title-sm">Leistungsbezüger</dt>
-                <dd>
-                  <DashList
-                    items={leistung.audiences.map((audience) => ({
-                      key: audience.id,
-                      content: audience.name,
-                    }))}
-                  />
-                </dd>
-              </div>
+          <dl className="border-t border-hairline">
+            {leistung.subtypeLabel ? (
+              <Fact label="Art der Leistung" values={[leistung.subtypeLabel]} />
             ) : null}
-            {leistung.applications.length > 0 ? (
-              <div className="flex flex-col gap-2">
-                <dt className="type-title-sm">Anwendungen</dt>
-                <dd>
-                  <DashList
-                    items={leistung.applications.map((application) => ({
-                      key: application.id,
-                      content: application.name,
-                    }))}
-                  />
-                </dd>
-              </div>
-            ) : null}
+            <Fact
+              label="Leistungsbezüger"
+              values={leistung.audiences.map((audience) => audience.name)}
+            />
+            <Fact
+              label="Anwendungen"
+              values={leistung.applications.map(
+                (application) => application.name
+              )}
+            />
           </dl>
         </Section>
       ) : null}
