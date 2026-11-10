@@ -645,7 +645,7 @@ Leistungen im Kanal.
 - Betrieb: Docker-Image (Standalone, inkl. Logo), Compose für den internen Server,
   Readiness-Check, Betriebshandbuch ([betrieb.md](betrieb.md)).
 - Demo-Modus ohne Token (`apps/web/data/demo-catalog.json`) und LeanIX-Mock
-  (`scripts/mock-leanix.mjs`) für Vorführungen und Tests; 198 automatisierte Tests.
+  (`scripts/mock-leanix.mjs`) für Vorführungen und Tests; 199 automatisierte Tests.
 
 **Geprüft:** Fünf unabhängige Prüfungen (Anforderungen, Ausfallsicherheit, CD und
 Barrierefreiheit, Sicherheit, Betrieb). 59 Befunde wurden bestätigt und behoben bzw. als offener
