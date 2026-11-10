@@ -464,21 +464,19 @@
 }
 
 /*
- * Meldungen (sonner) im Designsystem: weisse Kachel (10 px) mit Haarlinie,
- * Schiefer-Text, keine Schatten, Hausschrift. sonner fügt sein CSS
- * ungeschichtet am Ende von <head> ein; Tailwind-Klassen (Layer) verlieren
- * dagegen. Daher ungeschichtet und mit höherer Spezifität als die
- * sonner-Regeln. Der Typ ist an Symbol und linker Kante erkennbar: Rot nur
- * für Fehler (Zustand), sonst Schiefer.
+ * Meldungen (sonner) wie die Hinweise im Portal (Alert): Kachel in kühlem
+ * Grau (10 px), Schiefer-Text, keine Schatten, Hausschrift; Fehler weiss mit
+ * roter Haarlinie und rotem Symbol. sonner fügt sein CSS ungeschichtet am
+ * Ende von <head> ein; Tailwind-Klassen (Layer) verlieren dagegen. Daher
+ * ungeschichtet und mit höherer Spezifität als die sonner-Regeln.
  */
 :root [data-sonner-toaster] {
   font-family: inherit;
 }
 [data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
-  border: 1px solid var(--so-hairline);
-  border-left: 4px solid var(--so-slate);
+  border: 1px solid transparent;
   border-radius: var(--radius);
-  background: #ffffff;
+  background: var(--so-tile-contact);
   color: var(--so-slate);
   box-shadow: none;
   font-size: 1rem;
@@ -495,7 +493,8 @@
 }
 [data-sonner-toaster]
   [data-sonner-toast][data-styled="true"][data-type="error"] {
-  border-left-color: var(--so-red);
+  border-color: var(--so-red);
+  background: #ffffff;
 }
 [data-sonner-toaster]
   [data-sonner-toast][data-styled="true"][data-type="error"]

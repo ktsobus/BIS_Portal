@@ -17,8 +17,8 @@ export function StartSearch() {
       <SearchFieldLarge
         id="start-suche"
         name="q"
-        label="Leistung oder Service suchen"
-        placeholder="Suche nach Leistungen und Services"
+        label="Services und Leistungen suchen"
+        placeholder="Suche nach Services und Leistungen"
         aria-describedby="start-suche-hinweis"
       />
       <p id="start-suche-hinweis" className="type-body-sm">

@@ -19,7 +19,7 @@ function errorDigest(error: unknown): string | null {
 /**
  * Inhalt der Fehlerseiten (Anmeldung, Ersteinrichtung, Admin): deutscher
  * Text, Ansprechpartner, «Erneut versuchen» (rote Hauptaktion) und eine
- * weisse Pille zum Katalog.
+ * weisse Pille zur Startseite.
  */
 export function ErrorNotice({
   error,
@@ -64,7 +64,7 @@ export function ErrorNotice({
             Erneut versuchen
           </Button>
           <Link href="/" className={buttonVariants({ variant: "outline" })}>
-            Zum Katalog
+            Zur Startseite
             <ArrowRightIcon aria-hidden="true" strokeWidth={1.5} />
           </Link>
         </div>

@@ -111,7 +111,7 @@ export function CatalogSearch({
             label="Suchbegriff"
             value={state.query}
             onChange={(event) => update({ query: event.target.value })}
-            placeholder="Suche nach Leistungen und Services"
+            placeholder="Suche nach Services und Leistungen"
             aria-describedby="suche-hinweis"
           />
           <p id="suche-hinweis" className="type-body-sm">

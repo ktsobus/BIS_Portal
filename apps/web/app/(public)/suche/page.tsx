@@ -27,7 +27,7 @@ export default async function SearchPage({
       wide
       breadcrumbs={[{ label: "Start", href: "/" }, { label: "Suche" }]}
     >
-      <PageTitle>Leistungen und Services suchen</PageTitle>
+      <PageTitle>Services und Leistungen suchen</PageTitle>
       {/* Neu aufbauen, wenn die Suche über das Kopf-Suchfeld neu startet. */}
       <CatalogSearch
         key={`${query}|${subtype}|${audience}`}
