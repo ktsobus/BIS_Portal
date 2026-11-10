@@ -221,8 +221,10 @@ function Notices({ data }: { data: Overview }) {
           </p>
           <p>
             Ressource in LeanIX erfassen oder die Standard-Aktion{" "}
-            <code>CATALOG_FALLBACK_REQUEST_URL</code> (z. B. Service Desk)
-            konfigurieren.
+            <code className="rounded-sm bg-background px-1 font-mono text-[0.9em] break-all">
+              CATALOG_FALLBACK_REQUEST_URL
+            </code>{" "}
+            (z. B. Service Desk) konfigurieren.
           </p>
         </AlertDescription>
       </Alert>
