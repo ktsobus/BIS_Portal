@@ -103,6 +103,7 @@ export default async function ServicePage({
           <ContactBox
             id="keine-leistungen"
             title="Noch keine Leistungen erfasst"
+            headingLevel={3}
           >
             <NoRequestPathHint
               message="Für diesen Service sind im Portal noch keine Leistungen erfasst."

@@ -12,7 +12,8 @@ export function FamiliesSideNav({
 }) {
   return (
     <SideNav
-      label="Service-Familien"
+      // Eigener Name: die Fusszeile hat eine Navigation «Service-Familien».
+      label="Seitennavigation Service-Familien"
       root={{ label: "Service-Familien", href: "/" }}
       items={families.map((family) => ({
         key: family.id,

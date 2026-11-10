@@ -80,22 +80,26 @@ export function ResponsibleBox({
 export function ContactBox({
   id,
   title,
+  headingLevel = 2,
   children,
 }: {
   id: string
   title: React.ReactNode
+  /** 3, wenn die Box in einem Abschnitt mit eigener H2 steht. */
+  headingLevel?: 2 | 3
   children: React.ReactNode
 }) {
   const headingId = `${id}-titel`
+  const Heading = `h${headingLevel}` as const
   return (
     <section
       id={id}
       aria-labelledby={headingId}
       className="flex scroll-mt-6 flex-col gap-4 rounded-tile bg-tile-contact p-6 pb-12"
     >
-      <h2 id={headingId} className="type-headline-md">
+      <Heading id={headingId} className="type-headline-md">
         {title}
-      </h2>
+      </Heading>
       {children}
     </section>
   )
