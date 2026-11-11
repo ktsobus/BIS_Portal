@@ -23,7 +23,9 @@ export default async function HomePage() {
       return {
         family,
         services: page.ok
-          ? page.data.services.map(({ name, leistungCount }) => ({
+          ? page.data.services.map(({ id, slug, name, leistungCount }) => ({
+              id,
+              slug,
               name,
               leistungCount,
             }))

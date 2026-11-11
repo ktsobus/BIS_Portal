@@ -56,12 +56,8 @@ export function SiteHeader({
 }) {
   const isAdmin = variant === "admin"
   const items = tabs ?? (isAdmin ? [] : PUBLIC_TABS)
-  const metaItems: MetaItem[] = meta ?? [
-    {
-      key: "admin",
-      node: <MetaLink href="/admin">Administration</MetaLink>,
-    },
-  ]
+  // Öffentlich ohne Meta-Navigation: kein Link zur Administration im Kopf.
+  const metaItems: MetaItem[] = meta ?? []
   const hasTabs = items.length > 0
   const hasSearch = !isAdmin
 

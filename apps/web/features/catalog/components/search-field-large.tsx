@@ -12,11 +12,14 @@ export function SearchFieldLarge({
   id,
   label,
   className,
+  popup,
   ...inputProps
 }: Omit<React.ComponentProps<"input">, "type" | "id"> & {
   id: string
   /** Sichtbare Beschriftung über dem Feld (ein Platzhalter ersetzt sie nicht). */
   label: string
+  /** Liste unter dem Feld, z. B. Vorschläge beim Tippen. */
+  popup?: React.ReactNode
 }) {
   return (
     <div className={cn("flex flex-col", className)}>
@@ -24,13 +27,16 @@ export function SearchFieldLarge({
         {label}
       </label>
       <div className="flex items-end gap-4 sm:gap-6">
-        <input
-          id={id}
-          type="search"
-          autoComplete="off"
-          className="field-underline h-14 w-full min-w-0 flex-1 rounded-none border-0 border-b border-steel bg-transparent px-0 type-input-lg text-ink transition-[border-color,box-shadow] duration-200 placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
-          {...inputProps}
-        />
+        <div className="relative min-w-0 flex-1">
+          <input
+            id={id}
+            type="search"
+            autoComplete="off"
+            className="field-underline h-14 w-full min-w-0 rounded-none border-0 border-b border-steel bg-transparent px-0 type-input-lg text-ink transition-[border-color,box-shadow] duration-200 placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
+            {...inputProps}
+          />
+          {popup}
+        </div>
         <button
           type="submit"
           className="group/submit inline-flex min-h-11 shrink-0 items-center gap-3 pb-1.5 transition-[scale] duration-150 active:scale-[0.985]"

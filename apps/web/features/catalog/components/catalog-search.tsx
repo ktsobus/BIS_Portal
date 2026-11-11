@@ -11,7 +11,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { orpc } from "@/lib/orpc"
 
-import { prepareEntries, searchEntries } from "../search"
+import { prepareEntries, searchEntries, writeSearchUrl } from "../search"
 import { SearchFieldLarge } from "./search-field-large"
 import { CardGrid, ServiceCard } from "./service-card"
 
@@ -25,20 +25,6 @@ interface SearchState {
   query: string
   subtype: string
   audience: string
-}
-
-/** Schreibt den Suchzustand in die URL (ohne neuen Verlaufseintrag). */
-function writeUrl(state: SearchState) {
-  const params = new URLSearchParams()
-  if (state.query.trim()) params.set("q", state.query.trim())
-  if (state.subtype) params.set("art", state.subtype)
-  if (state.audience) params.set("bezueger", state.audience)
-  const search = params.toString()
-  window.history.replaceState(
-    null,
-    "",
-    `${window.location.pathname}${search ? `?${search}` : ""}`
-  )
 }
 
 /**
@@ -58,15 +44,7 @@ export function CatalogSearch({
   })
   const resultsHeadingRef = React.useRef<HTMLHeadingElement>(null)
 
-  const { data, error, isPending } = useQuery(
-    orpc.catalog.searchIndex.queryOptions({
-      staleTime: 5 * 60 * 1000,
-      // Katalog nicht verfügbar: sofort melden statt ~7 s «wird geladen»
-      // (TanStack-Standard: drei Wiederholungen). Sonst ein Versuch mehr.
-      retry: (failureCount, error) =>
-        !isCatalogUnavailable(error) && failureCount < 1,
-    })
-  )
+  const { data, error, isPending } = useQuery(searchIndexQuery())
 
   const prepared = React.useMemo(
     () => (data ? prepareEntries(data.entries) : []),
@@ -85,7 +63,7 @@ export function CatalogSearch({
   function update(patch: Partial<SearchState>) {
     const next = { ...state, ...patch }
     setState(next)
-    writeUrl(next)
+    writeSearchUrl(next)
   }
 
   const subtypes = data?.facets.subtypes ?? []
@@ -195,7 +173,18 @@ export function CatalogSearch({
   )
 }
 
-function isCatalogUnavailable(error: unknown): boolean {
+/** Suchindex für alle Suchfelder (Startseite, beide Darstellungen der Suche). */
+export function searchIndexQuery() {
+  return orpc.catalog.searchIndex.queryOptions({
+    staleTime: 5 * 60 * 1000,
+    // Katalog nicht verfügbar: sofort melden statt ~7 s «wird geladen»
+    // (TanStack-Standard: drei Wiederholungen). Sonst ein Versuch mehr.
+    retry: (failureCount, error) =>
+      !isCatalogUnavailable(error) && failureCount < 1,
+  })
+}
+
+export function isCatalogUnavailable(error: unknown): boolean {
   return error instanceof ORPCError && error.code === "CATALOG_UNAVAILABLE"
 }
 

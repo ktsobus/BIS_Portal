@@ -134,3 +134,25 @@ export function searchEntries(
     )
     .map((item) => item.entry)
 }
+
+/**
+ * Hält den Suchzustand in der Adresse (`q`, `art`, `bezueger`), ohne neuen
+ * Verlaufseintrag. Andere Parameter (z. B. `ansicht`) bleiben erhalten.
+ */
+export function writeSearchUrl({ query, subtype, audience }: SearchFilter) {
+  const params = new URLSearchParams(window.location.search)
+  for (const [key, value] of [
+    ["q", query.trim()],
+    ["art", subtype],
+    ["bezueger", audience],
+  ] as const) {
+    if (value) params.set(key, value)
+    else params.delete(key)
+  }
+  const search = params.toString()
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}${search ? `?${search}` : ""}`
+  )
+}
